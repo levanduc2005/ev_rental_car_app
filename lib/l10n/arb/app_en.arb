@@ -1,0 +1,46 @@
+{
+  "@@locale": "en",
+  "appTitle": "EV Rental App",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  "homeTitle": "Home",
+  "homeWelcome": "Welcome! Ready to rent an EV?",
+  "homeSubtitle": "Find EV cars and charging stations near you.",
+  "routeNotFound": "Page not found: {location}",
+  "@routeNotFound": {
+    "description": "Shown when a route cannot be resolved",
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "comingSoon": "Coming soon.",
+  "tabHome": "Home",
+  "tabMap": "Map",
+  "tabTrip": "Active Trip",
+  "tabProfile": "Profile",
+  "loginTitle": "Welcome Back",
+  "loginSubtitle": "Sign in to rent an EV car.",
+  "emailLabel": "Email",
+  "emailInvalid": "Enter a valid email address.",
+  "passwordLabel": "Password",
+  "passwordTooShort": "Password is too short.",
+  "loginButton": "Sign in",
+  "logout": "Log Out",
+  "logoutConfirmTitle": "Log Out?",
+  "logoutConfirmMessage": "You will need to sign in again next time.",
+  "guestName": "Demo User",
+  "guestEmail": "demo@evrental.com",
+  "profileAccountSection": "Account",
+  "profileNotifications": "Notifications",
+  "profileAbout": "About App",
+  "errorNetwork": "No internet connection. Please try again.",
+  "errorServer": "Something went wrong on our end. Please try again later.",
+  "errorData": "We received unexpected data. Please try again.",
+  "errorCache": "Could not read local data.",
+  "errorUnknown": "An unexpected error occurred."
+}
