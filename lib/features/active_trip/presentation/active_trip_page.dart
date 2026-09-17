@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
-import 'package:flutter_template/core/widgets/widgets.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/core/widgets/widgets.dart';
 
 /// Flow 3: Active Trip dashboard page (Real-time timer & Remote Lock/Unlock).
 class ActiveTripPage extends StatelessWidget {
@@ -9,9 +9,7 @@ class ActiveTripPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chuyến đi đang hoạt động'),
-      ),
+      appBar: AppBar(title: const Text('Chuyến đi đang hoạt động')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
@@ -23,8 +21,8 @@ class ActiveTripPage extends StatelessWidget {
                   Text(
                     '01:45:20',
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const Text('Thời gian đã di chuyển'),
                   const Divider(),
@@ -32,7 +30,10 @@ class ActiveTripPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Số tiền hiện tại:'),
-                      Text('262.500 VNĐ', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        '262.500 VNĐ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ],
@@ -48,7 +49,9 @@ class ActiveTripPage extends StatelessWidget {
                     label: 'Mở cửa xe',
                     icon: Icons.lock_open,
                     onPressed: () {
-                      context.showSnackBar('Đã gửi lệnh MỞ KHÓA xe qua Bluetooth/IoT');
+                      context.showSnackBar(
+                        'Đã gửi lệnh MỞ KHÓA xe qua Bluetooth/IoT',
+                      );
                     },
                   ),
                 ),
@@ -59,7 +62,9 @@ class ActiveTripPage extends StatelessWidget {
                     icon: Icons.lock,
                     variant: AppButtonVariant.outline,
                     onPressed: () {
-                      context.showSnackBar('Đã gửi lệnh KHÓA xe qua Bluetooth/IoT');
+                      context.showSnackBar(
+                        'Đã gửi lệnh KHÓA xe qua Bluetooth/IoT',
+                      );
                     },
                   ),
                 ),

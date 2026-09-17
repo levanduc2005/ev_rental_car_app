@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_template/core/utils/app_logger.dart';
+import 'package:rental_car/core/utils/app_logger.dart';
 
 /// Logs outgoing requests and incoming responses/errors.
 ///

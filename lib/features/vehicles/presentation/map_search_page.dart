@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
-import 'package:flutter_template/core/widgets/widgets.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/core/widgets/widgets.dart';
 
 /// Flow 2: Map Search page displaying EV cars and charging stations.
 class MapSearchPage extends StatelessWidget {
@@ -29,7 +29,11 @@ class MapSearchPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.map_outlined, size: 64, color: Colors.blueGrey),
+                  const Icon(
+                    Icons.map_outlined,
+                    size: 64,
+                    color: Colors.blueGrey,
+                  ),
                   const Gap(AppSpacing.sm),
                   Text(
                     'Khu vực hiển thị Bản đồ (Google Maps / Flutter Map)',

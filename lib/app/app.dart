@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/app/router/app_router.dart';
-import 'package:flutter_template/core/config/app_config.dart';
-import 'package:flutter_template/core/theme/app_theme.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:rental_car/app/router/app_router.dart';
+import 'package:rental_car/core/config/app_config.dart';
+import 'package:rental_car/core/theme/app_theme.dart';
+import 'package:rental_car/l10n/l10n.dart';
 
 /// The root application widget.
 ///

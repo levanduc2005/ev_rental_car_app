@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/core/network/dio_client.dart';
-import 'package:flutter_template/core/storage/key_value_store.dart';
-import 'package:flutter_template/core/storage/secure_store.dart';
+import 'package:rental_car/core/network/dio_client.dart';
+import 'package:rental_car/core/storage/key_value_store.dart';
+import 'package:rental_car/core/storage/secure_store.dart';
 
 /// Cross-cutting infrastructure providers.
 ///

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
 
 /// A padded container with the app's card styling and an optional tap action.
 class AppCard extends StatelessWidget {

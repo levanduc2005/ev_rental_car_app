@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/features/auth/presentation/auth_controller.dart';
-import 'package:flutter_template/features/auth/presentation/login_page.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:rental_car/features/auth/presentation/auth_controller.dart';
+import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
+import 'package:rental_car/l10n/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

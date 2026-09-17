@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_template/l10n/gen/app_localizations.dart';
+import 'package:rental_car/l10n/gen/app_localizations.dart';
 
-export 'package:flutter_template/l10n/gen/app_localizations.dart';
+export 'package:rental_car/l10n/gen/app_localizations.dart';
 
 /// Convenience accessor for localized strings.
 ///

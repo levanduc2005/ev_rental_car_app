@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
-import 'package:flutter_template/core/widgets/app_button.dart';
-import 'package:flutter_template/core/widgets/gap.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/core/widgets/app_button.dart';
+import 'package:rental_car/core/widgets/gap.dart';
 
 /// A centered empty-state placeholder with an optional call to action.
 ///

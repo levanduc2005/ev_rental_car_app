@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_template/core/config/app_config.dart';
-import 'package:flutter_template/core/network/logging_interceptor.dart';
+import 'package:rental_car/core/config/app_config.dart';
+import 'package:rental_car/core/network/logging_interceptor.dart';
 
 /// Builds a configured [Dio] instance for the app.
 ///
@@ -21,7 +21,8 @@ abstract final class DioClient {
         },
         // Let us handle non-2xx responses ourselves instead of throwing
         // opaque DioExceptions for every status code.
-        validateStatus: (status) => status != null && status < 500,
+        validateStatus: (status) =>
+            status != null && status >= 200 && status < 300,
       ),
     );
 

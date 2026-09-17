@@ -1,5 +1,5 @@
-import 'package:flutter_template/app/app.dart';
-import 'package:flutter_template/bootstrap.dart';
+import 'package:rental_car/app/app.dart';
+import 'package:rental_car/bootstrap.dart';
 
 /// Default entry point.
 ///

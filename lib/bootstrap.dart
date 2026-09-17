@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/core/providers/core_providers.dart';
-import 'package:flutter_template/core/storage/key_value_store.dart';
-import 'package:flutter_template/core/utils/app_logger.dart';
+import 'package:rental_car/core/providers/core_providers.dart';
+import 'package:rental_car/core/storage/key_value_store.dart';
+import 'package:rental_car/core/utils/app_logger.dart';
 
 /// Boots the app inside a guarded zone with global error handling and the
 /// async dependencies (storage) resolved and injected as provider overrides.

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_template/core/error/failure.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:rental_car/core/error/failure.dart';
+import 'package:rental_car/l10n/l10n.dart';
 
 /// Bridges the pure-domain [Failure] hierarchy to localized, user-facing text.
 ///

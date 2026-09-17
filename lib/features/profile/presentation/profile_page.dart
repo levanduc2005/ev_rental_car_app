@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
-import 'package:flutter_template/core/widgets/widgets.dart';
-import 'package:flutter_template/features/auth/presentation/auth_controller.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/core/widgets/widgets.dart';
+import 'package:rental_car/features/auth/presentation/auth_controller.dart';
+import 'package:rental_car/l10n/l10n.dart';
 
 /// The "Profile" tab.
 ///
@@ -72,7 +72,9 @@ class ProfilePage extends ConsumerWidget {
                   subtitle: const Text('Trạng thái: Chưa cập nhật'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    context.showSnackBar('Cập nhật GPLX B2 trực tiếp tại Profile');
+                    context.showSnackBar(
+                      'Cập nhật GPLX B2 trực tiếp tại Profile',
+                    );
                   },
                 ),
                 const Divider(height: 0),

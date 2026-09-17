@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:rental_car/l10n/l10n.dart';
 
 /// A reusable, centered error state with an optional retry action.
 class ErrorView extends StatelessWidget {

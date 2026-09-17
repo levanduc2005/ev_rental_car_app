@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
 
 /// A titled section header with an optional subtitle and trailing action.
 ///

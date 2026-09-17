@@ -4,7 +4,7 @@
 // See the `test/` subfolders for focused unit and widget tests of each layer.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/app/app.dart';
+import 'package:rental_car/app/app.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

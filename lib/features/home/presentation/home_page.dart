@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/app/router/app_routes.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
-import 'package:flutter_template/core/widgets/widgets.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/core/widgets/widgets.dart';
+import 'package:rental_car/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 /// The "Home" tab: a small dashboard linking to the example screens.

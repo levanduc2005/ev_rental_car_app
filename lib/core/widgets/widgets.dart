@@ -2,7 +2,7 @@
 ///
 /// Import everything with a single line:
 /// ```dart
-/// import 'package:flutter_template/core/widgets/widgets.dart';
+/// import 'package:rental_car/core/widgets/widgets.dart';
 /// ```
 library;
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/core/theme/app_spacing.dart';
-import 'package:flutter_template/core/widgets/widgets.dart';
+import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/core/widgets/widgets.dart';
 
 /// Flow 2: EV Vehicle detail page.
 class VehicleDetailPage extends StatelessWidget {
@@ -11,9 +11,7 @@ class VehicleDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Chi tiết xe #$vehicleId'),
-      ),
+      appBar: AppBar(title: Text('Chi tiết xe #$vehicleId')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
@@ -26,7 +24,11 @@ class VehicleDetailPage extends StatelessWidget {
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
-              child: const Icon(Icons.electric_car, size: 80, color: Colors.blue),
+              child: const Icon(
+                Icons.electric_car,
+                size: 80,
+                color: Colors.blue,
+              ),
             ),
             const Gap(AppSpacing.md),
             Text(
@@ -41,7 +43,11 @@ class VehicleDetailPage extends StatelessWidget {
             AppCard(
               child: Row(
                 children: [
-                  const Icon(Icons.battery_charging_full, size: 36, color: Colors.green),
+                  const Icon(
+                    Icons.battery_charging_full,
+                    size: 36,
+                    color: Colors.green,
+                  ),
                   const Gap(AppSpacing.sm),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

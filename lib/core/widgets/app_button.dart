@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/core/widgets/gap.dart';
+import 'package:rental_car/core/widgets/gap.dart';
 
 /// Visual style of an [AppButton].
 enum AppButtonVariant { primary, secondary, outline, text }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/core/error/failure.dart';
-import 'package:flutter_template/core/widgets/error_view.dart';
-import 'package:flutter_template/l10n/failure_l10n.dart';
+import 'package:rental_car/core/error/failure.dart';
+import 'package:rental_car/core/widgets/error_view.dart';
+import 'package:rental_car/l10n/failure_l10n.dart';
 
 /// Renders an [AsyncValue] with consistent loading/error/data handling.
 ///

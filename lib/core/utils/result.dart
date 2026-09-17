@@ -1,4 +1,4 @@
-import 'package:flutter_template/core/error/failure.dart';
+import 'package:rental_car/core/error/failure.dart';
 
 /// A lightweight functional result type used across the app.
 ///
