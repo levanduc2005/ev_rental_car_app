@@ -42,5 +42,12 @@
   "errorServer": "Something went wrong on our end. Please try again later.",
   "errorData": "We received unexpected data. Please try again.",
   "errorCache": "Could not read local data.",
-  "errorUnknown": "An unexpected error occurred."
+  "errorUnknown": "An unexpected error occurred.",
+  "loginTopBarTitle": "Sign in",
+  "loginEmailTitle": "Enter your email to continue",
+  "loginEmailSubtitle": "Sign in to manage your trips and unlock exclusive member benefits.",
+  "emailRequired": "Please enter your email address.",
+  "continueButton": "Continue",
+  "orDivider": "or",
+  "continueWithGoogle": "Continue with Google"
 }

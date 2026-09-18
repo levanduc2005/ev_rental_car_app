@@ -105,4 +105,26 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get errorUnknown => 'Đã xảy ra lỗi không xác định.';
+
+  @override
+  String get loginTopBarTitle => 'Đăng nhập';
+
+  @override
+  String get loginEmailTitle => 'Nhập email để tiếp tục';
+
+  @override
+  String get loginEmailSubtitle =>
+      'Đăng nhập để quản lý các chuyến đi của bạn và mở khoá các ưu đãi dành riêng cho khách hàng thân thiết.';
+
+  @override
+  String get emailRequired => 'Vui lòng nhập địa chỉ email.';
+
+  @override
+  String get continueButton => 'Tiếp tục';
+
+  @override
+  String get orDivider => 'hoặc';
+
+  @override
+  String get continueWithGoogle => 'Tiếp tục với Google';
 }

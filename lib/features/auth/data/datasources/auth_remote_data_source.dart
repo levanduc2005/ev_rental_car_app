@@ -15,8 +15,8 @@ abstract interface class AuthRemoteDataSource {
   Future<AuthTokensModel> refreshToken({required String refreshToken});
 }
 
-class AuthRemoteDataSourceimpl implements AuthRemoteDataSource {
-  const AuthRemoteDataSourceimpl({required Dio dio}) : _dio = dio;
+class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
+  const AuthRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   final Dio _dio;
 
@@ -56,6 +56,7 @@ class AuthRemoteDataSourceimpl implements AuthRemoteDataSource {
       final response = await _dio.post<Map<String, dynamic>>(
         '/api/auth/refresh',
         data: {'refreshToken': refreshToken},
+        options: Options(extra: {'isPublic': true}),
       );
 
       final data = response.data!['data'] as Map<String, dynamic>;
@@ -66,7 +67,11 @@ class AuthRemoteDataSourceimpl implements AuthRemoteDataSource {
   @override
   Future<void> sendOtp({required String email}) async {
     return guardApiCall(() async {
-      await _dio.post<void>('/api/auth/resend', data: {'email': email});
+      await _dio.post<void>(
+        '/api/auth/resend',
+        data: {'email': email},
+        options: Options(extra: {'isPublic': true}),
+      );
     });
   }
 
@@ -79,6 +84,7 @@ class AuthRemoteDataSourceimpl implements AuthRemoteDataSource {
       final response = await _dio.post<Map<String, dynamic>>(
         '/api/auth/verify',
         data: {'email': email, 'verificationCode': otp},
+        options: Options(extra: {'isPublic': true}),
       );
 
       final data = response.data!['data'] as Map<String, dynamic>;

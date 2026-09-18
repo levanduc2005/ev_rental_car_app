@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
-import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
 import 'package:rental_car/l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 /// The "Home" tab: a small dashboard linking to the example screens.
 class HomePage extends StatelessWidget {
@@ -12,29 +12,29 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.homeTitle)),
+      appBar: AppBar(
+        title: Text(l10n.homeTitle),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
           const Gap(AppSpacing.sm),
-          Icon(Icons.flutter_dash, size: 64, color: theme.colorScheme.primary),
+          const Icon(Icons.flutter_dash, size: 64, color: AppColors.primary),
           const Gap(AppSpacing.md),
           Text(
             l10n.homeWelcome,
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall,
+            style: AppTextStyles.heading2,
           ),
           const Gap(AppSpacing.xs),
           Text(
             l10n.homeSubtitle,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: AppTextStyles.subtitle,
           ),
+
           const Gap(AppSpacing.xl),
           _NavCard(
             icon: Icons.map_outlined,
@@ -70,30 +70,25 @@ class _NavCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return AppCard(
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, color: theme.colorScheme.primary),
+          Icon(icon, color: AppColors.primary),
           const Gap.h(AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: theme.textTheme.titleMedium),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text(title, style: AppTextStyles.title),
+                Text(subtitle, style: AppTextStyles.subtitleSmall),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right),
+          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
         ],
       ),
     );
   }
 }
+

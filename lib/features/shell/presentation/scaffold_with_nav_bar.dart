@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rental_car/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rental_car/l10n/l10n.dart';
 
 /// The app shell that hosts the bottom [NavigationBar].
 ///

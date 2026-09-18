@@ -107,4 +107,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorUnknown => 'An unexpected error occurred.';
+
+  @override
+  String get loginTopBarTitle => 'Sign in';
+
+  @override
+  String get loginEmailTitle => 'Enter your email to continue';
+
+  @override
+  String get loginEmailSubtitle =>
+      'Sign in to manage your trips and unlock exclusive member benefits.';
+
+  @override
+  String get emailRequired => 'Please enter your email address.';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get orDivider => 'or';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
 }

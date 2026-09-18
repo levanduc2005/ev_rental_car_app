@@ -1,6 +1,10 @@
+import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/core/utils/result.dart';
+import 'package:rental_car/core/utils/safe_call.dart';
 import 'package:rental_car/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:rental_car/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:rental_car/features/auth/data/models/auth_tokens_model.dart';
+import 'package:rental_car/features/auth/data/models/user_model.dart';
 import 'package:rental_car/features/auth/domain/entities/auth_tokens.dart';
 import 'package:rental_car/features/auth/domain/entities/user_entity.dart';
 import 'package:rental_car/features/auth/domain/repositories/auth_repository.dart';
@@ -17,32 +21,69 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<UserEntity>> completeProfile({required String fullName}) {
-    // TODO: implement completeProfile
-    throw UnimplementedError();
+    return safeCall(() async {
+      final userModel = await _remoteDataSource.completeProfile(
+        fullName: fullName,
+      );
+      await _localDataSource.saveUser(userModel);
+      return userModel.toEntity();
+    });
   }
 
   @override
   Future<Result<UserEntity?>> getCurrentUser() {
-    // TODO: implement getCurrentUser
-    throw UnimplementedError();
+    return safeCall(() async {
+      final cachedUser = await _localDataSource.getUser();
+      if (cachedUser != null) {
+        return cachedUser.toEntity();
+      }
+
+      final accessToken = await _localDataSource.getAccessToken();
+      if (accessToken != null && accessToken.isNotEmpty) {
+        final user = await _remoteDataSource.getCurrentUser();
+        await _localDataSource.saveUser(user);
+        return user.toEntity();
+      }
+
+      return null;
+    });
   }
 
   @override
   Future<Result<void>> logout() {
-    // TODO: implement logout
-    throw UnimplementedError();
+    return safeCall(() async {
+      try {
+        await _remoteDataSource.logout();
+      } finally {
+        await _localDataSource.clearTokens();
+        await _localDataSource.clearUser();
+      }
+    });
   }
 
   @override
   Future<Result<AuthTokens>> refreshToken() {
-    // TODO: implement refreshToken
-    throw UnimplementedError();
+    return safeCall(() async {
+      final oldRefreshToken = await _localDataSource.getRefreshToken();
+      if (oldRefreshToken == null || oldRefreshToken.isEmpty) {
+        throw const ServerException(message: 'Không tìm thấy refresh token.');
+      }
+
+      final tokens = await _remoteDataSource.refreshToken(
+        refreshToken: oldRefreshToken,
+      );
+      await _localDataSource.saveTokens(
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken ?? oldRefreshToken,
+      );
+
+      return tokens.toEntity();
+    });
   }
 
   @override
   Future<Result<void>> sendOtp({required String email}) {
-    // TODO: implement sendOtp
-    throw UnimplementedError();
+    return safeCall(() => _remoteDataSource.sendOtp(email: email));
   }
 
   @override
@@ -50,7 +91,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String otp,
   }) {
-    // TODO: implement verifyOtp
-    throw UnimplementedError();
+    return safeCall(() async {
+      final tokens = await _remoteDataSource.verifyOtp(email: email, otp: otp);
+
+      await _localDataSource.saveTokens(
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      );
+
+      final userModel = await _remoteDataSource.getCurrentUser();
+      await _localDataSource.saveUser(userModel);
+
+      return userModel.toEntity();
+    });
   }
 }

@@ -1,10 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// A thin, testable abstraction over non-sensitive local key/value storage.
-///
-/// The interface lets you swap the backing implementation (or mock it in
-/// tests) without touching callers. The default implementation is backed by
-/// `shared_preferences`.
 abstract interface class KeyValueStore {
   Future<String?> getString(String key);
   Future<bool> setString(String key, String value);

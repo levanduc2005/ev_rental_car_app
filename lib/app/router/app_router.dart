@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/features/active_trip/presentation/active_trip_page.dart';
-import 'package:rental_car/features/auth/presentation/auth_controller.dart';
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
+import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/booking/presentation/booking_page.dart';
 import 'package:rental_car/features/home/presentation/home_page.dart';
 import 'package:rental_car/features/payment/presentation/payment_page.dart';
@@ -13,7 +14,6 @@ import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dar
 import 'package:rental_car/features/vehicles/presentation/map_search_page.dart';
 import 'package:rental_car/features/vehicles/presentation/vehicle_detail_page.dart';
 import 'package:rental_car/l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   // Rebuild the redirect logic whenever auth state changes.
@@ -25,7 +25,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: kDebugMode,
     refreshListenable: refresh,
     redirect: (context, state) {
-      final loggedIn = ref.read(authControllerProvider);
+      final loggedIn = ref.read(authControllerProvider).isAuthenticated;
       final onLoginPage = state.matchedLocation == AppRoute.login.path;
 
       if (!loggedIn) return onLoginPage ? null : AppRoute.login.path;

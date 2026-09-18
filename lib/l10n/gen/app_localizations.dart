@@ -289,6 +289,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An unexpected error occurred.'**
   String get errorUnknown;
+
+  /// No description provided for @loginTopBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get loginTopBarTitle;
+
+  /// No description provided for @loginEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to continue'**
+  String get loginEmailTitle;
+
+  /// No description provided for @loginEmailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to manage your trips and unlock exclusive member benefits.'**
+  String get loginEmailSubtitle;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email address.'**
+  String get emailRequired;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// No description provided for @orDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orDivider;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
 }
 
 class _AppLocalizationsDelegate
