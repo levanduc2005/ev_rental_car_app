@@ -96,6 +96,19 @@ class AuthController extends Notifier<AuthState> {
     );
   }
 
+  void resetOtp() {
+    state = state.copyWith(
+      status: AuthStatus.unauthenticated,
+      clearError: true,
+      isLoading: false,
+    );
+  }
+
+  void clearError() {
+    state = state.copyWith(clearError: true);
+  }
+
+
   Future<void> logout() async {
     state = state.copyWith(isLoading: true);
     await _authRepository.logout();
@@ -103,6 +116,7 @@ class AuthController extends Notifier<AuthState> {
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
 }
+
 
 /// `true` when a user is signed in.
 final authControllerProvider = NotifierProvider<AuthController, AuthState>(

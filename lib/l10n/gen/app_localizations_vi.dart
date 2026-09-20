@@ -127,4 +127,26 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get continueWithGoogle => 'Tiếp tục với Google';
+
+  @override
+  String get otpVerificationTitle => 'Xác nhận mã OTP';
+
+  @override
+  String otpSentToMessage(String email) {
+    return 'Nhập mã OTP được gửi tới $email';
+  }
+
+  @override
+  String get changeEmail => 'Đổi email';
+
+  @override
+  String resendOtpIn(int seconds) {
+    return 'Gửi lại mã OTP (${seconds}s)';
+  }
+
+  @override
+  String get resendOtpNow => 'Gửi lại mã OTP';
+
+  @override
+  String get otpInvalidLength => 'Vui lòng nhập đủ 6 chữ số mã OTP.';
 }

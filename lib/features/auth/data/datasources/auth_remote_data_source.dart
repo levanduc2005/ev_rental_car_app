@@ -24,7 +24,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel> completeProfile({required String fullName}) {
     return guardApiCall(() async {
       final response = await _dio.post<Map<String, dynamic>>(
-        '/api/users/me/update-profile',
+        '/users/me/update-profile',
         data: {'fullName': fullName},
       );
 
@@ -36,7 +36,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> getCurrentUser() {
     return guardApiCall(() async {
-      final response = await _dio.get<Map<String, dynamic>>('/api/users/me');
+      final response = await _dio.get<Map<String, dynamic>>('/users/me');
 
       final data = response.data!['data'] as Map<String, dynamic>;
       return UserModel.fromJson(data);
@@ -46,7 +46,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> logout() {
     return guardApiCall(() async {
-      await _dio.post<void>('/api/auth/logout');
+      await _dio.post<void>('/auth/logout');
     });
   }
 
@@ -54,7 +54,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<AuthTokensModel> refreshToken({required String refreshToken}) {
     return guardApiCall(() async {
       final response = await _dio.post<Map<String, dynamic>>(
-        '/api/auth/refresh',
+        '/auth/refresh',
         data: {'refreshToken': refreshToken},
         options: Options(extra: {'isPublic': true}),
       );
@@ -68,7 +68,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<void> sendOtp({required String email}) async {
     return guardApiCall(() async {
       await _dio.post<void>(
-        '/api/auth/resend',
+        '/auth/send-otp',
         data: {'email': email},
         options: Options(extra: {'isPublic': true}),
       );
@@ -82,7 +82,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }) {
     return guardApiCall(() async {
       final response = await _dio.post<Map<String, dynamic>>(
-        '/api/auth/verify',
+        '/auth/verify-otp',
         data: {'email': email, 'verificationCode': otp},
         options: Options(extra: {'isPublic': true}),
       );

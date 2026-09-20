@@ -49,5 +49,28 @@
   "emailRequired": "Please enter your email address.",
   "continueButton": "Continue",
   "orDivider": "or",
-  "continueWithGoogle": "Continue with Google"
+  "continueWithGoogle": "Continue with Google",
+  "otpVerificationTitle": "OTP Verification",
+  "otpSentToMessage": "Enter the OTP code sent to {email}",
+  "@otpSentToMessage": {
+    "description": "Message showing the destination email for OTP",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "changeEmail": "Change email",
+  "resendOtpIn": "Resend OTP ({seconds}s)",
+  "@resendOtpIn": {
+    "description": "Countdown timer for resending OTP",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "resendOtpNow": "Resend OTP",
+  "otpInvalidLength": "Please enter a 6-digit OTP code."
 }
+

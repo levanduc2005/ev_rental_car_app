@@ -331,6 +331,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Google'**
   String get continueWithGoogle;
+
+  /// No description provided for @otpVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP Verification'**
+  String get otpVerificationTitle;
+
+  /// Message showing the destination email for OTP
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the OTP code sent to {email}'**
+  String otpSentToMessage(String email);
+
+  /// No description provided for @changeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Change email'**
+  String get changeEmail;
+
+  /// Countdown timer for resending OTP
+  ///
+  /// In en, this message translates to:
+  /// **'Resend OTP ({seconds}s)'**
+  String resendOtpIn(int seconds);
+
+  /// No description provided for @resendOtpNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend OTP'**
+  String get resendOtpNow;
+
+  /// No description provided for @otpInvalidLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a 6-digit OTP code.'**
+  String get otpInvalidLength;
 }
 
 class _AppLocalizationsDelegate

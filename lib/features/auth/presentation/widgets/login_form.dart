@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/core/utils/validators.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
@@ -34,7 +36,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
 
     if (!mounted) return;
 
-    if (!success) {
+    if (success) {
+      context.pushNamed(AppRoute.otp.name);
+    } else {
       final error = ref.read(authControllerProvider).errorMessage;
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -47,6 +51,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

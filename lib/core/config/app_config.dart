@@ -23,7 +23,7 @@ abstract final class AppConfig {
   /// Base URL for the REST API.
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://jsonplaceholder.typicode.com',
+    defaultValue: 'http://10.0.2.2:8080/api',
   );
 
   /// Network timeout in milliseconds.

@@ -4,6 +4,7 @@
 /// Reference routes as `AppRoute.posts.name` / `AppRoute.posts.path`.
 enum AppRoute {
   login('/login'),
+  otp('/login/otp'),
   home('/home'),
   mapSearch('/map-search'),
   vehicleDetail('/vehicles/:id'),

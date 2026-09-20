@@ -30,13 +30,15 @@ class AuthState {
     String? emailForOtp,
     bool? isLoading,
     String? errorMessage,
+    bool clearError = false,
   }) {
     return AuthState(
       status: status ?? this.status,
       user: user ?? this.user,
       emailForOtp: emailForOtp ?? this.emailForOtp,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 }
+

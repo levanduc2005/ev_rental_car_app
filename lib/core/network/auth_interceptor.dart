@@ -58,7 +58,7 @@ class AuthInterceptor extends QueuedInterceptor {
         );
         // Gọi api lấy token mới
         final response = await refreshDio.post<Map<String, dynamic>>(
-          '/api/auth/refresh',
+          '/auth/refresh',
           data: {'refreshToken': refreshToken},
           options: Options(extra: {'isPublic': true}),
         );

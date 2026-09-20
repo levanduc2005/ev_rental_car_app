@@ -129,4 +129,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get otpVerificationTitle => 'OTP Verification';
+
+  @override
+  String otpSentToMessage(String email) {
+    return 'Enter the OTP code sent to $email';
+  }
+
+  @override
+  String get changeEmail => 'Change email';
+
+  @override
+  String resendOtpIn(int seconds) {
+    return 'Resend OTP (${seconds}s)';
+  }
+
+  @override
+  String get resendOtpNow => 'Resend OTP';
+
+  @override
+  String get otpInvalidLength => 'Please enter a 6-digit OTP code.';
 }
