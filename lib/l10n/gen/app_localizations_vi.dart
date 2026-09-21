@@ -35,16 +35,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get comingSoon => 'Sắp ra mắt.';
 
   @override
-  String get tabHome => 'Trang chủ';
+  String get tabRent => 'Thuê xe';
 
   @override
-  String get tabMap => 'Bản đồ';
+  String get tabMyTrip => 'Đơn thuê';
 
   @override
-  String get tabTrip => 'Chuyến đi';
+  String get tabControl => 'Điều khiển';
 
   @override
-  String get tabProfile => 'Cá nhân';
+  String get tabNotification => 'Thông báo';
+
+  @override
+  String get tabSupport => 'Hỗ trợ';
 
   @override
   String get loginTitle => 'Mừng bạn quay lại';

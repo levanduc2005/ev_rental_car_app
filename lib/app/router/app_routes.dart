@@ -4,13 +4,15 @@
 /// Reference routes as `AppRoute.posts.name` / `AppRoute.posts.path`.
 enum AppRoute {
   login('/login'),
-  home('/home'),
-  mapSearch('/map-search'),
+  home('/home'), //Thuê xe
+  control('/control'), //Điều khiển
+  myTrip('/my-trip'), //Đơn thuê
+  notification('/notification'), //Thông báo
+  support('/support'), //Hỗ trợ
   vehicleDetail('/vehicles/:id'),
+  mapSearch('/map-search'), //Tìm xe & Trạm sạc
   booking('/booking'),
-  activeTrip('/active-trip'),
-  payment('/payment'),
-  profile('/profile');
+  payment('/payment');
 
   const AppRoute(this.path);
 

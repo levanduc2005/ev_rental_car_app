@@ -1,19 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/features/active_trip/presentation/active_trip_page.dart';
 import 'package:rental_car/features/auth/presentation/auth_controller.dart';
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
 import 'package:rental_car/features/booking/presentation/booking_page.dart';
-import 'package:rental_car/features/home/presentation/home_page.dart';
+import 'package:rental_car/features/home/presentation/pages/home_page.dart';
 import 'package:rental_car/features/payment/presentation/payment_page.dart';
-import 'package:rental_car/features/profile/presentation/profile_page.dart';
 import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dart';
-import 'package:rental_car/features/vehicles/presentation/map_search_page.dart';
-import 'package:rental_car/features/vehicles/presentation/vehicle_detail_page.dart';
 import 'package:rental_car/l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   // Rebuild the redirect logic whenever auth state changes.
@@ -53,7 +50,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, navigationShell) =>
             ScaffoldWithNavBar(navigationShell: navigationShell),
         branches: [
-          // Branch 0: Home Tab
+          // Branch 0: Tab 1 - Thuê xe (Home)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -63,43 +60,53 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 1: Map & Vehicle Search Tab
+          // Branch 1: Tab 2 - Đơn thuê(My Trip)
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoute.mapSearch.path,
-                name: AppRoute.mapSearch.name,
-                builder: (context, state) => const MapSearchPage(),
-                routes: [
-                  GoRoute(
-                    path: ':id',
-                    name: AppRoute.vehicleDetail.name,
-                    builder: (context, state) {
-                      final id = state.pathParameters['id'] ?? '1';
-                      return VehicleDetailPage(vehicleId: id);
-                    },
-                  ),
-                ],
+                path: AppRoute.myTrip.path,
+                name: AppRoute.myTrip.name,
+                builder: (context, state) => const BookingPage(),
               ),
             ],
           ),
-          // Branch 2: Active Trip Tab
+          // Branch 2: Tab 3 - Điều khiển xe (Control)
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoute.activeTrip.path,
-                name: AppRoute.activeTrip.name,
+                path: AppRoute.control.path,
+                name: AppRoute.control.name,
                 builder: (context, state) => const ActiveTripPage(),
               ),
             ],
           ),
-          // Branch 3: Profile Tab
+          // Branch 3: Tab 4 - Thông báo (Notification)
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoute.profile.path,
-                name: AppRoute.profile.name,
-                builder: (context, state) => const ProfilePage(),
+                path: AppRoute.notification.path,
+                name: AppRoute.notification.name,
+                builder: (context, state) => Scaffold(
+                  appBar: AppBar(title: Text(context.l10n.tabNotification)),
+                  body: const Center(
+                    child: Icon(Icons.notification_add_outlined, size: 64),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Branch 4: Tab 5 - Hỗ trợ (Support)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.support.path,
+                name: AppRoute.support.name,
+                builder: (context, state) => Scaffold(
+                  appBar: AppBar(title: Text(context.l10n.tabSupport)),
+                  body: const Center(
+                    child: Icon(Icons.support_agent_outlined, size: 64),
+                  ),
+                ),
               ),
             ],
           ),

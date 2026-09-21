@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rental_car/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rental_car/l10n/l10n.dart';
 
 /// The app shell that hosts the bottom [NavigationBar].
 ///
@@ -22,25 +22,35 @@ class ScaffoldWithNavBar extends StatelessWidget {
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: _onDestinationSelected,
         destinations: [
+          //Thuê xe
           NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
-            label: l10n.tabHome,
+            icon: const Icon(Icons.directions_car_outlined),
+            selectedIcon: const Icon(Icons.directions_car),
+            label: l10n.tabRent,
           ),
+          //Đơn thuê
           NavigationDestination(
-            icon: const Icon(Icons.map_outlined),
-            selectedIcon: const Icon(Icons.map),
-            label: l10n.tabMap,
+            icon: const Icon(Icons.receipt_long_outlined),
+            selectedIcon: const Icon(Icons.receipt_long),
+            label: l10n.tabMyTrip,
           ),
+          //Điều khiển
           NavigationDestination(
-            icon: const Icon(Icons.electric_car_outlined),
-            selectedIcon: const Icon(Icons.electric_car),
-            label: l10n.tabTrip,
+            icon: const Icon(Icons.key_outlined),
+            selectedIcon: const Icon(Icons.key),
+            label: l10n.tabControl,
           ),
+          //Thông báo
           NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person),
-            label: l10n.tabProfile,
+            icon: const Icon(Icons.notifications_outlined),
+            selectedIcon: const Icon(Icons.notifications),
+            label: l10n.tabNotification,
+          ),
+          //Hỗ trợ
+          NavigationDestination(
+            icon: const Icon(Icons.headphones_outlined),
+            selectedIcon: const Icon(Icons.headphones),
+            label: l10n.tabSupport,
           ),
         ],
       ),

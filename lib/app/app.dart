@@ -19,6 +19,7 @@ class App extends ConsumerWidget {
     return MaterialApp.router(
       // Localized title (shown in the OS task switcher). Falls back to the
       // flavor name before the first frame resolves localizations.
+      locale: const Locale('vi'),
       onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: !AppConfig.isProd,
       theme: AppTheme.light(),
