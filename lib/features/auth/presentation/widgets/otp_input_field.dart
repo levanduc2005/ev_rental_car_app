@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rental_car/core/theme/theme.dart';
 
-/// Ô nhập mã xác nhận OTP 6 số với 6 ô vuông bo góc riêng biệt.
 class OtpInputField extends StatefulWidget {
   const OtpInputField({
     required this.onCompleted,
