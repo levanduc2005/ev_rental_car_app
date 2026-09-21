@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:rental_car/core/storage/secure_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:rental_car/core/storage/secure_store.dart';
 
 class _MockSecureStorage extends Mock implements FlutterSecureStorage {}
 

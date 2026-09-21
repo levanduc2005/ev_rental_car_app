@@ -32,7 +32,7 @@ class ProfilePage extends ConsumerWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabProfile)),
+      appBar: AppBar(title: Text(l10n.profileAccountSection)),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [

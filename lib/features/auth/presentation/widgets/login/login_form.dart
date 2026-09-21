@@ -52,7 +52,6 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(

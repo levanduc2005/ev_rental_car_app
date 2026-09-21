@@ -8,6 +8,10 @@ enum AppRoute {
   completeProfile('/login/complete-profile'),
   home('/home'),
   mapSearch('/map-search'),
+  control('/control'), // Điều khiển
+  myTrip('/my-trip'), // Đơn thuê
+  notification('/notification'), // Thông báo
+  support('/support'), // Hỗ trợ
   vehicleDetail('/vehicles/:id'),
   booking('/booking'),
   activeTrip('/active-trip'),

@@ -9,9 +9,12 @@ import 'package:rental_car/core/network/logging_interceptor.dart';
 /// tests (see `test/` for examples that inject a mock adapter).
 abstract final class DioClient {
   static Dio create({List<Interceptor>? interceptors}) {
+    final rawBaseUrl = AppConfig.apiBaseUrl;
+    final baseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl : '$rawBaseUrl/';
+
     final dio = Dio(
       BaseOptions(
-        baseUrl: AppConfig.apiBaseUrl,
+        baseUrl: baseUrl,
         connectTimeout: const Duration(milliseconds: AppConfig.apiTimeoutMs),
         receiveTimeout: const Duration(milliseconds: AppConfig.apiTimeoutMs),
         sendTimeout: const Duration(milliseconds: AppConfig.apiTimeoutMs),
@@ -23,6 +26,20 @@ abstract final class DioClient {
         // opaque DioExceptions for every status code.
         validateStatus: (status) =>
             status != null && status >= 200 && status < 300,
+      ),
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Strip leading slash if path is relative so it doesn't overwrite baseUrl's subpath.
+          if (!options.path.startsWith('http://') &&
+              !options.path.startsWith('https://') &&
+              options.path.startsWith('/')) {
+            options.path = options.path.substring(1);
+          }
+          return handler.next(options);
+        },
       ),
     );
 

@@ -146,29 +146,35 @@ abstract class AppLocalizations {
   /// **'Coming soon.'**
   String get comingSoon;
 
-  /// No description provided for @tabHome.
+  /// No description provided for @tabRent.
   ///
   /// In en, this message translates to:
-  /// **'Home'**
-  String get tabHome;
+  /// **'Rental'**
+  String get tabRent;
 
-  /// No description provided for @tabMap.
+  /// No description provided for @tabMyTrip.
   ///
   /// In en, this message translates to:
-  /// **'Map'**
-  String get tabMap;
+  /// **'My Trip'**
+  String get tabMyTrip;
 
-  /// No description provided for @tabTrip.
+  /// No description provided for @tabControl.
   ///
   /// In en, this message translates to:
-  /// **'Active Trip'**
-  String get tabTrip;
+  /// **'Control'**
+  String get tabControl;
 
-  /// No description provided for @tabProfile.
+  /// No description provided for @tabNotification.
   ///
   /// In en, this message translates to:
-  /// **'Profile'**
-  String get tabProfile;
+  /// **'Notification'**
+  String get tabNotification;
+
+  /// No description provided for @tabSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get tabSupport;
 
   /// No description provided for @loginTitle.
   ///

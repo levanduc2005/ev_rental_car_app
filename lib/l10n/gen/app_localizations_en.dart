@@ -35,16 +35,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get comingSoon => 'Coming soon.';
 
   @override
-  String get tabHome => 'Home';
+  String get tabRent => 'Rental';
 
   @override
-  String get tabMap => 'Map';
+  String get tabMyTrip => 'My Trip';
 
   @override
-  String get tabTrip => 'Active Trip';
+  String get tabControl => 'Control';
 
   @override
-  String get tabProfile => 'Profile';
+  String get tabNotification => 'Notification';
+
+  @override
+  String get tabSupport => 'Support';
 
   @override
   String get loginTitle => 'Welcome Back';

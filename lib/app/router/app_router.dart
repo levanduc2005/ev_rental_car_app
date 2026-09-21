@@ -9,7 +9,7 @@ import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/otp_page.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/booking/presentation/booking_page.dart';
-import 'package:rental_car/features/home/presentation/home_page.dart';
+import 'package:rental_car/features/home/presentation/pages/home_page.dart';
 import 'package:rental_car/features/payment/presentation/payment_page.dart';
 import 'package:rental_car/features/profile/presentation/profile_page.dart';
 import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dart';
@@ -78,12 +78,32 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.payment.name,
         builder: (_, _) => const PaymentPage(),
       ),
+      GoRoute(
+        path: AppRoute.mapSearch.path,
+        name: AppRoute.mapSearch.name,
+        builder: (_, _) => const MapSearchPage(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: AppRoute.vehicleDetail.name,
+            builder: (_, state) {
+              final id = state.pathParameters['id'] ?? '1';
+              return VehicleDetailPage(vehicleId: id);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoute.profile.path,
+        name: AppRoute.profile.name,
+        builder: (_, _) => const ProfilePage(),
+      ),
       // The tabbed app shell. Each branch keeps its own navigation stack.
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             ScaffoldWithNavBar(navigationShell: navigationShell),
         branches: [
-          // Branch 0: Home Tab
+          // Branch 0: Tab 1 - Thuê xe (Home)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -93,43 +113,53 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 1: Map & Vehicle Search Tab
+          // Branch 1: Tab 2 - Đơn thuê(My Trip)
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoute.mapSearch.path,
-                name: AppRoute.mapSearch.name,
-                builder: (_, _) => const MapSearchPage(),
-                routes: [
-                  GoRoute(
-                    path: ':id',
-                    name: AppRoute.vehicleDetail.name,
-                    builder: (_, state) {
-                      final id = state.pathParameters['id'] ?? '1';
-                      return VehicleDetailPage(vehicleId: id);
-                    },
+                path: AppRoute.myTrip.path,
+                name: AppRoute.myTrip.name,
+                builder: (context, state) => const BookingPage(),
+              ),
+            ],
+          ),
+          // Branch 2: Tab 3 - Điều khiển xe (Control)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.control.path,
+                name: AppRoute.control.name,
+                builder: (context, state) => const ActiveTripPage(),
+              ),
+            ],
+          ),
+          // Branch 3: Tab 4 - Thông báo (Notification)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.notification.path,
+                name: AppRoute.notification.name,
+                builder: (context, state) => Scaffold(
+                  appBar: AppBar(title: Text(context.l10n.tabNotification)),
+                  body: const Center(
+                    child: Icon(Icons.notification_add_outlined, size: 64),
                   ),
-                ],
+                ),
               ),
             ],
           ),
-          // Branch 2: Active Trip Tab
+          // Branch 4: Tab 5 - Hỗ trợ (Support)
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoute.activeTrip.path,
-                name: AppRoute.activeTrip.name,
-                builder: (_, _) => const ActiveTripPage(),
-              ),
-            ],
-          ),
-          // Branch 3: Profile Tab
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoute.profile.path,
-                name: AppRoute.profile.name,
-                builder: (_, _) => const ProfilePage(),
+                path: AppRoute.support.path,
+                name: AppRoute.support.name,
+                builder: (context, state) => Scaffold(
+                  appBar: AppBar(title: Text(context.l10n.tabSupport)),
+                  body: const Center(
+                    child: Icon(Icons.support_agent_outlined, size: 64),
+                  ),
+                ),
               ),
             ],
           ),

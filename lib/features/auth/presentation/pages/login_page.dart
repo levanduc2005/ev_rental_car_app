@@ -28,10 +28,7 @@ class LoginPage extends StatelessWidget {
             ),
             const Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 16.0,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: Column(
                   children: [
                     SizedBox(height: 16),
