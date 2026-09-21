@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
-import 'package:rental_car/features/auth/presentation/auth_controller.dart';
+import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
 /// The "Profile" tab.
@@ -10,8 +10,8 @@ import 'package:rental_car/l10n/l10n.dart';
 /// Shows placeholder account info and a logout action, and demonstrates
 /// several kit widgets (`AppAvatar`, `AppCard`, `SectionHeader`, the confirm
 /// dialog and the snackbar helper).
-class NotificationPage extends ConsumerWidget {
-  const NotificationPage({super.key});
+class ProfilePage extends ConsumerWidget {
+  const ProfilePage({super.key});
 
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
     final l10n = context.l10n;
@@ -32,7 +32,7 @@ class NotificationPage extends ConsumerWidget {
     final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabNotification)),
+      appBar: AppBar(title: Text(l10n.profileAccountSection)),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [

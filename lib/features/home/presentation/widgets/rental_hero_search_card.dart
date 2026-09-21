@@ -13,8 +13,8 @@ class RentalHeroSearchCard extends StatefulWidget {
 class _RentalHeroSearchCardState extends State<RentalHeroSearchCard> {
   // 0: Thuê theo gói, 1: Thuê theo tháng
   int _selectedRentalType = 0;
-  String _selectedLocation = 'Hà Nội • Tất cả quận huyện';
-  String _selectedTime = '16:00, 14/09 — 20:00, 16/09';
+  final String _selectedLocation = 'Hà Nội • Tất cả quận huyện';
+  final String _selectedTime = '16:00, 14/09 — 20:00, 16/09';
 
   @override
   Widget build(BuildContext context) {

@@ -109,11 +109,11 @@ class HomePage extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: _onRefresh,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        child: const SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               // 1. Hero Banner + Hộp tìm kiếm nổi
               RentalHeroSearchCard(),
               SizedBox(height: AppSpacing.lg),

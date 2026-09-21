@@ -32,5 +32,19 @@
   "errorServer": "Lỗi máy chủ. Vui lòng thử lại sau.",
   "errorData": "Dữ liệu không hợp lệ.",
   "errorCache": "Không thể đọc dữ liệu cục bộ.",
-  "errorUnknown": "Đã xảy ra lỗi không xác định."
+  "errorUnknown": "Đã xảy ra lỗi không xác định.",
+  "loginTopBarTitle": "Đăng nhập",
+  "loginEmailTitle": "Nhập email để tiếp tục",
+  "loginEmailSubtitle": "Đăng nhập để quản lý các chuyến đi của bạn và mở khoá các ưu đãi dành riêng cho khách hàng thân thiết.",
+  "emailRequired": "Vui lòng nhập địa chỉ email.",
+  "continueButton": "Tiếp tục",
+  "orDivider": "hoặc",
+  "continueWithGoogle": "Tiếp tục với Google",
+  "otpVerificationTitle": "Xác nhận mã OTP",
+  "otpSentToMessage": "Nhập mã OTP được gửi tới {email}",
+  "changeEmail": "Đổi email",
+  "resendOtpIn": "Gửi lại mã OTP ({seconds}s)",
+  "resendOtpNow": "Gửi lại mã OTP",
+  "otpInvalidLength": "Vui lòng nhập đủ 6 chữ số mã OTP."
 }
+

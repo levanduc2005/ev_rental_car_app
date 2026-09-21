@@ -1,0 +1,13 @@
+{
+  "i18n-ally.localesPaths": [
+    "lib/l10n/arb"
+  ],
+  "i18n-ally.keystyle": "flat",
+  "i18n-ally.enabledParsers": [
+    "arb",
+    "json"
+  ],
+  "i18n-ally.sourceLanguage": "en",
+  "i18n-ally.displayLanguage": "vi",
+  "i18n-ally.extract.keygenStyle": "camelCase"
+}

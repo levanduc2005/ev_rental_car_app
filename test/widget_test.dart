@@ -1,27 +1,52 @@
-// Smoke test: the app boots to the login screen and, after signing in,
-// lands on the tabbed home shell.
-//
-// See the `test/` subfolders for focused unit and widget tests of each layer.
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rental_car/app/app.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rental_car/app/app.dart';
+import 'package:rental_car/core/providers/core_providers.dart';
+import 'package:rental_car/core/storage/key_value_store.dart';
+import 'package:rental_car/core/storage/secure_store.dart';
+import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class _FakeSecureStore implements SecureStore {
+  final Map<String, String> _data = {};
+
+  @override
+  Future<String?> read(String key) async => _data[key];
+
+  @override
+  Future<void> write(String key, String value) async {
+    _data[key] = value;
+  }
+
+  @override
+  Future<void> delete(String key) async {
+    _data.remove(key);
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    _data.clear();
+  }
+}
 
 void main() {
-  testWidgets('boots to login, then signs in to the home shell', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  testWidgets('boots to login screen when unauthenticated', (tester) async {
+    final prefs = await SharedPreferencesStore.create();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          keyValueStoreProvider.overrideWithValue(prefs),
+          secureStoreProvider.overrideWithValue(_FakeSecureStore()),
+        ],
+        child: const App(),
+      ),
+    );
     await tester.pumpAndSettle();
 
-    // Unauthenticated → login screen.
-    expect(find.text('Sign in'), findsOneWidget);
-
-    await tester.tap(find.text('Sign in'));
-    await tester.pumpAndSettle();
-
-    // Authenticated → tabbed shell with the home dashboard.
-    expect(find.byType(NavigationBar), findsOneWidget);
-    expect(find.text('Tìm xe & Trạm sạc'), findsOneWidget);
+    expect(find.byType(LoginPage), findsOneWidget);
   });
 }

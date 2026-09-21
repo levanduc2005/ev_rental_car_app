@@ -1,6 +1,6 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:rental_car/core/error/failure.dart';
 import 'package:rental_car/core/utils/result.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Result', () {

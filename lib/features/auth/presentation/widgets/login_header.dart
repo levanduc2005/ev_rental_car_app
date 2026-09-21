@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/features/auth/presentation/widgets/emotion_logo.dart';
+import 'package:rental_car/l10n/l10n.dart';
 
 /// Phần tiêu đề trang đăng nhập gồm logo, lời chào và mô tả.
 class LoginHeader extends StatelessWidget {
@@ -7,32 +9,25 @@ class LoginHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        children: [
-          EmotionLogo(),
-          SizedBox(height: 24),
-          Text(
-            'Welcome back',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
-              letterSpacing: -0.5,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Sign in to continue your journey with e-Motion',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF64748B),
-              fontWeight: FontWeight.w400,
-            ),
+    return Column(
+      children: [
+        const EmotionLogo(width: 140),
+        const SizedBox(height: 28),
+        Text(
+          context.l10n.loginEmailTitle,
+          style: AppTextStyles.heading2,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            context.l10n.loginEmailSubtitle,
+            style: AppTextStyles.subtitle,
             textAlign: TextAlign.center,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
