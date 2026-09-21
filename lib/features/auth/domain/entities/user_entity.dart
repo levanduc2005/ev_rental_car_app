@@ -6,7 +6,7 @@ part 'user_entity.freezed.dart';
 abstract class UserEntity with _$UserEntity {
   const factory UserEntity({
     required String email,
-    @Default('') String fullName,
+    String? fullName,
     String? phone,
     @Default('ROLE_USER') String role,
     @Default(0) int point,

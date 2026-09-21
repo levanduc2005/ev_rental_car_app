@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/theme.dart';
-import 'package:rental_car/features/auth/presentation/widgets/auth_top_bar.dart';
-import 'package:rental_car/features/auth/presentation/widgets/login_form.dart';
-import 'package:rental_car/features/auth/presentation/widgets/login_header.dart';
+import 'package:rental_car/features/auth/presentation/widgets/common/auth_top_bar.dart';
+import 'package:rental_car/features/auth/presentation/widgets/login/login_form.dart';
+import 'package:rental_car/features/auth/presentation/widgets/login/login_header.dart';
 
 /// Màn hình đăng nhập chính (Bước 1: Nhập Email).
 class LoginPage extends StatelessWidget {

@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
-import 'package:rental_car/features/auth/presentation/widgets/otp_header.dart';
-import 'package:rental_car/features/auth/presentation/widgets/otp_input_field.dart';
-import 'package:rental_car/features/auth/presentation/widgets/otp_resend_button.dart';
+import 'package:rental_car/features/auth/presentation/widgets/otp/otp_header.dart';
+import 'package:rental_car/features/auth/presentation/widgets/otp/otp_input_field.dart';
+import 'package:rental_car/features/auth/presentation/widgets/otp/otp_resend_button.dart';
 
 /// Form xử lý toàn bộ luồng xác nhận mã OTP 6 số.
 class OtpVerificationForm extends ConsumerStatefulWidget {

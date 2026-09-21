@@ -13,6 +13,7 @@ class AuthState {
   final String? emailForOtp;
   final bool isLoading;
   final String? errorMessage;
+  final bool hasSkippedProfile;
 
   const AuthState({
     this.status = AuthStatus.initial,
@@ -20,9 +21,15 @@ class AuthState {
     this.emailForOtp,
     this.isLoading = false,
     this.errorMessage,
+    this.hasSkippedProfile = false,
   });
 
   bool get isAuthenticated => status == AuthStatus.authenticated;
+
+  bool get requiresProfileSetup =>
+      isAuthenticated &&
+      (user?.fullName == null || user!.fullName!.trim().isEmpty) &&
+      !hasSkippedProfile;
 
   AuthState copyWith({
     AuthStatus? status,
@@ -30,6 +37,7 @@ class AuthState {
     String? emailForOtp,
     bool? isLoading,
     String? errorMessage,
+    bool? hasSkippedProfile,
     bool clearError = false,
   }) {
     return AuthState(
@@ -38,7 +46,7 @@ class AuthState {
       emailForOtp: emailForOtp ?? this.emailForOtp,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      hasSkippedProfile: hasSkippedProfile ?? this.hasSkippedProfile,
     );
   }
 }
-

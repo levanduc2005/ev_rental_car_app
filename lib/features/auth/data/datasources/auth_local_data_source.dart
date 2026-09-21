@@ -26,6 +26,12 @@ abstract interface class AuthLocalDataSource {
 
   /// Xóa cache thông tin người dùng
   Future<void> clearUser();
+
+  /// Đánh dấu đã bỏ qua bước hoàn tất hồ sơ
+  Future<void> setProfileSetupSkipped(String email);
+
+  /// Kiểm tra xem đã từng bỏ qua bước hoàn tất hồ sơ chưa
+  Future<bool> isProfileSetupSkipped(String email);
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -41,6 +47,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   static const _accessTokenKey = 'auth_access_token';
   static const _refreshTokenKey = 'auth_refresh_token';
   static const _userKey = 'auth_cached_user';
+  static String _skippedProfileKey(String email) =>
+      'auth_skipped_profile_$email';
 
   @override
   Future<void> clearTokens() async {
@@ -101,6 +109,25 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       await _keyValueStore.setString(_userKey, jsonString);
     } on Exception catch (e) {
       throw CacheException('Không thể lưu thông tin người dùng.', e);
+    }
+  }
+
+  @override
+  Future<void> setProfileSetupSkipped(String email) async {
+    try {
+      await _keyValueStore.setBool(_skippedProfileKey(email), value: true);
+    } catch (e) {
+      throw CacheException('Không thể lưu trạng thái bỏ qua hồ sơ.', e);
+    }
+  }
+
+  @override
+  Future<bool> isProfileSetupSkipped(String email) async {
+    try {
+      final value = await _keyValueStore.getBool(_skippedProfileKey(email));
+      return value ?? false;
+    } catch (e) {
+      throw CacheException('Không thể đọc trạng thái bỏ qua hồ sơ.', e);
     }
   }
 }

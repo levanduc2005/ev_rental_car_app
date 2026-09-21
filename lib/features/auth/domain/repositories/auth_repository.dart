@@ -23,4 +23,10 @@ abstract interface class AuthRepository {
 
   /// Refresh Access Token
   Future<Result<AuthTokens>> refreshToken();
+
+  /// Đánh dấu đã bỏ qua bước hoàn tất hồ sơ
+  Future<Result<void>> setProfileSetupSkipped(String email);
+
+  /// Kiểm tra xem đã từng bỏ qua bước hoàn tất hồ sơ chưa
+  Future<Result<bool>> isProfileSetupSkipped(String email);
 }

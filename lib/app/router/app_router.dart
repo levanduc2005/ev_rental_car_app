@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/features/active_trip/presentation/active_trip_page.dart';
+import 'package:rental_car/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/otp_page.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
@@ -26,18 +27,28 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: kDebugMode,
     refreshListenable: refresh,
     redirect: (context, state) {
-      final loggedIn = ref.read(authControllerProvider).isAuthenticated;
+      final authState = ref.read(authControllerProvider);
+      final loggedIn = authState.isAuthenticated;
       final onAuthPage =
           state.matchedLocation == AppRoute.login.path ||
-          state.matchedLocation == AppRoute.otp.path;
+          state.matchedLocation == AppRoute.otp.path ||
+          state.matchedLocation == AppRoute.completeProfile.path;
 
       if (!loggedIn) {
         if (state.matchedLocation == AppRoute.otp.path &&
-            ref.read(authControllerProvider).emailForOtp == null) {
+            authState.emailForOtp == null) {
           return AppRoute.login.path;
         }
         return onAuthPage ? null : AppRoute.login.path;
       }
+
+      // Đã đăng nhập: Nếu user chưa có tên và chưa từng bấm Bỏ qua thì vào trang điền tên
+      if (authState.requiresProfileSetup) {
+        return state.matchedLocation == AppRoute.completeProfile.path
+            ? null
+            : AppRoute.completeProfile.path;
+      }
+
       if (onAuthPage) return AppRoute.home.path;
       return null;
     },
@@ -51,6 +62,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.otp.path,
         name: AppRoute.otp.name,
         builder: (_, _) => const OtpPage(),
+      ),
+      GoRoute(
+        path: AppRoute.completeProfile.path,
+        name: AppRoute.completeProfile.name,
+        builder: (_, _) => const CompleteProfilePage(),
       ),
       GoRoute(
         path: AppRoute.booking.path,

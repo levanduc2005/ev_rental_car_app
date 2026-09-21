@@ -2,14 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
-/// Thanh tiêu đề trên cùng dùng chung cho các màn hình Auth:
-/// Gồm nút tròn (X) bên trái và tiêu đề căn giữa.
 class AuthTopBar extends StatelessWidget {
-  const AuthTopBar({
-    this.title,
-    this.onClose,
-    super.key,
-  });
+  const AuthTopBar({this.title, this.onClose, super.key});
 
   final String? title;
   final VoidCallback? onClose;
@@ -19,10 +13,7 @@ class AuthTopBar extends StatelessWidget {
     final displayTitle = title ?? context.l10n.loginTopBarTitle;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 12.0,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -51,7 +42,8 @@ class AuthTopBar extends StatelessWidget {
                   color: AppColors.textPrimary,
                 ),
                 padding: EdgeInsets.zero,
-                onPressed: onClose ??
+                onPressed:
+                    onClose ??
                     () {
                       if (Navigator.canPop(context)) {
                         Navigator.pop(context);
@@ -61,14 +53,9 @@ class AuthTopBar extends StatelessWidget {
             ),
           ),
 
-          Text(
-            displayTitle,
-            style: AppTextStyles.heading3,
-          ),
+          Text(displayTitle, style: AppTextStyles.heading3),
         ],
       ),
     );
-
   }
 }
-

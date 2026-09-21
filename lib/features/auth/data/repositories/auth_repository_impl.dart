@@ -105,4 +105,14 @@ class AuthRepositoryImpl implements AuthRepository {
       return userModel.toEntity();
     });
   }
+
+  @override
+  Future<Result<void>> setProfileSetupSkipped(String email) {
+    return safeCall(() => _localDataSource.setProfileSetupSkipped(email));
+  }
+
+  @override
+  Future<Result<bool>> isProfileSetupSkipped(String email) {
+    return safeCall(() => _localDataSource.isProfileSetupSkipped(email));
+  }
 }

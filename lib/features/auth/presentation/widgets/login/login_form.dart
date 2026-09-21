@@ -5,7 +5,7 @@ import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/core/utils/validators.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
-import 'package:rental_car/features/auth/presentation/widgets/google_sign_in_button.dart';
+import 'package:rental_car/features/auth/presentation/widgets/login/google_sign_in_button.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
 class LoginForm extends ConsumerStatefulWidget {

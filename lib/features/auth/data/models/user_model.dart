@@ -24,7 +24,7 @@ extension UserModelX on UserModel {
   UserEntity toEntity() {
     return UserEntity(
       email: email,
-      fullName: fullName ?? '',
+      fullName: fullName,
       role: role ?? 'ROLE_USER',
       phone: phone,
       point: point,

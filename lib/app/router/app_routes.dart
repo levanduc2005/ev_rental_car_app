@@ -5,6 +5,7 @@
 enum AppRoute {
   login('/login'),
   otp('/login/otp'),
+  completeProfile('/login/complete-profile'),
   home('/home'),
   mapSearch('/map-search'),
   vehicleDetail('/vehicles/:id'),
@@ -15,6 +16,5 @@ enum AppRoute {
 
   const AppRoute(this.path);
 
-  /// The URL path for this route.
   final String path;
 }

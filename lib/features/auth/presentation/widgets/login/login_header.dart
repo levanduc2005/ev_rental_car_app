@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rental_car/core/theme/theme.dart';
-import 'package:rental_car/features/auth/presentation/widgets/emotion_logo.dart';
+import 'package:rental_car/features/auth/presentation/widgets/common/emotion_logo.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
-/// Phần tiêu đề trang đăng nhập gồm logo, lời chào và mô tả.
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
 

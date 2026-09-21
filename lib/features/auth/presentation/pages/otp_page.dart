@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
-import 'package:rental_car/features/auth/presentation/widgets/auth_top_bar.dart';
-import 'package:rental_car/features/auth/presentation/widgets/otp_verification_form.dart';
+import 'package:rental_car/features/auth/presentation/widgets/common/auth_top_bar.dart';
+import 'package:rental_car/features/auth/presentation/widgets/otp/otp_verification_form.dart';
 
 class OtpPage extends ConsumerWidget {
   const OtpPage({super.key});

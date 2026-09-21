@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserEntity {
 
- String get email; String get fullName; String? get phone; String get role; int get point; bool get isBlocked; DateTime? get createdAt;
+ String get email; String? get fullName; String? get phone; String get role; int get point; bool get isBlocked; DateTime? get createdAt;
 /// Create a copy of UserEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $UserEntityCopyWith<$Res>  {
   factory $UserEntityCopyWith(UserEntity value, $Res Function(UserEntity) _then) = _$UserEntityCopyWithImpl;
 @useResult
 $Res call({
- String email, String fullName, String? phone, String role, int point, bool isBlocked, DateTime? createdAt
+ String email, String? fullName, String? phone, String role, int point, bool isBlocked, DateTime? createdAt
 });
 
 
@@ -62,11 +62,11 @@ class _$UserEntityCopyWithImpl<$Res>
 
 /// Create a copy of UserEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? fullName = null,Object? phone = freezed,Object? role = null,Object? point = null,Object? isBlocked = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? fullName = freezed,Object? phone = freezed,Object? role = null,Object? point = null,Object? isBlocked = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,point: null == point ? _self.point : point // ignore: cast_nullable_to_non_nullable
 as int,isBlocked: null == isBlocked ? _self.isBlocked : isBlocked // ignore: cast_nullable_to_non_nullable
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String fullName,  String? phone,  String role,  int point,  bool isBlocked,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String? fullName,  String? phone,  String role,  int point,  bool isBlocked,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserEntity() when $default != null:
 return $default(_that.email,_that.fullName,_that.phone,_that.role,_that.point,_that.isBlocked,_that.createdAt);case _:
@@ -177,7 +177,7 @@ return $default(_that.email,_that.fullName,_that.phone,_that.role,_that.point,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String fullName,  String? phone,  String role,  int point,  bool isBlocked,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String? fullName,  String? phone,  String role,  int point,  bool isBlocked,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserEntity():
 return $default(_that.email,_that.fullName,_that.phone,_that.role,_that.point,_that.isBlocked,_that.createdAt);case _:
@@ -197,7 +197,7 @@ return $default(_that.email,_that.fullName,_that.phone,_that.role,_that.point,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String fullName,  String? phone,  String role,  int point,  bool isBlocked,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String? fullName,  String? phone,  String role,  int point,  bool isBlocked,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _UserEntity() when $default != null:
 return $default(_that.email,_that.fullName,_that.phone,_that.role,_that.point,_that.isBlocked,_that.createdAt);case _:
@@ -212,11 +212,11 @@ return $default(_that.email,_that.fullName,_that.phone,_that.role,_that.point,_t
 
 
 class _UserEntity implements UserEntity {
-  const _UserEntity({required this.email, this.fullName = '', this.phone, this.role = 'ROLE_USER', this.point = 0, this.isBlocked = false, this.createdAt});
+  const _UserEntity({required this.email, this.fullName, this.phone, this.role = 'ROLE_USER', this.point = 0, this.isBlocked = false, this.createdAt});
   
 
 @override final  String email;
-@override@JsonKey() final  String fullName;
+@override final  String? fullName;
 @override final  String? phone;
 @override@JsonKey() final  String role;
 @override@JsonKey() final  int point;
@@ -253,7 +253,7 @@ abstract mixin class _$UserEntityCopyWith<$Res> implements $UserEntityCopyWith<$
   factory _$UserEntityCopyWith(_UserEntity value, $Res Function(_UserEntity) _then) = __$UserEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String email, String fullName, String? phone, String role, int point, bool isBlocked, DateTime? createdAt
+ String email, String? fullName, String? phone, String role, int point, bool isBlocked, DateTime? createdAt
 });
 
 
@@ -270,11 +270,11 @@ class __$UserEntityCopyWithImpl<$Res>
 
 /// Create a copy of UserEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? fullName = null,Object? phone = freezed,Object? role = null,Object? point = null,Object? isBlocked = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? fullName = freezed,Object? phone = freezed,Object? role = null,Object? point = null,Object? isBlocked = null,Object? createdAt = freezed,}) {
   return _then(_UserEntity(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,point: null == point ? _self.point : point // ignore: cast_nullable_to_non_nullable
 as int,isBlocked: null == isBlocked ? _self.isBlocked : isBlocked // ignore: cast_nullable_to_non_nullable

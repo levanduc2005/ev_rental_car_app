@@ -19,10 +19,21 @@ class AuthController extends Notifier<AuthState> {
   Future<void> checkAuthStatus() async {
     final result = await _authRepository.getCurrentUser();
 
-    result.when(
-      ok: (user) {
+    await result.when(
+      ok: (user) async {
         if (user != null) {
-          state = state.copyWith(status: AuthStatus.authenticated, user: user);
+          final skippedResult = await _authRepository.isProfileSetupSkipped(
+            user.email,
+          );
+          final hasSkipped = skippedResult.when(
+            ok: (v) => v,
+            err: (_) => false,
+          );
+          state = state.copyWith(
+            status: AuthStatus.authenticated,
+            user: user,
+            hasSkippedProfile: hasSkipped,
+          );
         } else {
           state = state.copyWith(status: AuthStatus.unauthenticated);
         }
@@ -59,11 +70,16 @@ class AuthController extends Notifier<AuthState> {
 
     final result = await _authRepository.verifyOtp(email: email, otp: otp);
 
-    return result.when(
-      ok: (user) {
+    return await result.when(
+      ok: (user) async {
+        final skippedResult = await _authRepository.isProfileSetupSkipped(
+          email,
+        );
+        final hasSkipped = skippedResult.when(ok: (v) => v, err: (_) => false);
         state = state.copyWith(
           status: AuthStatus.authenticated,
           user: user,
+          hasSkippedProfile: hasSkipped,
           isLoading: false,
         );
         return true;
@@ -96,6 +112,14 @@ class AuthController extends Notifier<AuthState> {
     );
   }
 
+  Future<void> skipProfileSetup() async {
+    final email = state.user?.email ?? state.emailForOtp;
+    if (email != null && email.isNotEmpty) {
+      await _authRepository.setProfileSetupSkipped(email);
+    }
+    state = state.copyWith(hasSkippedProfile: true);
+  }
+
   void resetOtp() {
     state = state.copyWith(
       status: AuthStatus.unauthenticated,
@@ -108,7 +132,6 @@ class AuthController extends Notifier<AuthState> {
     state = state.copyWith(clearError: true);
   }
 
-
   Future<void> logout() async {
     state = state.copyWith(isLoading: true);
     await _authRepository.logout();
@@ -117,8 +140,6 @@ class AuthController extends Notifier<AuthState> {
   }
 }
 
-
-/// `true` when a user is signed in.
 final authControllerProvider = NotifierProvider<AuthController, AuthState>(
   AuthController.new,
 );
