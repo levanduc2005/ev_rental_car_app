@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:rental_car/core/config/app_config.dart';
 import 'package:rental_car/features/auth/data/datasources/auth_local_data_source.dart';
 
@@ -25,6 +26,7 @@ class AuthInterceptor extends QueuedInterceptor {
     }
 
     final token = await _localDataSource.getAccessToken();
+    debugPrint('🔑 [SecureStore] AccessToken: $token');
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }

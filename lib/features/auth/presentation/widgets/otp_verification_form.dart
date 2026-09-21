@@ -20,6 +20,8 @@ class OtpVerificationForm extends ConsumerStatefulWidget {
 }
 
 class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
+  int _resetCount = 0;
+
   Future<void> _handleVerify(String otp) async {
     final success = await ref
         .read(authControllerProvider.notifier)
@@ -28,6 +30,10 @@ class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
     if (!mounted) return;
 
     if (!success) {
+      setState(() {
+        _resetCount++;
+      });
+
       final error = ref.read(authControllerProvider).errorMessage;
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -48,7 +54,11 @@ class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
 
     if (!mounted) return;
 
-    if (!success) {
+    if (success) {
+      setState(() {
+        _resetCount++;
+      });
+    } else {
       final error = ref.read(authControllerProvider).errorMessage;
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -71,7 +81,6 @@ class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Header: Icon phong bì + Tiêu đề + Email + Đổi email
         OtpHeader(
           email: widget.email,
           onChangeEmail: () {
@@ -81,7 +90,11 @@ class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
         ),
 
         const SizedBox(height: 32),
-        OtpInputField(enabled: !isLoading, onCompleted: _handleVerify),
+        OtpInputField(
+          key: ValueKey(_resetCount),
+          enabled: !isLoading,
+          onCompleted: _handleVerify,
+        ),
 
         const SizedBox(height: 28),
         OtpResendButton(isLoading: isLoading, onResend: _handleResendOtp),

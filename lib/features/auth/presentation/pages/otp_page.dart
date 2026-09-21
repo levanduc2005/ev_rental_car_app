@@ -7,7 +7,6 @@ import 'package:rental_car/features/auth/presentation/providers/auth_controller.
 import 'package:rental_car/features/auth/presentation/widgets/auth_top_bar.dart';
 import 'package:rental_car/features/auth/presentation/widgets/otp_verification_form.dart';
 
-/// Trang xác thực mã OTP 6 số độc lập theo chuẩn Route-driven.
 class OtpPage extends ConsumerWidget {
   const OtpPage({super.key});
 

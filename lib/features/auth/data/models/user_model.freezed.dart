@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
- String get email; String get fullName; String? get role; String? get phone; int get point; bool get blocked; String? get createdAt;
+ String get email; String? get fullName; String? get role; String? get phone; int get point; bool get blocked; String? get createdAt;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
- String email, String fullName, String? role, String? phone, int point, bool blocked, String? createdAt
+ String email, String? fullName, String? role, String? phone, int point, bool blocked, String? createdAt
 });
 
 
@@ -65,11 +65,11 @@ class _$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? fullName = null,Object? role = freezed,Object? phone = freezed,Object? point = null,Object? blocked = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? email = null,Object? fullName = freezed,Object? role = freezed,Object? phone = freezed,Object? point = null,Object? blocked = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String?,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,point: null == point ? _self.point : point // ignore: cast_nullable_to_non_nullable
 as int,blocked: null == blocked ? _self.blocked : blocked // ignore: cast_nullable_to_non_nullable
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String fullName,  String? role,  String? phone,  int point,  bool blocked,  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String email,  String? fullName,  String? role,  String? phone,  int point,  bool blocked,  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
 return $default(_that.email,_that.fullName,_that.role,_that.phone,_that.point,_that.blocked,_that.createdAt);case _:
@@ -180,7 +180,7 @@ return $default(_that.email,_that.fullName,_that.role,_that.phone,_that.point,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String fullName,  String? role,  String? phone,  int point,  bool blocked,  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String email,  String? fullName,  String? role,  String? phone,  int point,  bool blocked,  String? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
 return $default(_that.email,_that.fullName,_that.role,_that.phone,_that.point,_that.blocked,_that.createdAt);case _:
@@ -200,7 +200,7 @@ return $default(_that.email,_that.fullName,_that.role,_that.phone,_that.point,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String fullName,  String? role,  String? phone,  int point,  bool blocked,  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String email,  String? fullName,  String? role,  String? phone,  int point,  bool blocked,  String? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
 return $default(_that.email,_that.fullName,_that.role,_that.phone,_that.point,_that.blocked,_that.createdAt);case _:
@@ -215,11 +215,11 @@ return $default(_that.email,_that.fullName,_that.role,_that.phone,_that.point,_t
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({required this.email, required this.fullName, this.role, this.phone, this.point = 0, this.blocked = false, this.createdAt});
+  const _UserModel({required this.email, this.fullName, this.role, this.phone, this.point = 0, this.blocked = false, this.createdAt});
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  String email;
-@override final  String fullName;
+@override final  String? fullName;
 @override final  String? role;
 @override final  String? phone;
 @override@JsonKey() final  int point;
@@ -259,7 +259,7 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
- String email, String fullName, String? role, String? phone, int point, bool blocked, String? createdAt
+ String email, String? fullName, String? role, String? phone, int point, bool blocked, String? createdAt
 });
 
 
@@ -276,11 +276,11 @@ class __$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? fullName = null,Object? role = freezed,Object? phone = freezed,Object? point = null,Object? blocked = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? email = null,Object? fullName = freezed,Object? role = freezed,Object? phone = freezed,Object? point = null,Object? blocked = null,Object? createdAt = freezed,}) {
   return _then(_UserModel(
 email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
-as String,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as String,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String?,role: freezed == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String?,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,point: null == point ? _self.point : point // ignore: cast_nullable_to_non_nullable
 as int,blocked: null == blocked ? _self.blocked : blocked // ignore: cast_nullable_to_non_nullable

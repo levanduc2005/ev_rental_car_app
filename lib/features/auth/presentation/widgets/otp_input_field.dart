@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rental_car/core/theme/theme.dart';
 
-/// Ô nhập mã xác nhận OTP 6 số với 6 ô vuông bo góc riêng biệt.
 class OtpInputField extends StatefulWidget {
   const OtpInputField({
     required this.onCompleted,
@@ -89,8 +88,8 @@ class _OtpInputFieldState extends State<OtpInputField> {
                     color: isCurrent
                         ? AppColors.borderFocused
                         : isFilled
-                            ? AppColors.primary.withValues(alpha: 0.5)
-                            : AppColors.border,
+                        ? AppColors.primary.withValues(alpha: 0.5)
+                        : AppColors.border,
                     width: isCurrent ? 2.0 : 1.2,
                   ),
                   boxShadow: isCurrent
@@ -118,19 +117,19 @@ class _OtpInputFieldState extends State<OtpInputField> {
                           ),
                         )
                       : isCurrent
-                          ? Container(
-                              width: 2,
-                              height: 24,
-                              color: AppColors.primary,
-                            )
-                          : Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.border,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
+                      ? Container(
+                          width: 2,
+                          height: 24,
+                          color: AppColors.primary,
+                        )
+                      : Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: AppColors.border,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                 ),
               ),
             );

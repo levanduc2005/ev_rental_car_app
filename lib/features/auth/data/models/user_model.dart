@@ -8,7 +8,7 @@ part 'user_model.g.dart';
 abstract class UserModel with _$UserModel {
   const factory UserModel({
     required String email,
-    required String fullName,
+    String? fullName,
     String? role,
     String? phone,
     @Default(0) int point,
@@ -24,7 +24,7 @@ extension UserModelX on UserModel {
   UserEntity toEntity() {
     return UserEntity(
       email: email,
-      fullName: fullName,
+      fullName: fullName ?? '',
       role: role ?? 'ROLE_USER',
       phone: phone,
       point: point,
