@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/home/presentation/widgets/brand_selector_section.dart';
 import 'package:rental_car/features/home/presentation/widgets/insurance_banner.dart';
@@ -103,6 +105,13 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.tune_rounded),
             onPressed: () {
               // Mở bộ lọc nâng cao
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.account_circle_outlined),
+            tooltip: 'Hồ sơ cá nhân',
+            onPressed: () {
+              context.push(AppRoute.profile.path);
             },
           ),
         ],

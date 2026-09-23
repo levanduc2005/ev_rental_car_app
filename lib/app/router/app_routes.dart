@@ -16,7 +16,11 @@ enum AppRoute {
   booking('/booking'),
   activeTrip('/active-trip'),
   payment('/payment'),
-  profile('/profile');
+  profile('/profile'),
+  editProfile('/profile/edit'),
+  kycUpload('/profile/kyc-upload'),
+  kycStatus('/profile/kyc-status'),
+  rentalHistory('/profile/rental-history');
 
   const AppRoute(this.path);
 

@@ -152,4 +152,40 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get otpInvalidLength => 'Vui lòng nhập đủ 6 chữ số mã OTP.';
+
+  @override
+  String get profileTitle => 'Hồ sơ cá nhân';
+
+  @override
+  String get editProfileTitle => 'Chỉnh sửa thông tin';
+
+  @override
+  String get kycVerificationTitle => 'Xác thực Bằng lái & Giấy tờ (KYC)';
+
+  @override
+  String get kycStatusTitle => 'Trạng thái Xét duyệt';
+
+  @override
+  String get kycApproved => 'Đã xác thực';
+
+  @override
+  String get kycPending => 'Chờ duyệt';
+
+  @override
+  String get kycRejected => 'Bị từ chối';
+
+  @override
+  String get kycNone => 'Chưa xác thực';
+
+  @override
+  String get driverLicense => 'Giấy phép lái xe (GPLX)';
+
+  @override
+  String get idCard => 'Căn cước công dân (CCCD)';
+
+  @override
+  String get saveChanges => 'Lưu thay đổi';
+
+  @override
+  String get reuploadDocument => 'Chụp lại & Nộp lại giấy tờ';
 }

@@ -45,6 +45,18 @@
   "changeEmail": "Đổi email",
   "resendOtpIn": "Gửi lại mã OTP ({seconds}s)",
   "resendOtpNow": "Gửi lại mã OTP",
-  "otpInvalidLength": "Vui lòng nhập đủ 6 chữ số mã OTP."
+  "otpInvalidLength": "Vui lòng nhập đủ 6 chữ số mã OTP.",
+  "profileTitle": "Hồ sơ cá nhân",
+  "editProfileTitle": "Chỉnh sửa thông tin",
+  "kycVerificationTitle": "Xác thực Bằng lái & Giấy tờ (KYC)",
+  "kycStatusTitle": "Trạng thái Xét duyệt",
+  "kycApproved": "Đã xác thực",
+  "kycPending": "Chờ duyệt",
+  "kycRejected": "Bị từ chối",
+  "kycNone": "Chưa xác thực",
+  "driverLicense": "Giấy phép lái xe (GPLX)",
+  "idCard": "Căn cước công dân (CCCD)",
+  "saveChanges": "Lưu thay đổi",
+  "reuploadDocument": "Chụp lại & Nộp lại giấy tờ"
 }
 

@@ -154,4 +154,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otpInvalidLength => 'Please enter a 6-digit OTP code.';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get editProfileTitle => 'Edit Profile';
+
+  @override
+  String get kycVerificationTitle => 'Driver License & KYC Verification';
+
+  @override
+  String get kycStatusTitle => 'Verification Status';
+
+  @override
+  String get kycApproved => 'Approved';
+
+  @override
+  String get kycPending => 'Pending';
+
+  @override
+  String get kycRejected => 'Rejected';
+
+  @override
+  String get kycNone => 'Not Verified';
+
+  @override
+  String get driverLicense => 'Driver\'s License (GPLX)';
+
+  @override
+  String get idCard => 'Citizen ID Card (CCCD)';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get reuploadDocument => 'Re-upload Document';
 }

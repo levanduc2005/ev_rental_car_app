@@ -72,6 +72,18 @@
     }
   },
   "resendOtpNow": "Resend OTP",
-  "otpInvalidLength": "Please enter a 6-digit OTP code."
+  "otpInvalidLength": "Please enter a 6-digit OTP code.",
+  "profileTitle": "Profile",
+  "editProfileTitle": "Edit Profile",
+  "kycVerificationTitle": "Driver License & KYC Verification",
+  "kycStatusTitle": "Verification Status",
+  "kycApproved": "Approved",
+  "kycPending": "Pending",
+  "kycRejected": "Rejected",
+  "kycNone": "Not Verified",
+  "driverLicense": "Driver's License (GPLX)",
+  "idCard": "Citizen ID Card (CCCD)",
+  "saveChanges": "Save Changes",
+  "reuploadDocument": "Re-upload Document"
 }
 

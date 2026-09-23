@@ -30,10 +30,7 @@ class CompleteProfilePage extends ConsumerWidget {
             ),
             const Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 20.0,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [

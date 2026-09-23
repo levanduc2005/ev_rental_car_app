@@ -373,6 +373,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a 6-digit OTP code.'**
   String get otpInvalidLength;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfileTitle;
+
+  /// No description provided for @kycVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver License & KYC Verification'**
+  String get kycVerificationTitle;
+
+  /// No description provided for @kycStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Status'**
+  String get kycStatusTitle;
+
+  /// No description provided for @kycApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get kycApproved;
+
+  /// No description provided for @kycPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get kycPending;
+
+  /// No description provided for @kycRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get kycRejected;
+
+  /// No description provided for @kycNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Verified'**
+  String get kycNone;
+
+  /// No description provided for @driverLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver\'s License (GPLX)'**
+  String get driverLicense;
+
+  /// No description provided for @idCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen ID Card (CCCD)'**
+  String get idCard;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @reuploadDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-upload Document'**
+  String get reuploadDocument;
 }
 
 class _AppLocalizationsDelegate

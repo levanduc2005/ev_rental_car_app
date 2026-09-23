@@ -11,6 +11,11 @@ import 'package:rental_car/features/auth/presentation/providers/auth_controller.
 import 'package:rental_car/features/booking/presentation/booking_page.dart';
 import 'package:rental_car/features/home/presentation/pages/home_page.dart';
 import 'package:rental_car/features/payment/presentation/payment_page.dart';
+import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
+import 'package:rental_car/features/profile/presentation/pages/edit_profile_screen.dart';
+import 'package:rental_car/features/profile/presentation/pages/kyc_status_screen.dart';
+import 'package:rental_car/features/profile/presentation/pages/kyc_upload_screen.dart';
+import 'package:rental_car/features/profile/presentation/pages/rental_history_screen.dart';
 import 'package:rental_car/features/profile/presentation/profile_page.dart';
 import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dart';
 import 'package:rental_car/features/vehicles/presentation/map_search_page.dart';
@@ -97,6 +102,29 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.profile.path,
         name: AppRoute.profile.name,
         builder: (_, _) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: AppRoute.editProfile.path,
+        name: AppRoute.editProfile.name,
+        builder: (_, _) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.kycUpload.path,
+        name: AppRoute.kycUpload.name,
+        builder: (_, _) => const KycUploadScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.kycStatus.path,
+        name: AppRoute.kycStatus.name,
+        builder: (_, state) {
+          final doc = state.extra as KycDocumentEntity?;
+          return KycStatusScreen(document: doc);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.rentalHistory.path,
+        name: AppRoute.rentalHistory.name,
+        builder: (_, _) => const RentalHistoryScreen(),
       ),
       // The tabbed app shell. Each branch keeps its own navigation stack.
       StatefulShellRoute.indexedStack(

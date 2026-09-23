@@ -9,7 +9,7 @@ import 'package:rental_car/core/network/logging_interceptor.dart';
 /// tests (see `test/` for examples that inject a mock adapter).
 abstract final class DioClient {
   static Dio create({List<Interceptor>? interceptors}) {
-    final rawBaseUrl = AppConfig.apiBaseUrl;
+    const rawBaseUrl = AppConfig.apiBaseUrl;
     final baseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl : '$rawBaseUrl/';
 
     final dio = Dio(
