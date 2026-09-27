@@ -135,25 +135,31 @@ class _RentalVehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      width: 250,
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.35),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => context.pushNamed(
+        AppRoute.vehicleDetail.name,
+        pathParameters: {'id': '1'},
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: Container(
+        width: 250,
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.35),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           // 1. Khung ảnh xe + Các tag nổi trên ảnh
           Stack(
             children: [
@@ -388,8 +394,10 @@ class _RentalVehicleCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              onPressed: () =>
-                                  context.goNamed(AppRoute.mapSearch.name),
+                              onPressed: () => context.pushNamed(
+                                AppRoute.vehicleDetail.name,
+                                pathParameters: {'id': '1'},
+                              ),
                               child: const Text(
                                 'Chọn xe',
                                 style: TextStyle(
@@ -411,8 +419,10 @@ class _RentalVehicleCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              onPressed: () =>
-                                  context.goNamed(AppRoute.mapSearch.name),
+                              onPressed: () => context.pushNamed(
+                                AppRoute.vehicleDetail.name,
+                                pathParameters: {'id': '1'},
+                              ),
                               child: const Text(
                                 'Đặt ngay',
                                 style: TextStyle(
@@ -429,7 +439,8 @@ class _RentalVehicleCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 }
 

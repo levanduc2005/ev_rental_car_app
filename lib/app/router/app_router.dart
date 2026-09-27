@@ -8,9 +8,12 @@ import 'package:rental_car/features/auth/presentation/pages/complete_profile_pag
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/otp_page.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
-import 'package:rental_car/features/booking/presentation/booking_page.dart';
+import 'package:rental_car/features/booking/presentation/pages/booking_confirmation_page.dart';
+import 'package:rental_car/features/booking/presentation/pages/booking_payment_page.dart';
+import 'package:rental_car/features/booking/presentation/pages/booking_success_page.dart';
+import 'package:rental_car/features/booking/presentation/pages/my_reservations_page.dart';
+import 'package:rental_car/features/booking/presentation/pages/reservation_detail_page.dart';
 import 'package:rental_car/features/home/presentation/pages/home_page.dart';
-import 'package:rental_car/features/payment/presentation/payment_page.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
 import 'package:rental_car/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:rental_car/features/profile/presentation/pages/kyc_status_screen.dart';
@@ -76,12 +79,32 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.booking.path,
         name: AppRoute.booking.name,
-        builder: (_, _) => const BookingPage(),
+        builder: (_, state) {
+          final queryId = state.uri.queryParameters['vehicleId'];
+          final extraId = state.extra is int
+              ? state.extra as int
+              : (state.extra is String ? int.tryParse(state.extra as String) : null);
+          final vehicleId = extraId ?? (queryId != null ? int.tryParse(queryId) : null);
+          return BookingConfirmationPage(vehicleId: vehicleId);
+        },
       ),
       GoRoute(
         path: AppRoute.payment.path,
         name: AppRoute.payment.name,
-        builder: (_, _) => const PaymentPage(),
+        builder: (_, _) => const BookingPaymentPage(),
+      ),
+      GoRoute(
+        path: AppRoute.bookingSuccess.path,
+        name: AppRoute.bookingSuccess.name,
+        builder: (_, _) => const BookingSuccessPage(),
+      ),
+      GoRoute(
+        path: AppRoute.reservationDetail.path,
+        name: AppRoute.reservationDetail.name,
+        builder: (_, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '1') ?? 1;
+          return ReservationDetailPage(reservationId: id);
+        },
       ),
       GoRoute(
         path: AppRoute.mapSearch.path,
@@ -147,7 +170,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoute.myTrip.path,
                 name: AppRoute.myTrip.name,
-                builder: (context, state) => const BookingPage(),
+                builder: (context, state) => const MyReservationsPage(),
               ),
             ],
           ),

@@ -16,6 +16,8 @@ enum AppRoute {
   booking('/booking'),
   activeTrip('/active-trip'),
   payment('/payment'),
+  bookingSuccess('/booking-success'),
+  reservationDetail('/reservations/:id'),
   profile('/profile'),
   editProfile('/profile/edit'),
   kycUpload('/profile/kyc-upload'),
