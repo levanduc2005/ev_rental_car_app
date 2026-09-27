@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/features/home/domain/entities/vehicle_entity.dart';
 
 class VehicleCardData {
   const VehicleCardData({
+    this.id,
     required this.name,
     required this.imageUrl,
     required this.rating,
@@ -21,6 +23,7 @@ class VehicleCardData {
     this.isLuxury = false,
   });
 
+  final int? id;
   final String name;
   final String imageUrl;
   final double rating;
@@ -35,19 +38,57 @@ class VehicleCardData {
   final Color? topBadgeColor;
   final String? bottomBadgeText;
   final bool isLuxury;
+
+  factory VehicleCardData.fromEntity(VehicleEntity entity) {
+    return VehicleCardData(
+      id: entity.id,
+      name: entity.name,
+      imageUrl: entity.mainImage != null && entity.mainImage!.isNotEmpty
+          ? entity.mainImage!
+          : 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=800&auto=format&fit=crop',
+      rating: entity.rating,
+      location: entity.locationDisplay,
+      seats: '${entity.seats} chỗ',
+      transmission: entity.isElectric ? 'Điện' : 'Tự động',
+      fuelType: entity.fuelTypeDisplay,
+      price4h: entity.formattedPrice4h,
+      oldPrice4h: '',
+      price24h: entity.formattedPrice24h,
+      topBadgeText: entity.isElectric
+          ? '⚡ 100% Điện'
+          : (entity.isLuxury ? '👑 Xe sang' : null),
+      topBadgeColor: entity.isElectric
+          ? const Color(0xFF1976D2)
+          : (entity.isLuxury ? const Color(0xFFE65100) : null),
+      bottomBadgeText: 'Tự nhận xe',
+      isLuxury: entity.isLuxury,
+    );
+  }
 }
 
 class VehicleShowcaseSection extends StatelessWidget {
   const VehicleShowcaseSection({
     required this.title,
     required this.subtitle,
-    required this.vehicles,
+    this.vehicles,
+    this.vehicleEntities,
     super.key,
-  });
+  }) : assert(
+         vehicles != null || vehicleEntities != null,
+         'Either vehicles or vehicleEntities must be provided',
+       );
 
   final String title;
   final String subtitle;
-  final List<VehicleCardData> vehicles;
+  final List<VehicleCardData>? vehicles;
+  final List<VehicleEntity>? vehicleEntities;
+
+  List<VehicleCardData> get _displayVehicles {
+    if (vehicleEntities != null) {
+      return vehicleEntities!.map(VehicleCardData.fromEntity).toList();
+    }
+    return vehicles ?? const [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,10 +155,10 @@ class VehicleShowcaseSection extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             scrollDirection: Axis.horizontal,
-            itemCount: vehicles.length,
+            itemCount: _displayVehicles.length,
             separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.md),
             itemBuilder: (context, index) {
-              return _RentalVehicleCard(vehicle: vehicles[index]);
+              return _RentalVehicleCard(vehicle: _displayVehicles[index]);
             },
           ),
         ),
@@ -131,16 +172,23 @@ class _RentalVehicleCard extends StatelessWidget {
 
   final VehicleCardData vehicle;
 
+  void _onSelect(BuildContext context) {
+    if (vehicle.id != null) {
+      context.push(
+        AppRoute.vehicleDetail.path.replaceFirst(':id', vehicle.id.toString()),
+      );
+    } else {
+      context.goNamed(AppRoute.mapSearch.name);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return InkWell(
+      onTap: () => _onSelect(context),
       borderRadius: BorderRadius.circular(20),
-      onTap: () => context.pushNamed(
-        AppRoute.vehicleDetail.name,
-        pathParameters: {'id': '1'},
-      ),
       child: Container(
         width: 250,
         decoration: BoxDecoration(
@@ -160,287 +208,281 @@ class _RentalVehicleCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          // 1. Khung ảnh xe + Các tag nổi trên ảnh
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-                child: Image.network(
-                  vehicle.imageUrl,
-                  height: 130,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    height: 130,
-                    color: Colors.grey.shade200,
-                    child: const Icon(
-                      Icons.directions_car_rounded,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ),
-              if (vehicle.topBadgeText != null)
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: vehicle.topBadgeColor ?? const Color(0xFFD32F2F),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      vehicle.topBadgeText!,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              if (vehicle.bottomBadgeText != null)
-                Positioned(
-                  bottom: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1976D2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.phone_android_rounded,
-                          size: 12,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          vehicle.bottomBadgeText!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-
-          // 2. Nội dung chi tiết xe
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // 1. Khung ảnh xe + Các tag nổi trên ảnh
+            Stack(
               children: [
-                // Tên xe + Rating sao
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                  child: Image.network(
+                    vehicle.imageUrl,
+                    height: 130,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Container(
+                      height: 130,
+                      color: Colors.grey.shade200,
+                      child: const Icon(
+                        Icons.directions_car_rounded,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+                if (vehicle.topBadgeText != null)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: vehicle.topBadgeColor ?? const Color(0xFFD32F2F),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Text(
-                        vehicle.name,
+                        vehicle.topBadgeText!,
                         style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.star_rounded,
-                          size: 16,
-                          color: Color(0xFF1976D2),
-                        ),
-                        const SizedBox(width: 2),
-                        Text(
-                          '${vehicle.rating}',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1976D2),
+                  ),
+                if (vehicle.bottomBadgeText != null)
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1976D2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.phone_android_rounded,
+                            size: 12,
+                            color: Colors.white,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-
-                // Vị trí xe
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      size: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 2),
-                    Expanded(
-                      child: Text(
-                        vehicle.location,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                          const SizedBox(width: 4),
+                          Text(
+                            vehicle.bottomBadgeText!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-
-                // Dãy Chip thông số
-                Row(
-                  children: [
-                    _SpecChip(
-                      label: vehicle.seats,
-                      icon: Icons.people_outline_rounded,
-                    ),
-                    const SizedBox(width: 4),
-                    _SpecChip(
-                      label: vehicle.transmission,
-                      icon: Icons.settings_outlined,
-                    ),
-                    const SizedBox(width: 4),
-                    _SpecChip(
-                      label: vehicle.fuelType,
-                      icon: Icons.bolt_rounded,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                // Giá tiền + Nút Đặt ngay / Chọn xe
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Cột giá
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              vehicle.price4h,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xFF1976D2),
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            const Text(
-                              '/4 giờ',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              vehicle.oldPrice4h,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey.shade400,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          '${vehicle.price24h} / 24 giờ',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Nút bấm
-                    SizedBox(
-                      height: 32,
-                      child: vehicle.isLuxury
-                          ? FilledButton(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF1976D2),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              onPressed: () => context.pushNamed(
-                                AppRoute.vehicleDetail.name,
-                                pathParameters: {'id': '1'},
-                              ),
-                              child: const Text(
-                                'Chọn xe',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            )
-                          : OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF1976D2),
-                                side: const BorderSide(
-                                  color: Color(0xFF1976D2),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              onPressed: () => context.pushNamed(
-                                AppRoute.vehicleDetail.name,
-                                pathParameters: {'id': '1'},
-                              ),
-                              child: const Text(
-                                'Đặt ngay',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
+                  ),
               ],
             ),
-          ),
-        ],
+
+            // 2. Nội dung chi tiết xe
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Tên xe + Rating sao
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          vehicle.name,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.star_rounded,
+                            size: 16,
+                            color: Color(0xFF1976D2),
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${vehicle.rating}',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1976D2),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+
+                  // Vị trí xe
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 2),
+                      Expanded(
+                        child: Text(
+                          vehicle.location,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+
+                  // Dãy Chip thông số
+                  Row(
+                    children: [
+                      _SpecChip(
+                        label: vehicle.seats,
+                        icon: Icons.people_outline_rounded,
+                      ),
+                      const SizedBox(width: 4),
+                      _SpecChip(
+                        label: vehicle.transmission,
+                        icon: Icons.settings_outlined,
+                      ),
+                      const SizedBox(width: 4),
+                      _SpecChip(
+                        label: vehicle.fuelType,
+                        icon: Icons.bolt_rounded,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // Giá tiền + Nút Đặt ngay / Chọn xe
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Cột giá
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                vehicle.price4h,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF1976D2),
+                                ),
+                              ),
+                              const SizedBox(width: 2),
+                              const Text(
+                                '/4 giờ',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                vehicle.oldPrice4h,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey.shade400,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            '${vehicle.price24h} / 24 giờ',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Nút bấm
+                      SizedBox(
+                        height: 32,
+                        child: vehicle.isLuxury
+                            ? FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1976D2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () => _onSelect(context),
+                                child: const Text(
+                                  'Chọn xe',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
+                            : OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF1976D2),
+                                  side: const BorderSide(
+                                    color: Color(0xFF1976D2),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () => _onSelect(context),
+                                child: const Text(
+                                  'Đặt ngay',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 }
 
