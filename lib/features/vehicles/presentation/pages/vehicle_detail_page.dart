@@ -189,7 +189,10 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
 
         // Chi phí thực tế theo gói thời gian thuê niêm yết (chuẩn nghiệp vụ FE & BE)
         final rentalFee = _getPackageRentalFee(detail, _selectedPackageId);
-        final collateralDepositVal = _parseVnd(detail.collateralDeposit, 3000000.0);
+        final collateralDepositVal = _parseVnd(
+          detail.collateralDeposit,
+          3000000.0,
+        );
         final holdingDepositVal = _parseVnd(detail.holdingDeposit, 5000.0);
         final totalRental = rentalFee + collateralDepositVal;
         final remainingAtStation = totalRental > holdingDepositVal

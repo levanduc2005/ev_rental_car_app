@@ -22,11 +22,7 @@ class VietQRPaymentCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -37,9 +33,7 @@ class VietQRPaymentCard extends StatelessWidget {
             decoration: const BoxDecoration(
               color: Color(0xFFF8FAFC),
               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              border: Border(
-                bottom: BorderSide(color: Color(0xFFF1F5F9)),
-              ),
+              border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,9 +129,7 @@ class VietQRPaymentCard extends StatelessWidget {
                         return const SizedBox(
                           width: 260,
                           height: 260,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          child: Center(child: CircularProgressIndicator()),
                         );
                       },
                       errorBuilder: (_, _, _) => Container(
@@ -149,8 +141,10 @@ class VietQRPaymentCard extends StatelessWidget {
                           children: [
                             Icon(Icons.qr_code, size: 80, color: Colors.grey),
                             SizedBox(height: 8),
-                            Text('Mã QR thanh toán PayOS',
-                                style: TextStyle(fontSize: 12)),
+                            Text(
+                              'Mã QR thanh toán PayOS',
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ],
                         ),
                       ),
@@ -165,7 +159,9 @@ class VietQRPaymentCard extends StatelessWidget {
                     backgroundColor: const Color(0xFFEFF6FF),
                     foregroundColor: const Color(0xFF2563EB),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 18, vertical: 8),
+                      horizontal: 18,
+                      vertical: 8,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -181,8 +177,7 @@ class VietQRPaymentCard extends StatelessWidget {
                   icon: const Icon(Icons.download, size: 16),
                   label: const Text(
                     'Lưu mã QR',
-                    style: TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -193,9 +188,10 @@ class VietQRPaymentCard extends StatelessWidget {
                     Expanded(child: Divider()),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text('Hoặc',
-                          style: TextStyle(
-                              fontSize: 11, color: Colors.grey)),
+                      child: Text(
+                        'Hoặc',
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
                     ),
                     Expanded(child: Divider()),
                   ],
@@ -236,10 +232,13 @@ class VietQRPaymentCard extends StatelessWidget {
                       _CopyRow(
                         label: 'Số tiền:',
                         value: BookingFormatters.formatCurrency(
-                            paymentInfo.depositFee),
+                          paymentInfo.depositFee,
+                        ),
                         copyText: paymentInfo.depositFee.toString(),
                         onCopy: () => onCopy(
-                            paymentInfo.depositFee.toString(), 'Số tiền'),
+                          paymentInfo.depositFee.toString(),
+                          'Số tiền',
+                        ),
                       ),
                       const Divider(height: 16, color: Color(0xFFFEF3C7)),
                       _CopyRow(
@@ -248,8 +247,9 @@ class VietQRPaymentCard extends StatelessWidget {
                         copyText: paymentInfo.transferContent,
                         isMono: true,
                         onCopy: () => onCopy(
-                            paymentInfo.transferContent,
-                            'Nội dung chuyển khoản'),
+                          paymentInfo.transferContent,
+                          'Nội dung chuyển khoản',
+                        ),
                       ),
                       const Divider(height: 16, color: Color(0xFFFEF3C7)),
                       _CopyRow(
@@ -257,16 +257,16 @@ class VietQRPaymentCard extends StatelessWidget {
                         value: paymentInfo.accountNumber,
                         copyText: paymentInfo.accountNumber,
                         isMono: true,
-                        onCopy: () => onCopy(
-                            paymentInfo.accountNumber, 'Số tài khoản'),
+                        onCopy: () =>
+                            onCopy(paymentInfo.accountNumber, 'Số tài khoản'),
                       ),
                       const Divider(height: 16, color: Color(0xFFFEF3C7)),
                       _CopyRow(
                         label: 'Chủ tài khoản:',
                         value: paymentInfo.accountName,
                         copyText: paymentInfo.accountName,
-                        onCopy: () => onCopy(
-                            paymentInfo.accountName, 'Chủ tài khoản'),
+                        onCopy: () =>
+                            onCopy(paymentInfo.accountName, 'Chủ tài khoản'),
                       ),
                       const Divider(height: 16, color: Color(0xFFFEF3C7)),
                       Row(

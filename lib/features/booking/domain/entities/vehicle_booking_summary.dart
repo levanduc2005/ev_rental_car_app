@@ -20,11 +20,11 @@ class VehicleBookingSummary {
     this.price8h = 0,
     this.price12h = 0,
     this.price24h = 0,
-  })  : _location = location,
-        _seats = seats,
-        _transmission = transmission,
-        _fuelType = fuelType,
-        _batteryCapacity = batteryCapacity;
+  }) : _location = location,
+       _seats = seats,
+       _transmission = transmission,
+       _fuelType = fuelType,
+       _batteryCapacity = batteryCapacity;
 
   final int id;
   final String name;
@@ -53,7 +53,8 @@ class VehicleBookingSummary {
   String get transmission => _transmission ?? 'Số tự động';
   String get fuelType => _fuelType ?? 'Điện';
   int get batteryCapacity => _batteryCapacity ?? 0;
-  int get holdDepositFee => (holdFee != null && holdFee! > 0) ? holdFee!.toInt() : 5000;
+  int get holdDepositFee =>
+      (holdFee != null && holdFee! > 0) ? holdFee!.toInt() : 5000;
 
   VehicleBookingSummary copyWith({
     int? id,

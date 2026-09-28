@@ -35,10 +35,9 @@ class BookingFeeEntity {
   final List<FeeItemEntity> items;
 
   /// Số tiền cần thanh toán khi nhận xe = (bookingFee + depositFee) - holdCarFee
-  double get paymentUponPickup =>
-      (bookingFee + depositFee) - holdCarFee > 0
-          ? (bookingFee + depositFee) - holdCarFee
-          : 0;
+  double get paymentUponPickup => (bookingFee + depositFee) - holdCarFee > 0
+      ? (bookingFee + depositFee) - holdCarFee
+      : 0;
 
   // Tiện ích chuyển đổi kiểu int cho UI
   int get bookingCost => bookingFee.toInt();

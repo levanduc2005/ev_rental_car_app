@@ -87,10 +87,7 @@ class PricingBreakdownCard extends StatelessWidget {
           const SizedBox(height: 6),
           const Text(
             'Thanh toán khi nhận xe và kiểm tra xe, không nhận cọc xe máy.',
-            style: TextStyle(
-              fontSize: 11.5,
-              color: Color(0xFF94A3B8),
-            ),
+            style: TextStyle(fontSize: 11.5, color: Color(0xFF94A3B8)),
           ),
           const SizedBox(height: 16),
 
@@ -249,12 +246,15 @@ class PricingBreakdownCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                              border: Border.all(
+                                color: const Color(0xFFE2E8F0),
+                              ),
                             ),
                             child: Column(
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
                                       'Tiền thuê',
@@ -275,7 +275,8 @@ class PricingBreakdownCard extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
                                       'Tiền cọc xe',
@@ -290,7 +291,8 @@ class PricingBreakdownCard extends StatelessWidget {
                                           collateralDepositText,
                                           style: const TextStyle(
                                             fontSize: 11,
-                                            decoration: TextDecoration.lineThrough,
+                                            decoration:
+                                                TextDecoration.lineThrough,
                                             color: Color(0xFF94A3B8),
                                           ),
                                         ),
@@ -441,7 +443,11 @@ class PricingBreakdownCard extends StatelessWidget {
               ),
               if (hasInfoIcon) ...[
                 const SizedBox(width: 4),
-                const Icon(Icons.info_outline, size: 14, color: Color(0xFF94A3B8)),
+                const Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: Color(0xFF94A3B8),
+                ),
               ],
             ],
           ),

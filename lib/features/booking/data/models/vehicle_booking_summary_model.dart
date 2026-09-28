@@ -71,16 +71,20 @@ class VehicleBookingSummaryModel {
     }
 
     final priceDto = json['vehiclePriceDto'] as Map<String, dynamic>?;
-    final p4h = (priceDto?['rentalRate_4Hours'] as num?)?.toInt() ??
+    final p4h =
+        (priceDto?['rentalRate_4Hours'] as num?)?.toInt() ??
         (json['pricePer4Hours'] as num?)?.toInt() ??
         0;
-    final p8h = (priceDto?['rentalRate_8Hours'] as num?)?.toInt() ??
+    final p8h =
+        (priceDto?['rentalRate_8Hours'] as num?)?.toInt() ??
         (json['pricePer8Hours'] as num?)?.toInt() ??
         0;
-    final p12h = (priceDto?['rentalRate_12Hours'] as num?)?.toInt() ??
+    final p12h =
+        (priceDto?['rentalRate_12Hours'] as num?)?.toInt() ??
         (json['pricePer12Hours'] as num?)?.toInt() ??
         0;
-    final p24h = (priceDto?['rentalRate_24Hours'] as num?)?.toInt() ??
+    final p24h =
+        (priceDto?['rentalRate_24Hours'] as num?)?.toInt() ??
         (json['pricePer24Hours'] as num?)?.toInt() ??
         (json['pricePerDay'] as num?)?.toInt() ??
         0;
@@ -91,18 +95,22 @@ class VehicleBookingSummaryModel {
 
     return VehicleBookingSummaryModel(
       id: json['id'] as int? ?? 0,
-      name: json['name'] as String? ??
+      name:
+          json['name'] as String? ??
           (json['brand'] != null
               ? '${json['brand']} ${json['model'] ?? ''}'.trim()
               : 'Xe điện'),
-      plateNumber: json['plateNumber'] as String? ?? json['licensePlate'] as String?,
+      plateNumber:
+          json['plateNumber'] as String? ?? json['licensePlate'] as String?,
       imageUrl: firstImage ?? json['imageUrl'] as String?,
-      batteryPercentage: (json['batteryLevel'] as num?)?.toInt() ??
+      batteryPercentage:
+          (json['batteryLevel'] as num?)?.toInt() ??
           (json['batteryPercentage'] as num?)?.toInt() ??
           100,
       pricePerHour: calculatedHourly,
       depositFee: (json['depositFee'] as num?)?.toDouble(),
-      holdFee: (json['holdFee'] as num?)?.toDouble() ??
+      holdFee:
+          (json['holdFee'] as num?)?.toDouble() ??
           (json['holdFeeValue'] as num?)?.toDouble(),
       stationId: stationId,
       stationName: stationName,

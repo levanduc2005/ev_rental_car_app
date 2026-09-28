@@ -11,9 +11,7 @@ class SmartPickupBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF0F7FF),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFBAE6FD),
-        ),
+        border: Border.all(color: const Color(0xFFBAE6FD)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +48,9 @@ class SmartPickupBanner extends StatelessWidget {
           const SizedBox(height: 4),
           _buildCheckItem('Nhận xe và mở rộng 100% qua ứng dụng e-Motion'),
           const SizedBox(height: 4),
-          _buildCheckItem('Đặt xe nhanh chóng, nhận xe ngay không chờ duyệt đơn'),
+          _buildCheckItem(
+            'Đặt xe nhanh chóng, nhận xe ngay không chờ duyệt đơn',
+          ),
           const SizedBox(height: 8),
           const Text(
             'Cách thức hoạt động >',
@@ -69,11 +69,7 @@ class SmartPickupBanner extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(
-          Icons.check,
-          size: 15,
-          color: Color(0xFF1976D2),
-        ),
+        const Icon(Icons.check, size: 15, color: Color(0xFF1976D2)),
         const SizedBox(width: 6),
         Expanded(
           child: Text(

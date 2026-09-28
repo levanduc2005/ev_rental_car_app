@@ -18,7 +18,11 @@ class AdditionalFeesCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.info_outline_rounded, size: 18, color: Color(0xFF1976D2)),
+              Icon(
+                Icons.info_outline_rounded,
+                size: 18,
+                color: Color(0xFF1976D2),
+              ),
               SizedBox(width: 6),
               Text(
                 'PHỤ PHÍ CÓ THỂ PHÁT SINH',

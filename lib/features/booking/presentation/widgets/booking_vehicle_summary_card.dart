@@ -86,10 +86,7 @@ class BookingVehicleSummaryCard extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (badge != null) ...[
-                  const SizedBox(height: 6),
-                  badge!,
-                ],
+                if (badge != null) ...[const SizedBox(height: 6), badge!],
               ],
             ),
           ),

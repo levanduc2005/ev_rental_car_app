@@ -27,8 +27,7 @@ class ReservationDetailPage extends ConsumerStatefulWidget {
       _ReservationDetailPageState();
 }
 
-class _ReservationDetailPageState
-    extends ConsumerState<ReservationDetailPage> {
+class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
   ReservationEntity? _reservation;
   bool _isLoading = true;
   String? _errorMessage;
@@ -194,7 +193,8 @@ class _ReservationDetailPageState
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () {
                   ref
@@ -205,7 +205,9 @@ class _ReservationDetailPageState
                 child: Text(
                   'Tiếp tục thanh toán cọc ${BookingFormatters.formatCurrency(res.depositFee)}',
                   style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -215,11 +217,14 @@ class _ReservationDetailPageState
                   side: const BorderSide(color: AppColors.error),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () => _handleCancel(res),
-                child: const Text('Hủy giữ chỗ tức thì (đổi xe khác)',
-                    style: TextStyle(fontSize: 14)),
+                child: const Text(
+                  'Hủy giữ chỗ tức thì (đổi xe khác)',
+                  style: TextStyle(fontSize: 14),
+                ),
               ),
             ],
 
@@ -232,11 +237,14 @@ class _ReservationDetailPageState
                     side: const BorderSide(color: AppColors.error),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: () => _handleCancel(res),
-                  child: const Text('Hủy đơn đặt xe (Trước 5 ngày)',
-                      style: TextStyle(fontSize: 14)),
+                  child: const Text(
+                    'Hủy đơn đặt xe (Trước 5 ngày)',
+                    style: TextStyle(fontSize: 14),
+                  ),
                 ),
               ] else ...[
                 Container(
@@ -248,14 +256,19 @@ class _ReservationDetailPageState
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline,
-                          color: Colors.amber.shade800, size: 20),
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.amber.shade800,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Theo quy định, đơn không thể hủy khi thời gian nhận xe còn dưới 5 ngày.',
                           style: TextStyle(
-                              fontSize: 12, color: Colors.amber.shade900),
+                            fontSize: 12,
+                            color: Colors.amber.shade900,
+                          ),
                         ),
                       ),
                     ],
@@ -272,12 +285,14 @@ class _ReservationDetailPageState
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () => context.goNamed(AppRoute.home.name),
-                child: const Text('Thuê lại chuyến xe này',
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Thuê lại chuyến xe này',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
               ),
 
             // Contextual Actions for CANCELLED / FAILED / OVERDUE
@@ -288,12 +303,14 @@ class _ReservationDetailPageState
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () => context.goNamed(AppRoute.home.name),
-                child: const Text('Tìm và thuê xe khác',
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Tìm và thuê xe khác',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
               ),
 
             const SizedBox(height: 24),

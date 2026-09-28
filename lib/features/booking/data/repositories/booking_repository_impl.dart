@@ -108,9 +108,13 @@ class BookingRepositoryImpl implements BookingRepository {
   }
 
   @override
-  Future<Result<PayOSPaymentInfoEntity>> createPayOSPaymentLink(int reservationId) {
+  Future<Result<PayOSPaymentInfoEntity>> createPayOSPaymentLink(
+    int reservationId,
+  ) {
     return safeCall(() async {
-      final model = await _remoteDataSource.createPayOSPaymentLink(reservationId);
+      final model = await _remoteDataSource.createPayOSPaymentLink(
+        reservationId,
+      );
       return model.toEntity();
     });
   }

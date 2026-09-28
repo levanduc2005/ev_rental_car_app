@@ -47,5 +47,7 @@ abstract interface class BookingRepository {
   Future<Result<bool>> confirmPayOSPayment(String reservationCode);
 
   /// Tạo hoặc lấy liên kết thanh toán PayOS VietQR động từ backend (POST /api/payment/payos/create-link/{reservationId})
-  Future<Result<PayOSPaymentInfoEntity>> createPayOSPaymentLink(int reservationId);
+  Future<Result<PayOSPaymentInfoEntity>> createPayOSPaymentLink(
+    int reservationId,
+  );
 }

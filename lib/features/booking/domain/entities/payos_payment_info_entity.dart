@@ -104,7 +104,6 @@ class PayOSPaymentInfoEntity {
     }
   }
 
-
   PayOSPaymentInfoEntity copyWith({
     String? orderCode,
     double? amount,

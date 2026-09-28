@@ -18,7 +18,8 @@ class CheckinQrCard extends StatelessWidget {
   final String? stationAddress;
 
   String get _cleanCode {
-    if (reservationCode.startsWith('BBC') || reservationCode.startsWith('bbc')) {
+    if (reservationCode.startsWith('BBC') ||
+        reservationCode.startsWith('bbc')) {
       return reservationCode.toUpperCase();
     }
     return 'BBC$reservationCode';
@@ -98,7 +99,10 @@ class CheckinQrCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                    icon: const Icon(
+                      Icons.close,
+                      color: AppColors.textSecondary,
+                    ),
                     onPressed: () => Navigator.of(dialogCtx).pop(),
                   ),
                 ],
@@ -136,7 +140,10 @@ class CheckinQrCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(10),
@@ -156,7 +163,11 @@ class CheckinQrCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      icon: const Icon(Icons.copy, size: 18, color: Color(0xFF2563EB)),
+                      icon: const Icon(
+                        Icons.copy,
+                        size: 18,
+                        color: Color(0xFF2563EB),
+                      ),
                       onPressed: () => _copyCode(dialogCtx),
                       tooltip: 'Sao chép',
                     ),
@@ -200,7 +211,11 @@ class CheckinQrCard extends StatelessWidget {
             children: [
               const Row(
                 children: [
-                  Icon(Icons.qr_code_scanner, color: Color(0xFF2563EB), size: 20),
+                  Icon(
+                    Icons.qr_code_scanner,
+                    color: Color(0xFF2563EB),
+                    size: 20,
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'MÃ CHECK-IN NHẬN XE TẠI BÃI',
@@ -291,14 +306,20 @@ class CheckinQrCard extends StatelessWidget {
                       return const SizedBox(
                         width: 170,
                         height: 170,
-                        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       );
                     },
                     errorBuilder: (_, _, _) => Container(
                       width: 170,
                       height: 170,
                       color: Colors.grey.shade100,
-                      child: const Icon(Icons.qr_code, size: 80, color: Colors.grey),
+                      child: const Icon(
+                        Icons.qr_code,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -310,7 +331,11 @@ class CheckinQrCard extends StatelessWidget {
                         color: Color(0xFF2563EB),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.fullscreen, color: Colors.white, size: 16),
+                      child: const Icon(
+                        Icons.fullscreen,
+                        color: Colors.white,
+                        size: 16,
+                      ),
                     ),
                   ),
                 ],

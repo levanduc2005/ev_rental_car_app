@@ -59,7 +59,10 @@ class CancellationPolicyTable extends StatelessWidget {
                     decoration: BoxDecoration(color: Color(0xFFF1F5F9)),
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
                         child: Text(
                           'Quy định',
                           style: TextStyle(
@@ -70,7 +73,10 @@ class CancellationPolicyTable extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 10,
+                        ),
                         child: Text(
                           'Ngày thường',
                           style: TextStyle(
@@ -81,7 +87,10 @@ class CancellationPolicyTable extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 10,
+                        ),
                         child: Text(
                           'Ngày lễ, Tết',
                           style: TextStyle(
@@ -100,7 +109,10 @@ class CancellationPolicyTable extends StatelessWidget {
                     ),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
                         child: Row(
                           children: [
                             Container(
@@ -126,7 +138,10 @@ class CancellationPolicyTable extends StatelessWidget {
                         ),
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 10,
+                        ),
                         child: Text(
                           'Trước chuyến đi > 5 ngày',
                           style: TextStyle(
@@ -136,7 +151,10 @@ class CancellationPolicyTable extends StatelessWidget {
                         ),
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 10,
+                        ),
                         child: Text(
                           'Trước chuyến đi > 5 ngày',
                           style: TextStyle(
@@ -154,7 +172,10 @@ class CancellationPolicyTable extends StatelessWidget {
                     ),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
                         child: Row(
                           children: [
                             Container(
@@ -180,7 +201,10 @@ class CancellationPolicyTable extends StatelessWidget {
                         ),
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 10,
+                        ),
                         child: Text(
                           'Trong vòng 5 ngày trước chuyến đi',
                           style: TextStyle(
@@ -190,7 +214,10 @@ class CancellationPolicyTable extends StatelessWidget {
                         ),
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 10,
+                        ),
                         child: Text(
                           'Trong vòng 5 ngày trước chuyến đi',
                           style: TextStyle(
@@ -205,7 +232,10 @@ class CancellationPolicyTable extends StatelessWidget {
               ),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFFF8FAFC),
                   border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),

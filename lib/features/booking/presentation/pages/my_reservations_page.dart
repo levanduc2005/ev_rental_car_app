@@ -21,8 +21,10 @@ class MyReservationsPage extends ConsumerWidget {
     final controller = ref.read(myReservationsControllerProvider.notifier);
 
     // Lắng nghe thông báo action (vd: hủy đơn thành công)
-    ref.listen<MyReservationsState>(myReservationsControllerProvider,
-        (previous, next) {
+    ref.listen<MyReservationsState>(myReservationsControllerProvider, (
+      previous,
+      next,
+    ) {
       if (next.actionMessage != null &&
           next.actionMessage != previous?.actionMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,7 +81,9 @@ class MyReservationsPage extends ConsumerWidget {
                     const Icon(Icons.directions_car_outlined, size: 18),
                     const SizedBox(width: 6),
                     Text(
-                      activeCount > 0 ? 'Chuyến đi ($activeCount)' : 'Chuyến đi',
+                      activeCount > 0
+                          ? 'Chuyến đi ($activeCount)'
+                          : 'Chuyến đi',
                     ),
                   ],
                 ),
@@ -91,7 +95,9 @@ class MyReservationsPage extends ConsumerWidget {
                     const Icon(Icons.cancel_outlined, size: 18),
                     const SizedBox(width: 6),
                     Text(
-                      cancelledCount > 0 ? 'Đã hủy ($cancelledCount)' : 'Đã hủy',
+                      cancelledCount > 0
+                          ? 'Đã hủy ($cancelledCount)'
+                          : 'Đã hủy',
                     ),
                   ],
                 ),
@@ -115,10 +121,7 @@ class MyReservationsPage extends ConsumerWidget {
 
 /// Tab hiển thị các Chuyến đi đang đặt, đã cọc, đang thuê hoặc đã hoàn tất
 class _ActiveTripsTab extends StatelessWidget {
-  const _ActiveTripsTab({
-    required this.state,
-    required this.controller,
-  });
+  const _ActiveTripsTab({required this.state, required this.controller});
 
   final MyReservationsState state;
   final MyReservationsController controller;
@@ -156,26 +159,34 @@ class _ActiveTripsTab extends StatelessWidget {
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: 'Chờ thanh toán',
-                  isSelected: state.selectedFilter == ReservationTabFilter.pending,
-                  onTap: () => controller.setFilter(ReservationTabFilter.pending),
+                  isSelected:
+                      state.selectedFilter == ReservationTabFilter.pending,
+                  onTap: () =>
+                      controller.setFilter(ReservationTabFilter.pending),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: 'Đã xác nhận',
-                  isSelected: state.selectedFilter == ReservationTabFilter.confirmed,
-                  onTap: () => controller.setFilter(ReservationTabFilter.confirmed),
+                  isSelected:
+                      state.selectedFilter == ReservationTabFilter.confirmed,
+                  onTap: () =>
+                      controller.setFilter(ReservationTabFilter.confirmed),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: 'Đang thuê',
-                  isSelected: state.selectedFilter == ReservationTabFilter.active,
-                  onTap: () => controller.setFilter(ReservationTabFilter.active),
+                  isSelected:
+                      state.selectedFilter == ReservationTabFilter.active,
+                  onTap: () =>
+                      controller.setFilter(ReservationTabFilter.active),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
                   label: 'Hoàn tất',
-                  isSelected: state.selectedFilter == ReservationTabFilter.completed,
-                  onTap: () => controller.setFilter(ReservationTabFilter.completed),
+                  isSelected:
+                      state.selectedFilter == ReservationTabFilter.completed,
+                  onTap: () =>
+                      controller.setFilter(ReservationTabFilter.completed),
                 ),
               ],
             ),
@@ -187,7 +198,8 @@ class _ActiveTripsTab extends StatelessWidget {
           child: trips.isEmpty
               ? _EmptyView(
                   title: 'Chưa có chuyến đi nào trong mục này',
-                  subtitle: 'Hãy khám phá danh sách xe và đặt chuyến đi đầu tiên!',
+                  subtitle:
+                      'Hãy khám phá danh sách xe và đặt chuyến đi đầu tiên!',
                   buttonText: 'Tìm xe ngay',
                   onButtonPressed: () => context.goNamed(AppRoute.home.name),
                 )
@@ -204,10 +216,7 @@ class _ActiveTripsTab extends StatelessWidget {
 
 /// Tab hiển thị các đơn đã hủy hoặc hết hạn
 class _CancelledTripsTab extends StatelessWidget {
-  const _CancelledTripsTab({
-    required this.state,
-    required this.controller,
-  });
+  const _CancelledTripsTab({required this.state, required this.controller});
 
   final MyReservationsState state;
   final MyReservationsController controller;
@@ -240,12 +249,19 @@ class _CancelledTripsTab extends StatelessWidget {
           ),
           child: const Row(
             children: [
-              Icon(Icons.info_outline, size: 16, color: AppColors.textSecondary),
+              Icon(
+                Icons.info_outline,
+                size: 16,
+                color: AppColors.textSecondary,
+              ),
               SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Danh sách lưu trữ các đơn đặt xe đã bị hủy hoặc hết hạn thanh toán.',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
             ],
@@ -344,10 +360,7 @@ class _LoadingView extends StatelessWidget {
           SizedBox(height: 12),
           Text(
             'Đang tải danh sách đơn thuê từ máy chủ...',
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -356,10 +369,7 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({
-    required this.errorMessage,
-    required this.onRetry,
-  });
+  const _ErrorView({required this.errorMessage, required this.onRetry});
 
   final String errorMessage;
   final VoidCallback onRetry;
@@ -387,10 +397,7 @@ class _ErrorView extends StatelessWidget {
                 label: const Text('Đăng nhập ngay'),
               )
             else
-              ElevatedButton(
-                onPressed: onRetry,
-                child: const Text('Tải lại'),
-              ),
+              ElevatedButton(onPressed: onRetry, child: const Text('Tải lại')),
           ],
         ),
       ),

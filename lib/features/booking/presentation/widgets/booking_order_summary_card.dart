@@ -41,11 +41,7 @@ class BookingOrderSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -81,8 +77,10 @@ class BookingOrderSummaryCard extends StatelessWidget {
                 bottom: 8,
                 left: 8,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(6),
@@ -108,15 +106,9 @@ class BookingOrderSummaryCard extends StatelessWidget {
             isMono: true,
           ),
           const Divider(height: 16),
-          _AttributeRow(
-            label: 'Tên khách thuê',
-            value: renterName,
-          ),
+          _AttributeRow(label: 'Tên khách thuê', value: renterName),
           const Divider(height: 16),
-          _AttributeRow(
-            label: 'Số điện thoại',
-            value: renterPhone,
-          ),
+          _AttributeRow(label: 'Số điện thoại', value: renterPhone),
           const Divider(height: 16),
           _AttributeRow(
             label: 'Ngày nhận',
@@ -128,11 +120,7 @@ class BookingOrderSummaryCard extends StatelessWidget {
             value: BookingFormatters.formatDateTime(endDateTime),
           ),
           const Divider(height: 16),
-          _AttributeRow(
-            label: 'Loại xe',
-            value: vehicleName,
-            isBold: true,
-          ),
+          _AttributeRow(label: 'Loại xe', value: vehicleName, isBold: true),
           const Divider(height: 20, thickness: 1.5),
 
           // Total Rental Price to pay upon pick-up
@@ -299,7 +287,8 @@ class BookingOrderSummaryCard extends StatelessWidget {
                               ),
                               Text(
                                 BookingFormatters.formatCurrency(
-                                    totalRent + collateralFee - depositFee),
+                                  totalRent + collateralFee - depositFee,
+                                ),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
@@ -312,30 +301,38 @@ class BookingOrderSummaryCard extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('• Tiền thuê:',
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      color: AppColors.textSecondary)),
+                              const Text(
+                                '• Tiền thuê:',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
                               Text(
                                 BookingFormatters.formatCurrency(totalRent),
                                 style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('• Tiền thế chấp:',
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      color: AppColors.textSecondary)),
+                              const Text(
+                                '• Tiền thế chấp:',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
                               Text(
                                 BookingFormatters.formatCurrency(collateralFee),
                                 style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -371,9 +368,10 @@ class _AttributeRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style:
-                const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        ),
         Text(
           value,
           style: TextStyle(

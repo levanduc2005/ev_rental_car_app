@@ -176,12 +176,16 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
       );
     }
 
-    final reservationCode = reservation?.reservationCode ?? paymentInfo.orderCode;
+    final reservationCode =
+        reservation?.reservationCode ?? paymentInfo.orderCode;
     final depositFee = reservation?.depositFee ?? paymentInfo.depositFee;
-    final totalRent = reservation?.totalAmount ?? bookingState.estimatedTotalRent;
-    final collateralFee = reservation?.collateralFee ?? vehicle?.depositFee?.toInt() ?? 3000000;
+    final totalRent =
+        reservation?.totalAmount ?? bookingState.estimatedTotalRent;
+    final collateralFee =
+        reservation?.collateralFee ?? vehicle?.depositFee?.toInt() ?? 3000000;
 
-    final renterName = (user != null && user.fullName != null && user.fullName!.isNotEmpty)
+    final renterName =
+        (user != null && user.fullName != null && user.fullName!.isNotEmpty)
         ? user.fullName!
         : (user != null && user.email.isNotEmpty ? user.email : 'Khách hàng');
     final renterPhone = (user?.phone != null && user!.phone!.isNotEmpty)
@@ -207,8 +211,10 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.support_agent_outlined,
-                color: Color(0xFF2563EB)),
+            icon: const Icon(
+              Icons.support_agent_outlined,
+              color: Color(0xFF2563EB),
+            ),
             onPressed: () {},
           ),
         ],
@@ -287,7 +293,9 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
             RichText(
               text: TextSpan(
                 style: const TextStyle(
-                    fontSize: 12, color: AppColors.textSecondary),
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
                 children: [
                   const TextSpan(text: 'Mã đặt xe của bạn: '),
                   TextSpan(
@@ -316,15 +324,20 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Loại xe:',
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.textSecondary)),
+                      const Text(
+                        'Loại xe:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       Text(
                         vehicle?.name ?? 'KIA K3 2024',
                         style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ],
                   ),
@@ -332,18 +345,23 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Ngày nhận trả xe:',
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.textSecondary)),
+                      const Text(
+                        'Ngày nhận trả xe:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       Text(
                         BookingFormatters.formatDateRange(
                           bookingState.startDateTime,
                           bookingState.endDateTime,
                         ),
                         style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ],
                   ),
@@ -418,7 +436,9 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                       Text(
                         'Đang kiểm tra giao dịch PayOS...',
                         style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   )

@@ -1,14 +1,36 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rental_car/features/auth/domain/repositories/auth_repository.dart';
+import 'package:rental_car/features/auth/domain/usecases/check_profile_setup_skipped_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/complete_profile_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/send_otp_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/set_profile_setup_skipped_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_state.dart';
 
 class AuthController extends Notifier<AuthState> {
-  late final AuthRepository _authRepository;
+  late final GetCurrentUserUseCase _getCurrentUserUseCase;
+  late final CheckProfileSetupSkippedUseCase _checkProfileSetupSkippedUseCase;
+  late final SetProfileSetupSkippedUseCase _setProfileSetupSkippedUseCase;
+  late final SendOtpUseCase _sendOtpUseCase;
+  late final VerifyOtpUseCase _verifyOtpUseCase;
+  late final CompleteProfileUseCase _completeProfileUseCase;
+  late final LogoutUseCase _logoutUseCase;
 
   @override
   AuthState build() {
-    _authRepository = ref.watch(authRepositoryProvider);
+    _getCurrentUserUseCase = ref.watch(getCurrentUserUseCaseProvider);
+    _checkProfileSetupSkippedUseCase = ref.watch(
+      checkProfileSetupSkippedUseCaseProvider,
+    );
+    _setProfileSetupSkippedUseCase = ref.watch(
+      setProfileSetupSkippedUseCaseProvider,
+    );
+    _sendOtpUseCase = ref.watch(sendOtpUseCaseProvider);
+    _verifyOtpUseCase = ref.watch(verifyOtpUseCaseProvider);
+    _completeProfileUseCase = ref.watch(completeProfileUseCaseProvider);
+    _logoutUseCase = ref.watch(logoutUseCaseProvider);
 
     // Tự động kiểm tra phiên đăng nhập khi mở app
     Future.microtask(checkAuthStatus);
@@ -17,12 +39,12 @@ class AuthController extends Notifier<AuthState> {
   }
 
   Future<void> checkAuthStatus() async {
-    final result = await _authRepository.getCurrentUser();
+    final result = await _getCurrentUserUseCase();
 
     await result.when(
       ok: (user) async {
         if (user != null) {
-          final skippedResult = await _authRepository.isProfileSetupSkipped(
+          final skippedResult = await _checkProfileSetupSkippedUseCase(
             user.email,
           );
           final hasSkipped = skippedResult.when(
@@ -47,13 +69,13 @@ class AuthController extends Notifier<AuthState> {
   Future<bool> sendOtp(String email) async {
     state = state.copyWith(isLoading: true);
 
-    final result = await _authRepository.sendOtp(email: email);
+    final result = await _sendOtpUseCase(email: email);
 
     return result.when(
       ok: (_) {
         state = state.copyWith(
           status: AuthStatus.otpSent,
-          emailForOtp: email,
+          emailForOtp: email.trim().toLowerCase(),
           isLoading: false,
         );
         return true;
@@ -68,13 +90,11 @@ class AuthController extends Notifier<AuthState> {
   Future<bool> verifyOtp({required String email, required String otp}) async {
     state = state.copyWith(isLoading: true);
 
-    final result = await _authRepository.verifyOtp(email: email, otp: otp);
+    final result = await _verifyOtpUseCase(email: email, otp: otp);
 
     return await result.when(
       ok: (user) async {
-        final skippedResult = await _authRepository.isProfileSetupSkipped(
-          email,
-        );
+        final skippedResult = await _checkProfileSetupSkippedUseCase(email);
         final hasSkipped = skippedResult.when(ok: (v) => v, err: (_) => false);
         state = state.copyWith(
           status: AuthStatus.authenticated,
@@ -94,7 +114,7 @@ class AuthController extends Notifier<AuthState> {
   Future<bool> completeProfile(String fullName) async {
     state = state.copyWith(isLoading: true);
 
-    final result = await _authRepository.completeProfile(fullName: fullName);
+    final result = await _completeProfileUseCase(fullName: fullName);
 
     return result.when(
       ok: (user) {
@@ -115,7 +135,7 @@ class AuthController extends Notifier<AuthState> {
   Future<void> skipProfileSetup() async {
     final email = state.user?.email ?? state.emailForOtp;
     if (email != null && email.isNotEmpty) {
-      await _authRepository.setProfileSetupSkipped(email);
+      await _setProfileSetupSkippedUseCase(email);
     }
     state = state.copyWith(hasSkippedProfile: true);
   }
@@ -134,7 +154,7 @@ class AuthController extends Notifier<AuthState> {
 
   Future<void> logout() async {
     state = state.copyWith(isLoading: true);
-    await _authRepository.logout();
+    await _logoutUseCase();
     // reset về state trắng
     state = const AuthState(status: AuthStatus.unauthenticated);
   }

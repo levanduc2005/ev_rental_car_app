@@ -64,16 +64,15 @@ class BookingPaymentBreakdownCard extends StatelessWidget {
             subtitle: 'Hoàn trả 100% sau khi kết thúc chuyến đi',
           ),
           const SizedBox(height: 8),
-          _FeeRow(
-            label: 'Phương thức thanh toán:',
-            amount: paymentMethod,
-          ),
+          _FeeRow(label: 'Phương thức thanh toán:', amount: paymentMethod),
           const Divider(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isDepositPhase ? 'Cần thanh toán ngay:' : 'Tổng chi phí chuyến đi:',
+                isDepositPhase
+                    ? 'Cần thanh toán ngay:'
+                    : 'Tổng chi phí chuyến đi:',
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -128,7 +127,9 @@ class _FeeRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isHighlight ? FontWeight.w600 : FontWeight.normal,
-                  color: isHighlight ? AppColors.textPrimary : AppColors.textSecondary,
+                  color: isHighlight
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
                 ),
               ),
             ),

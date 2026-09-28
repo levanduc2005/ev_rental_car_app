@@ -38,10 +38,7 @@ class LocationSelectorCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: const Color(0xFF1976D2),
-              width: 1.5,
-            ),
+            border: Border.all(color: const Color(0xFF1976D2), width: 1.5),
             boxShadow: const [
               BoxShadow(
                 color: Color(0x0A1976D2),
@@ -79,8 +76,10 @@ class LocationSelectorCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE3F2FD),
                       borderRadius: BorderRadius.circular(6),
@@ -121,16 +120,21 @@ class LocationSelectorCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline,
-                        size: 14, color: Color(0xFF64748B)),
+                    Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: Color(0xFF64748B),
+                    ),
                     SizedBox(width: 6),
                     Expanded(
                       child: Text(

@@ -37,16 +37,10 @@ class MyReservationsController extends Notifier<MyReservationsState> {
 
     result.when(
       ok: (list) {
-        state = state.copyWith(
-          reservations: list,
-          isLoading: false,
-        );
+        state = state.copyWith(reservations: list, isLoading: false);
       },
       err: (failure) {
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: failure.message,
-        );
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
       },
     );
   }
@@ -85,5 +79,5 @@ class MyReservationsController extends Notifier<MyReservationsState> {
 
 final myReservationsControllerProvider =
     NotifierProvider<MyReservationsController, MyReservationsState>(
-  MyReservationsController.new,
-);
+      MyReservationsController.new,
+    );

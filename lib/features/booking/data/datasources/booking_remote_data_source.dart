@@ -14,7 +14,9 @@ abstract interface class BookingRemoteDataSource {
   });
 
   /// Gọi POST /api/reservations để tạo đơn đặt giữ chỗ
-  Future<ReservationModel> createReservation(CreateReservationRequestModel request);
+  Future<ReservationModel> createReservation(
+    CreateReservationRequestModel request,
+  );
 
   /// Gọi POST /api/reservations/email để lấy danh sách đơn của người dùng
   Future<List<ReservationModel>> getMyReservations({

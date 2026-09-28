@@ -6,7 +6,9 @@ import 'package:rental_car/features/booking/data/repositories/booking_repository
 import 'package:rental_car/features/booking/domain/repositories/booking_repository.dart';
 
 // --- Data Layer Providers ---
-final bookingRemoteDataSourceProvider = Provider<BookingRemoteDataSource>((ref) {
+final bookingRemoteDataSourceProvider = Provider<BookingRemoteDataSource>((
+  ref,
+) {
   return BookingRemoteDataSourceImpl(dio: ref.watch(dioProvider));
 });
 

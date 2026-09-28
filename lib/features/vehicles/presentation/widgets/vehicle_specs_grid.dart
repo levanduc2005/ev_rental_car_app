@@ -119,7 +119,11 @@ class VehicleSpecsGrid extends StatelessWidget {
                   : const Color(0xFFF0F7FF),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: iconColor ?? const Color(0xFF1976D2), size: 20),
+            child: Icon(
+              icon,
+              color: iconColor ?? const Color(0xFF1976D2),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(

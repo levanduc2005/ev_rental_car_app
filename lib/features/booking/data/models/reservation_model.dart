@@ -44,7 +44,8 @@ class ReservationModel {
 
   factory ReservationModel.fromJson(Map<String, dynamic> json) {
     // 1. Trường hợp bọc trong response createReservation Map: { "reservation": {...}, "vnpayUrl": "...", "payos": {...}, "deposit": {...} }
-    if (json.containsKey('reservation') && json['reservation'] is Map<String, dynamic>) {
+    if (json.containsKey('reservation') &&
+        json['reservation'] is Map<String, dynamic>) {
       final resJson = json['reservation'] as Map<String, dynamic>;
       final vnpayUrl = json['vnpayUrl'] as String?;
       final depositJson = json['deposit'] as Map<String, dynamic>?;
@@ -52,7 +53,9 @@ class ReservationModel {
 
       PayOSPaymentInfoModel? paymentInfo;
       if (json.containsKey('payos') && json['payos'] is Map<String, dynamic>) {
-        paymentInfo = PayOSPaymentInfoModel.fromJson(json['payos'] as Map<String, dynamic>);
+        paymentInfo = PayOSPaymentInfoModel.fromJson(
+          json['payos'] as Map<String, dynamic>,
+        );
       }
 
       return ReservationModel.fromJson(resJson).copyWith(
@@ -64,21 +67,28 @@ class ReservationModel {
 
     VehicleBookingSummaryModel? parsedVehicle;
     if (json['vehicle'] is Map<String, dynamic>) {
-      parsedVehicle = VehicleBookingSummaryModel.fromJson(json['vehicle'] as Map<String, dynamic>);
+      parsedVehicle = VehicleBookingSummaryModel.fromJson(
+        json['vehicle'] as Map<String, dynamic>,
+      );
     }
 
     final code = json['code']?.toString() ?? json['id']?.toString() ?? '';
     final paymentUrl = json['paymentUrl'] as String?;
     PayOSPaymentInfoModel? paymentInfo;
     if (json.containsKey('payos') && json['payos'] is Map<String, dynamic>) {
-      paymentInfo = PayOSPaymentInfoModel.fromJson(json['payos'] as Map<String, dynamic>);
+      paymentInfo = PayOSPaymentInfoModel.fromJson(
+        json['payos'] as Map<String, dynamic>,
+      );
     }
 
     final station = json['station'] as Map<String, dynamic>?;
-    final stationAddress = json['stationAddress'] as String? ?? station?['address'] as String?;
-    final depositAmount = (json['depositAmount'] as num?)?.toDouble() ??
+    final stationAddress =
+        json['stationAddress'] as String? ?? station?['address'] as String?;
+    final depositAmount =
+        (json['depositAmount'] as num?)?.toDouble() ??
         (json['depositFee'] as num?)?.toDouble();
-    final totalRentAmount = (json['totalRentAmount'] as num?)?.toDouble() ??
+    final totalRentAmount =
+        (json['totalRentAmount'] as num?)?.toDouble() ??
         (json['totalAmount'] as num?)?.toDouble();
 
     return ReservationModel(
@@ -154,7 +164,8 @@ class ReservationModel {
       stationId: stationId,
       stationName: stationName,
       stationAddress: stationAddress,
-      vehicle: vehicle?.toEntity() ??
+      vehicle:
+          vehicle?.toEntity() ??
           (vehicleName != null
               ? VehicleBookingSummary(
                   id: 0,

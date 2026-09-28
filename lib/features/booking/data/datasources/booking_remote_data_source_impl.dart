@@ -48,7 +48,9 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
   }
 
   @override
-  Future<ReservationModel> createReservation(CreateReservationRequestModel request) {
+  Future<ReservationModel> createReservation(
+    CreateReservationRequestModel request,
+  ) {
     return guardApiCall(() async {
       final response = await _dio.post<Map<String, dynamic>>(
         '/reservations',
@@ -88,7 +90,10 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
         final content = data['content'];
         if (content is List) {
           return content
-              .map((item) => ReservationModel.fromJson(item as Map<String, dynamic>))
+              .map(
+                (item) =>
+                    ReservationModel.fromJson(item as Map<String, dynamic>),
+              )
               .toList();
         }
       }
@@ -99,12 +104,16 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
   @override
   Future<ReservationModel> getReservationDetail(int reservationId) {
     return guardApiCall(() async {
-      final response = await _dio.get<Map<String, dynamic>>('/reservations/me/$reservationId');
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/reservations/me/$reservationId',
+      );
       final data = response.data?['data'];
       if (data is Map<String, dynamic>) {
         return ReservationModel.fromJson(data);
       }
-      throw const ParsingException('Không tìm thấy thông tin chi tiết đơn đặt xe.');
+      throw const ParsingException(
+        'Không tìm thấy thông tin chi tiết đơn đặt xe.',
+      );
     });
   }
 
@@ -126,7 +135,9 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
   @override
   Future<VehicleBookingSummaryModel> getVehicleDetail(int vehicleId) {
     return guardApiCall(() async {
-      final response = await _dio.get<Map<String, dynamic>>('/vehicles/id/$vehicleId');
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/vehicles/id/$vehicleId',
+      );
       final data = response.data?['data'];
       if (data is Map<String, dynamic>) {
         return VehicleBookingSummaryModel.fromJson(data);
@@ -156,7 +167,9 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
       if (data is Map<String, dynamic>) {
         return PayOSPaymentInfoModel.fromJson(data);
       }
-      throw const ParsingException('Không thể lấy thông tin thanh toán PayOS từ hệ thống.');
+      throw const ParsingException(
+        'Không thể lấy thông tin thanh toán PayOS từ hệ thống.',
+      );
     });
   }
 }

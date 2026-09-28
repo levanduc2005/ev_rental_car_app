@@ -66,13 +66,15 @@ class BookingFormController extends Notifier<BookingFormState> {
     // Validate luật Backend
     if (start.minute != 0 || end.minute != 0) {
       state = state.copyWith(
-        errorMessage: 'Thời gian nhận và trả xe phải đúng giờ tròn (ví dụ 14:00)',
+        errorMessage:
+            'Thời gian nhận và trả xe phải đúng giờ tròn (ví dụ 14:00)',
       );
       return;
     }
     if (start.isBefore(now.add(const Duration(hours: 3)))) {
       state = state.copyWith(
-        errorMessage: 'Thời gian nhận xe phải sau thời điểm hiện tại ít nhất 3 tiếng',
+        errorMessage:
+            'Thời gian nhận xe phải sau thời điểm hiện tại ít nhất 3 tiếng',
       );
       return;
     }
@@ -106,10 +108,7 @@ class BookingFormController extends Notifier<BookingFormState> {
 
     result.when(
       ok: (fee) {
-        state = state.copyWith(
-          feeBreakdown: fee,
-          isCalculatingFee: false,
-        );
+        state = state.copyWith(feeBreakdown: fee, isCalculatingFee: false);
       },
       err: (failure) {
         state = state.copyWith(
@@ -121,9 +120,7 @@ class BookingFormController extends Notifier<BookingFormState> {
   }
 
   /// Gửi yêu cầu đặt xe chính thức qua API POST /api/reservations
-  Future<ReservationEntity?> submitReservation({
-    String? note,
-  }) async {
+  Future<ReservationEntity?> submitReservation({String? note}) async {
     final vehicle = state.vehicle;
     if (vehicle == null) {
       state = state.copyWith(errorMessage: 'Vui lòng chọn thông tin xe trước.');
@@ -136,7 +133,8 @@ class BookingFormController extends Notifier<BookingFormState> {
     if (currentUser == null || currentUser.email.isEmpty) {
       state = state.copyWith(
         isCreatingReservation: false,
-        errorMessage: 'Vui lòng đăng nhập tài khoản trước khi thực hiện đặt xe.',
+        errorMessage:
+            'Vui lòng đăng nhập tài khoản trước khi thực hiện đặt xe.',
       );
       return null;
     }
@@ -154,7 +152,8 @@ class BookingFormController extends Notifier<BookingFormState> {
       ok: (rawReservation) {
         final reservation = rawReservation.copyWith(
           vehicle: rawReservation.vehicle ?? state.vehicle,
-          totalRentAmount: rawReservation.totalRentAmount ?? state.feeBreakdown?.totalAmount,
+          totalRentAmount:
+              rawReservation.totalRentAmount ?? state.feeBreakdown?.totalAmount,
         );
 
         state = state.copyWith(
@@ -209,5 +208,5 @@ class BookingFormController extends Notifier<BookingFormState> {
 /// Provider của BookingFormController
 final bookingFormControllerProvider =
     NotifierProvider<BookingFormController, BookingFormState>(
-  BookingFormController.new,
-);
+      BookingFormController.new,
+    );

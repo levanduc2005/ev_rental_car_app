@@ -38,8 +38,11 @@ class BookingScheduleCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.calendar_month_outlined,
-                      size: 18, color: Color(0xFF2563EB)),
+                  const Icon(
+                    Icons.calendar_month_outlined,
+                    size: 18,
+                    color: Color(0xFF2563EB),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     title,

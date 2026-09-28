@@ -20,8 +20,10 @@ class VehicleStationMapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName =
-        LocationSelectorCard.resolveStationName(stationName, stationAddress);
+    final displayName = LocationSelectorCard.resolveStationName(
+      stationName,
+      stationAddress,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,7 +45,11 @@ class VehicleStationMapCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 child: Row(
                   children: [
-                    Icon(Icons.map_outlined, size: 15, color: Color(0xFF1976D2)),
+                    Icon(
+                      Icons.map_outlined,
+                      size: 15,
+                      color: Color(0xFF1976D2),
+                    ),
                     SizedBox(width: 4),
                     Text(
                       'Mở bản đồ',
@@ -70,10 +76,7 @@ class VehicleStationMapCard extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFE2E8F0),
-                  Color(0xFFCBD5E1),
-                ],
+                colors: [Color(0xFFE2E8F0), Color(0xFFCBD5E1)],
               ),
               border: Border.all(color: const Color(0xFFCBD5E1)),
               boxShadow: [
@@ -90,9 +93,7 @@ class VehicleStationMapCard extends StatelessWidget {
                 Positioned.fill(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child: CustomPaint(
-                      painter: _MapGridPainter(),
-                    ),
+                    child: CustomPaint(painter: _MapGridPainter()),
                   ),
                 ),
                 // Marker trạm xe e-Motion ở trung tâm (hiển thị Tên của Trạm)
@@ -110,7 +111,9 @@ class VehicleStationMapCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF1976D2).withValues(alpha: 0.35),
+                              color: const Color(
+                                0xFF1976D2,
+                              ).withValues(alpha: 0.35),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -155,7 +158,10 @@ class VehicleStationMapCard extends StatelessWidget {
                   right: 12,
                   bottom: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.95),
                       borderRadius: BorderRadius.circular(10),
@@ -205,7 +211,10 @@ class VehicleStationMapCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF1976D2),
                             borderRadius: BorderRadius.circular(6),
@@ -258,10 +267,20 @@ class _MapGridPainter extends CustomPainter {
     // Vẽ sông nước nhẹ
     final riverPath = Path();
     riverPath.moveTo(0, size.height * 0.2);
-    riverPath.quadraticBezierTo(size.width * 0.4, size.height * 0.35, size.width * 0.8, 0);
+    riverPath.quadraticBezierTo(
+      size.width * 0.4,
+      size.height * 0.35,
+      size.width * 0.8,
+      0,
+    );
     riverPath.lineTo(size.width, 0);
     riverPath.lineTo(size.width, size.height * 0.15);
-    riverPath.quadraticBezierTo(size.width * 0.4, size.height * 0.45, 0, size.height * 0.3);
+    riverPath.quadraticBezierTo(
+      size.width * 0.4,
+      size.height * 0.45,
+      0,
+      size.height * 0.3,
+    );
     riverPath.close();
     canvas.drawPath(riverPath, waterPaint);
 

@@ -26,24 +26,28 @@ class PayOSPaymentInfoModel {
   final DateTime? expiresAt;
 
   factory PayOSPaymentInfoModel.fromJson(Map<String, dynamic> json) {
-    final code = json['orderCode']?.toString() ??
+    final code =
+        json['orderCode']?.toString() ??
         json['code']?.toString() ??
         DateTime.now().millisecondsSinceEpoch.toString();
     final amount = (json['amount'] as num?)?.toDouble() ?? 0.0;
-    final checkoutUrl = json['checkoutUrl'] as String? ?? json['vnpayUrl'] as String?;
+    final checkoutUrl =
+        json['checkoutUrl'] as String? ?? json['vnpayUrl'] as String?;
     final bin = json['bin']?.toString() ?? '970422';
     final accountNumber = json['accountNumber']?.toString() ?? '';
     final accountName = json['accountName']?.toString() ?? '';
-    final bank = json['bankName']?.toString() ??
+    final bank =
+        json['bankName']?.toString() ??
         PayOSPaymentInfoEntity.resolveBankName(bin);
-    final description = json['description']?.toString() ??
+    final description =
+        json['description']?.toString() ??
         (code.startsWith('BBC') ? code : 'BBC$code');
     final rawQr = json['qrCode']?.toString();
     final qrCodeUrl = (rawQr != null && rawQr.startsWith('http'))
         ? rawQr
         : (accountNumber.isNotEmpty
-            ? 'https://img.vietqr.io/image/$bin-$accountNumber-compact2.png?amount=${amount.toInt()}&addInfo=$description&accountName=${Uri.encodeComponent(accountName)}'
-            : '');
+              ? 'https://img.vietqr.io/image/$bin-$accountNumber-compact2.png?amount=${amount.toInt()}&addInfo=$description&accountName=${Uri.encodeComponent(accountName)}'
+              : '');
 
     return PayOSPaymentInfoModel(
       orderCode: code,

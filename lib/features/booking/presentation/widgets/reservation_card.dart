@@ -24,7 +24,10 @@ class ReservationCard extends StatelessWidget {
     final isPending = reservation.isPending;
     final isConfirmed = reservation.isConfirmed;
     final isCompleted = reservation.isCompleted;
-    final isInactive = reservation.isCancelled || reservation.isFailed || reservation.isOverdue;
+    final isInactive =
+        reservation.isCancelled ||
+        reservation.isFailed ||
+        reservation.isOverdue;
 
     return Material(
       color: Colors.transparent,
@@ -54,14 +57,20 @@ class ReservationCard extends StatelessWidget {
             children: [
               // Header Card (Code & Status Badge)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.receipt_long,
-                            size: 16, color: Color(0xFF2563EB)),
+                        const Icon(
+                          Icons.receipt_long,
+                          size: 16,
+                          color: Color(0xFF2563EB),
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           '#${reservation.reservationCode}',
@@ -97,7 +106,10 @@ class ReservationCard extends StatelessWidget {
                           width: 80,
                           height: 60,
                           color: Colors.grey.shade200,
-                          child: const Icon(Icons.directions_car, color: Colors.grey),
+                          child: const Icon(
+                            Icons.directions_car,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ),
@@ -117,15 +129,19 @@ class ReservationCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(Icons.access_time,
-                                  size: 13, color: AppColors.textSecondary),
+                              const Icon(
+                                Icons.access_time,
+                                size: 13,
+                                color: AppColors.textSecondary,
+                              ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   'Nhận: ${BookingFormatters.formatDateTime(reservation.startDateTime)}',
                                   style: const TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.textSecondary),
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary,
+                                  ),
                                 ),
                               ),
                             ],
@@ -133,15 +149,19 @@ class ReservationCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              const Icon(Icons.event_available,
-                                  size: 13, color: AppColors.textSecondary),
+                              const Icon(
+                                Icons.event_available,
+                                size: 13,
+                                color: AppColors.textSecondary,
+                              ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   'Trả: ${BookingFormatters.formatDateTime(reservation.endDateTime)}',
                                   style: const TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.textSecondary),
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary,
+                                  ),
                                 ),
                               ),
                             ],
@@ -156,20 +176,31 @@ class ReservationCard extends StatelessWidget {
 
               // Footer Card (Amounts & Contextual Action Buttons)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Cọc giữ chỗ / Tổng:',
-                            style: TextStyle(
-                                fontSize: 10, color: AppColors.textSecondary)),
+                        const Text(
+                          'Cọc giữ chỗ / Tổng:',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                         Text(
                           isPending
-                              ? BookingFormatters.formatCurrency(reservation.depositFee)
-                              : BookingFormatters.formatCurrency(reservation.totalAmount),
+                              ? BookingFormatters.formatCurrency(
+                                  reservation.depositFee,
+                                )
+                              : BookingFormatters.formatCurrency(
+                                  reservation.totalAmount,
+                                ),
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -187,11 +218,15 @@ class ReservationCard extends StatelessWidget {
                               foregroundColor: AppColors.error,
                               side: const BorderSide(color: AppColors.error),
                               visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                             ),
                             onPressed: onCancel,
-                            child: const Text('Hủy giữ chỗ',
-                                style: TextStyle(fontSize: 11)),
+                            child: const Text(
+                              'Hủy giữ chỗ',
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
@@ -199,12 +234,18 @@ class ReservationCard extends StatelessWidget {
                               backgroundColor: const Color(0xFF2563EB),
                               foregroundColor: Colors.white,
                               visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                             ),
                             onPressed: onResumePayment,
-                            child: const Text('Thanh toán',
-                                style: TextStyle(
-                                    fontSize: 11, fontWeight: FontWeight.bold)),
+                            child: const Text(
+                              'Thanh toán',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
 
@@ -216,11 +257,15 @@ class ReservationCard extends StatelessWidget {
                                 foregroundColor: AppColors.error,
                                 side: const BorderSide(color: AppColors.error),
                                 visualDensity: VisualDensity.compact,
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
                               ),
                               onPressed: onCancel,
-                              child: const Text('Hủy đơn',
-                                  style: TextStyle(fontSize: 11)),
+                              child: const Text(
+                                'Hủy đơn',
+                                style: TextStyle(fontSize: 11),
+                              ),
                             )
                           else
                             const Text(
@@ -237,17 +282,26 @@ class ReservationCard extends StatelessWidget {
                               foregroundColor: const Color(0xFF2563EB),
                               side: const BorderSide(color: Color(0xFF2563EB)),
                               visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                             ),
                             onPressed: () {
                               context.pushNamed(
                                 AppRoute.reservationDetail.name,
-                                pathParameters: {'id': reservation.id.toString()},
+                                pathParameters: {
+                                  'id': reservation.id.toString(),
+                                },
                               );
                             },
                             icon: const Icon(Icons.qr_code, size: 14),
-                            label: const Text('Mã QR Check-in',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                            label: const Text(
+                              'Mã QR Check-in',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
 
@@ -258,17 +312,26 @@ class ReservationCard extends StatelessWidget {
                               foregroundColor: const Color(0xFF2563EB),
                               side: const BorderSide(color: Color(0xFF2563EB)),
                               visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                             ),
                             onPressed: () {
                               context.pushNamed(
                                 AppRoute.reservationDetail.name,
-                                pathParameters: {'id': reservation.id.toString()},
+                                pathParameters: {
+                                  'id': reservation.id.toString(),
+                                },
                               );
                             },
                             icon: const Icon(Icons.qr_code, size: 14),
-                            label: const Text('Mã QR Check-in',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                            label: const Text(
+                              'Mã QR Check-in',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
 
@@ -279,11 +342,16 @@ class ReservationCard extends StatelessWidget {
                               backgroundColor: const Color(0xFF2563EB),
                               foregroundColor: Colors.white,
                               visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                             ),
-                            onPressed: () => context.goNamed(AppRoute.home.name),
-                            child: const Text('Thuê lại xe',
-                                style: TextStyle(fontSize: 11)),
+                            onPressed: () =>
+                                context.goNamed(AppRoute.home.name),
+                            child: const Text(
+                              'Thuê lại xe',
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ),
 
                         // CANCELLED / FAILED / OVERDUE: Thuê xe khác
@@ -293,11 +361,16 @@ class ReservationCard extends StatelessWidget {
                               foregroundColor: const Color(0xFF2563EB),
                               side: const BorderSide(color: Color(0xFF2563EB)),
                               visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
                             ),
-                            onPressed: () => context.goNamed(AppRoute.home.name),
-                            child: const Text('Thuê xe khác',
-                                style: TextStyle(fontSize: 11)),
+                            onPressed: () =>
+                                context.goNamed(AppRoute.home.name),
+                            child: const Text(
+                              'Thuê xe khác',
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ),
                       ],
                     ),

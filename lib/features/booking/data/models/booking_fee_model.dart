@@ -19,11 +19,8 @@ class FeeItemModel {
     );
   }
 
-  FeeItemEntity toEntity() => FeeItemEntity(
-        description: description,
-        feeType: feeType,
-        value: value,
-      );
+  FeeItemEntity toEntity() =>
+      FeeItemEntity(description: description, feeType: feeType, value: value);
 }
 
 class BookingFeeModel {

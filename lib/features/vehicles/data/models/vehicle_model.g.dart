@@ -41,6 +41,7 @@ _VehicleModel _$VehicleModelFromJson(Map<String, dynamic> json) =>
       pricePer8Hours: (json['pricePer8Hours'] as num?)?.toDouble(),
       pricePer12Hours: (json['pricePer12Hours'] as num?)?.toDouble(),
       pricePerDay: (json['pricePerDay'] as num?)?.toDouble(),
+      stationName: json['stationName'] as String?,
     );
 
 Map<String, dynamic> _$VehicleModelToJson(_VehicleModel instance) =>
@@ -76,4 +77,5 @@ Map<String, dynamic> _$VehicleModelToJson(_VehicleModel instance) =>
       'pricePer8Hours': instance.pricePer8Hours,
       'pricePer12Hours': instance.pricePer12Hours,
       'pricePerDay': instance.pricePerDay,
+      'stationName': instance.stationName,
     };

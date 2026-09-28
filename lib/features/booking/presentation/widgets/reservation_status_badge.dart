@@ -20,45 +20,33 @@ class ReservationStatusBadge extends StatelessWidget {
 
     final (color, label, icon) = switch (statusUpper) {
       'PENDING' || 'WAITING_PAYMENT' => (
-          Colors.amber.shade800,
-          'Chờ thanh toán',
-          Icons.access_time_rounded,
-        ),
+        Colors.amber.shade800,
+        'Chờ thanh toán',
+        Icons.access_time_rounded,
+      ),
       'CONFIRM' || 'CONFIRMED' || 'DEPOSITED' => (
-          const Color(0xFF2563EB),
-          'Đã cọc - Chờ nhận xe',
-          Icons.verified_outlined,
-        ),
+        const Color(0xFF2563EB),
+        'Đã cọc - Chờ nhận xe',
+        Icons.verified_outlined,
+      ),
       'ACTIVE' || 'IN_PROGRESS' => (
-          Colors.green.shade600,
-          'Đang thuê xe',
-          Icons.directions_car_filled_outlined,
-        ),
+        Colors.green.shade600,
+        'Đang thuê xe',
+        Icons.directions_car_filled_outlined,
+      ),
       'COMPLETED' => (
-          Colors.teal.shade700,
-          'Hoàn tất chuyến',
-          Icons.check_circle_outline,
-        ),
-      'CANCELLED' => (
-          Colors.grey.shade600,
-          'Đã hủy',
-          Icons.cancel_outlined,
-        ),
-      'FAILED' => (
-          AppColors.error,
-          'Hết hạn thanh toán',
-          Icons.error_outline,
-        ),
+        Colors.teal.shade700,
+        'Hoàn tất chuyến',
+        Icons.check_circle_outline,
+      ),
+      'CANCELLED' => (Colors.grey.shade600, 'Đã hủy', Icons.cancel_outlined),
+      'FAILED' => (AppColors.error, 'Hết hạn thanh toán', Icons.error_outline),
       'OVERDUE' => (
-          Colors.deepOrange.shade700,
-          'Quá hạn nhận xe',
-          Icons.warning_amber_rounded,
-        ),
-      _ => (
-          Colors.blueGrey,
-          status,
-          Icons.info_outline,
-        ),
+        Colors.deepOrange.shade700,
+        'Quá hạn nhận xe',
+        Icons.warning_amber_rounded,
+      ),
+      _ => (Colors.blueGrey, status, Icons.info_outline),
     };
 
     return Container(

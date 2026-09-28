@@ -55,8 +55,7 @@ class _RentalScheduleBottomSheetState extends State<RentalScheduleBottomSheet> {
   void _validate() {
     final now = DateTime.now();
     if (_start.isBefore(now.add(const Duration(hours: 3)))) {
-      _validationError =
-          'Thời gian nhận xe phải sau hiện tại ít nhất 3 tiếng.';
+      _validationError = 'Thời gian nhận xe phải sau hiện tại ít nhất 3 tiếng.';
     } else if (_end.difference(_start).inHours < 4) {
       _validationError = 'Thời lượng thuê xe tối thiểu là 4 tiếng.';
     } else {

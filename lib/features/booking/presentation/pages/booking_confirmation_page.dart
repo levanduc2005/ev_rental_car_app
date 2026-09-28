@@ -179,8 +179,11 @@ class _BookingConfirmationPageState
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      Icon(Icons.person_outline,
-                          size: 18, color: Color(0xFF2563EB)),
+                      Icon(
+                        Icons.person_outline,
+                        size: 18,
+                        color: Color(0xFF2563EB),
+                      ),
                     ],
                   ),
                   const Divider(height: 16),
@@ -188,8 +191,8 @@ class _BookingConfirmationPageState
                     label: 'Họ và tên:',
                     value:
                         (user?.fullName != null && user!.fullName!.isNotEmpty)
-                            ? user.fullName!
-                            : 'Khách hàng e-Motion',
+                        ? user.fullName!
+                        : 'Khách hàng e-Motion',
                   ),
                   const SizedBox(height: 8),
                   _InfoItem(
@@ -222,7 +225,8 @@ class _BookingConfirmationPageState
             BookingPaymentBreakdownCard(
               depositFee: fee?.holdDepositFee ?? vehicle.holdDepositFee,
               totalRent: totalRent,
-              collateralFee: fee?.collateralFee ?? vehicle.depositFee?.toInt() ?? 3000000,
+              collateralFee:
+                  fee?.collateralFee ?? vehicle.depositFee?.toInt() ?? 3000000,
             ),
             const SizedBox(height: 16),
 
@@ -279,8 +283,11 @@ class _BookingConfirmationPageState
                             ],
                           ),
                         ),
-                        Icon(Icons.check_circle,
-                            color: Color(0xFF2563EB), size: 20),
+                        Icon(
+                          Icons.check_circle,
+                          color: Color(0xFF2563EB),
+                          size: 20,
+                        ),
                       ],
                     ),
                   ),
@@ -294,7 +301,9 @@ class _BookingConfirmationPageState
                         borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                     ),
                     style: const TextStyle(fontSize: 12),
                   ),
@@ -361,7 +370,9 @@ class _BookingConfirmationPageState
                         Text(
                           'Đang khởi tạo đơn trên hệ thống...',
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     )
@@ -398,18 +409,20 @@ class _InfoItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style:
-                const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             value,
             textAlign: TextAlign.right,
             style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary),
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
       ],

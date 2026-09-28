@@ -141,7 +141,8 @@ abstract class VehicleModel with _$VehicleModel {
     }
 
     num? holdFeeNum;
-    final rawHold = json['holdFee'] ?? json['holdFeeValue'] ?? json['holdingDeposit'];
+    final rawHold =
+        json['holdFee'] ?? json['holdFeeValue'] ?? json['holdingDeposit'];
     if (rawHold is num) {
       holdFeeNum = rawHold;
     } else if (rawHold is String) {
@@ -193,37 +194,37 @@ abstract class VehicleModel with _$VehicleModel {
 
 extension VehicleModelX on VehicleModel {
   VehicleEntity toEntity() => VehicleEntity(
-        id: id,
-        name: name,
-        location: location,
-        distanceKm: distanceKm,
-        originalPriceK: originalPriceK,
-        salePriceK: salePriceK,
-        priceUnit: priceUnit,
-        estimatedDuration: estimatedDuration,
-        viewingCount: viewingCount,
-        seats: seats,
-        transmission: transmission,
-        fuelType: fuelType,
-        imageUrl: imageUrl,
-        discountText: discountText,
-        deliveryType: deliveryType,
-        isLuxury: isLuxury,
-        luxuryTag: luxuryTag,
-        consumption: consumption,
-        description: description,
-        imageUrls: imageUrls,
-        rentalFee: rentalFee,
-        insuranceFee: insuranceFee,
-        discountAmount: discountAmount,
-        vatAmount: vatAmount,
-        totalRental: totalRental,
-        holdingDeposit: holdingDeposit,
-        collateralDeposit: collateralDeposit,
-        pricePer4Hours: pricePer4Hours,
-        pricePer8Hours: pricePer8Hours,
-        pricePer12Hours: pricePer12Hours,
-        pricePerDay: pricePerDay,
-        stationName: stationName,
-      );
+    id: id,
+    name: name,
+    location: location,
+    distanceKm: distanceKm,
+    originalPriceK: originalPriceK,
+    salePriceK: salePriceK,
+    priceUnit: priceUnit,
+    estimatedDuration: estimatedDuration,
+    viewingCount: viewingCount,
+    seats: seats,
+    transmission: transmission,
+    fuelType: fuelType,
+    imageUrl: imageUrl,
+    discountText: discountText,
+    deliveryType: deliveryType,
+    isLuxury: isLuxury,
+    luxuryTag: luxuryTag,
+    consumption: consumption,
+    description: description,
+    imageUrls: imageUrls,
+    rentalFee: rentalFee,
+    insuranceFee: insuranceFee,
+    discountAmount: discountAmount,
+    vatAmount: vatAmount,
+    totalRental: totalRental,
+    holdingDeposit: holdingDeposit,
+    collateralDeposit: collateralDeposit,
+    pricePer4Hours: pricePer4Hours,
+    pricePer8Hours: pricePer8Hours,
+    pricePer12Hours: pricePer12Hours,
+    pricePerDay: pricePerDay,
+    stationName: stationName,
+  );
 }

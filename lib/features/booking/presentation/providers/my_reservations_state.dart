@@ -27,12 +27,14 @@ class MyReservationsState {
   final String? actionMessage;
 
   /// Danh sách các đơn còn hiệu lực / chuyến đi (không bao gồm đơn đã hủy / quá hạn)
-  List<ReservationEntity> get activeTrips =>
-      reservations.where((r) => !r.isCancelled && !r.isFailed && !r.isOverdue).toList();
+  List<ReservationEntity> get activeTrips => reservations
+      .where((r) => !r.isCancelled && !r.isFailed && !r.isOverdue)
+      .toList();
 
   /// Danh sách các đơn đã hủy / quá hạn / hết hạn thanh toán
-  List<ReservationEntity> get cancelledTrips =>
-      reservations.where((r) => r.isCancelled || r.isFailed || r.isOverdue).toList();
+  List<ReservationEntity> get cancelledTrips => reservations
+      .where((r) => r.isCancelled || r.isFailed || r.isOverdue)
+      .toList();
 
   /// Các đơn theo bộ lọc trong tab Chuyến đi
   List<ReservationEntity> get filteredActiveTrips {
@@ -42,9 +44,8 @@ class MyReservationsState {
         activeTrips.where((r) => r.isPending).toList(),
       ReservationTabFilter.confirmed =>
         activeTrips.where((r) => r.isConfirmed).toList(),
-      ReservationTabFilter.active => activeTrips
-          .where((r) => r.isActive)
-          .toList(),
+      ReservationTabFilter.active =>
+        activeTrips.where((r) => r.isActive).toList(),
       ReservationTabFilter.completed =>
         activeTrips.where((r) => r.isCompleted).toList(),
       ReservationTabFilter.cancelled => activeTrips,
@@ -58,14 +59,14 @@ class MyReservationsState {
         reservations.where((r) => r.isPending).toList(),
       ReservationTabFilter.confirmed =>
         reservations.where((r) => r.isConfirmed).toList(),
-      ReservationTabFilter.active => reservations
-          .where((r) => r.isActive)
-          .toList(),
+      ReservationTabFilter.active =>
+        reservations.where((r) => r.isActive).toList(),
       ReservationTabFilter.completed =>
         reservations.where((r) => r.isCompleted).toList(),
-      ReservationTabFilter.cancelled => reservations
-          .where((r) => r.isCancelled || r.isFailed || r.isOverdue)
-          .toList(),
+      ReservationTabFilter.cancelled =>
+        reservations
+            .where((r) => r.isCancelled || r.isFailed || r.isOverdue)
+            .toList(),
     };
   }
 
@@ -85,8 +86,9 @@ class MyReservationsState {
       isCancelling: isCancelling ?? this.isCancelling,
       selectedFilter: selectedFilter ?? this.selectedFilter,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      actionMessage:
-          clearActionMessage ? null : (actionMessage ?? this.actionMessage),
+      actionMessage: clearActionMessage
+          ? null
+          : (actionMessage ?? this.actionMessage),
     );
   }
 }

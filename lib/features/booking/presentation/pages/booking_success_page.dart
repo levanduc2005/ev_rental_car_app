@@ -104,9 +104,13 @@ class BookingSuccessPage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Phương tiện:',
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.textSecondary)),
+                      const Text(
+                        'Phương tiện:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       Text(
                         vehicle?.name ?? 'KIA K3 2024',
                         style: const TextStyle(
@@ -121,12 +125,17 @@ class BookingSuccessPage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Thời gian nhận:',
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.textSecondary)),
+                      const Text(
+                        'Thời gian nhận:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       Text(
                         BookingFormatters.formatDateTime(
-                            bookingState.startDateTime),
+                          bookingState.startDateTime,
+                        ),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -139,12 +148,17 @@ class BookingSuccessPage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Thời gian trả:',
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.textSecondary)),
+                      const Text(
+                        'Thời gian trả:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       Text(
                         BookingFormatters.formatDateTime(
-                            bookingState.endDateTime),
+                          bookingState.endDateTime,
+                        ),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -157,9 +171,13 @@ class BookingSuccessPage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Điểm nhận xe:',
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.textSecondary)),
+                      const Text(
+                        'Điểm nhận xe:',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       Expanded(
                         child: Text(
                           bookingState.pickupAddress,
