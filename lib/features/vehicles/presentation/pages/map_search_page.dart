@@ -11,7 +11,24 @@ import 'package:rental_car/features/vehicles/presentation/widgets/vehicle_search
 
 /// Flow 2: Màn hình Tìm kiếm & Danh sách xe (Slide 08 - Danh sách tìm kiếm xe)
 class MapSearchPage extends ConsumerStatefulWidget {
-  const MapSearchPage({super.key});
+  const MapSearchPage({
+    this.initialCity,
+    this.initialStationId,
+    this.initialLocation,
+    this.initialStart,
+    this.initialEnd,
+    this.initialType,
+    this.initialPackage,
+    super.key,
+  });
+
+  final String? initialCity;
+  final String? initialStationId;
+  final String? initialLocation;
+  final String? initialStart;
+  final String? initialEnd;
+  final String? initialType;
+  final String? initialPackage;
 
   @override
   ConsumerState<MapSearchPage> createState() => _MapSearchPageState();
@@ -19,6 +36,42 @@ class MapSearchPage extends ConsumerStatefulWidget {
 
 class _MapSearchPageState extends ConsumerState<MapSearchPage> {
   int _selectedFilterIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initSearchFilter();
+    });
+  }
+
+  void _initSearchFilter() {
+    final s = DateTime.tryParse(widget.initialStart ?? '');
+    final e = DateTime.tryParse(widget.initialEnd ?? '');
+    final pkg = int.tryParse(widget.initialPackage ?? '');
+    final stId = int.tryParse(widget.initialStationId ?? '');
+
+    if (s != null ||
+        e != null ||
+        pkg != null ||
+        widget.initialCity != null ||
+        widget.initialLocation != null ||
+        stId != null) {
+      final current = ref.read(vehicleFilterProvider);
+      ref
+          .read(vehicleFilterProvider.notifier)
+          .updateFilter(
+            current.copyWith(
+              startTime: s,
+              endTime: e,
+              hourPackage: pkg,
+              city: widget.initialCity,
+              location: widget.initialLocation,
+              stationId: stId,
+            ),
+          );
+    }
+  }
 
   Future<void> _openFilterModal() async {
     final currentFilter = ref.read(vehicleFilterProvider);
@@ -40,6 +93,7 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentFilter = ref.watch(vehicleFilterProvider);
     final vehicleListAsync = ref.watch(vehicleListControllerProvider);
 
     return Scaffold(
@@ -56,9 +110,19 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
               }
             },
             onOpenFilter: _openFilterModal,
-            locationText: 'VRG2+57M, Lưu Hữu Phước, Thủ Đức...',
-            dateTimeRangeText: '14:00, 17/09 đến 18:00, 19/09',
-            onTapSearchBox: () {},
+            locationText: currentFilter.location?.isNotEmpty == true
+                ? currentFilter.location!
+                : (currentFilter.city?.isNotEmpty == true
+                      ? currentFilter.city!
+                      : 'Hà Nội • Tất cả các trạm'),
+            dateTimeRangeText: currentFilter.formattedTimeRange,
+            onTapSearchBox: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.goNamed(AppRoute.home.name);
+              }
+            },
           ),
 
           // 2. THANH BỘ LỌC CUỘN NGANG (Slide 08)
@@ -116,14 +180,14 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
                     final vehicle = vehicles[index];
                     return VehicleListCard(
                       item: vehicle,
+                      targetHours: currentFilter.durationHours,
+                      targetUnit: currentFilter.durationUnitLabel,
                       onTap: () => _onVehicleSelected(vehicle),
                     );
                   },
                 );
               },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),

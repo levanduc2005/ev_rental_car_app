@@ -52,17 +52,11 @@ class VehicleFilterChipsBar extends StatelessWidget {
             const SizedBox(width: 8),
 
             // Chip 4: "Hãng xe ▼"
-            _buildDropdownChip(
-              label: 'Hãng xe',
-              onTap: onOpenFilterSheet,
-            ),
+            _buildDropdownChip(label: 'Hãng xe', onTap: onOpenFilterSheet),
             const SizedBox(width: 8),
 
             // Chip 5: "Số chỗ ▼"
-            _buildDropdownChip(
-              label: 'Số chỗ',
-              onTap: onOpenFilterSheet,
-            ),
+            _buildDropdownChip(label: 'Số chỗ', onTap: onOpenFilterSheet),
           ],
         ),
       ),
@@ -84,7 +78,9 @@ class VehicleFilterChipsBar extends StatelessWidget {
           color: isSelected ? const Color(0xFF1976D2) : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF1976D2) : const Color(0xFFE2E8F0),
+            color: isSelected
+                ? const Color(0xFF1976D2)
+                : const Color(0xFFE2E8F0),
           ),
         ),
         child: Text(
@@ -116,17 +112,15 @@ class VehicleFilterChipsBar extends StatelessWidget {
           color: isSelected ? const Color(0xFF1976D2) : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF1976D2) : const Color(0xFFE2E8F0),
+            color: isSelected
+                ? const Color(0xFF1976D2)
+                : const Color(0xFFE2E8F0),
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected ? Colors.white : iconColor,
-            ),
+            Icon(icon, size: 16, color: isSelected ? Colors.white : iconColor),
             const SizedBox(width: 4),
             Text(
               label,
@@ -156,19 +150,13 @@ class VehicleFilterChipsBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: const Color(0xFFE2E8F0),
-          ),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(
-                icon,
-                size: 15,
-                color: iconColor ?? const Color(0xFF64748B),
-              ),
+              Icon(icon, size: 15, color: iconColor ?? const Color(0xFF64748B)),
               const SizedBox(width: 5),
             ],
             Text(

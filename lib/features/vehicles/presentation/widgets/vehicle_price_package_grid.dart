@@ -35,35 +35,35 @@ class VehiclePricePackageGrid extends StatelessWidget {
 
   static String _formatVnd(double val) {
     final str = val.round().toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (m) => '${m[1]}.',
-        );
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]}.',
+    );
     return '$strđ';
   }
 
   List<PricePackage> get packages => [
-        PricePackage(
-          id: '4h',
-          name: 'Gói 4 giờ',
-          priceText: _formatVnd(price4h ?? 500000),
-        ),
-        PricePackage(
-          id: '8h',
-          name: 'Gói 8 giờ',
-          priceText: _formatVnd(price8h ?? 700000),
-          isHot: true,
-        ),
-        PricePackage(
-          id: '12h',
-          name: 'Gói 12 giờ',
-          priceText: _formatVnd(price12h ?? 800000),
-        ),
-        PricePackage(
-          id: '24h',
-          name: 'Gói 24 giờ (1 ngày)',
-          priceText: _formatVnd(price24h ?? 1000000),
-        ),
-      ];
+    PricePackage(
+      id: '4h',
+      name: 'Gói 4 giờ',
+      priceText: _formatVnd(price4h ?? 500000),
+    ),
+    PricePackage(
+      id: '8h',
+      name: 'Gói 8 giờ',
+      priceText: _formatVnd(price8h ?? 700000),
+      isHot: true,
+    ),
+    PricePackage(
+      id: '12h',
+      name: 'Gói 12 giờ',
+      priceText: _formatVnd(price12h ?? 800000),
+    ),
+    PricePackage(
+      id: '24h',
+      name: 'Gói 24 giờ (1 ngày)',
+      priceText: _formatVnd(price24h ?? 1000000),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -101,12 +101,17 @@ class VehiclePricePackageGrid extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? const Color(0xFFF0F7FF) : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF1976D2) : const Color(0xFFE2E8F0),
+                    color: isSelected
+                        ? const Color(0xFF1976D2)
+                        : const Color(0xFFE2E8F0),
                     width: isSelected ? 1.5 : 1.0,
                   ),
                 ),
@@ -121,8 +126,12 @@ class VehiclePricePackageGrid extends StatelessWidget {
                           pkg.name,
                           style: TextStyle(
                             fontSize: 11.5,
-                            color: isSelected ? const Color(0xFF1976D2) : const Color(0xFF64748B),
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            color: isSelected
+                                ? const Color(0xFF1976D2)
+                                : const Color(0xFF64748B),
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                           ),
                         ),
                         if (pkg.isHot)
@@ -152,7 +161,9 @@ class VehiclePricePackageGrid extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: isSelected ? const Color(0xFF1976D2) : const Color(0xFF0F172A),
+                        color: isSelected
+                            ? const Color(0xFF1976D2)
+                            : const Color(0xFF0F172A),
                       ),
                     ),
                   ],

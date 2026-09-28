@@ -4,22 +4,24 @@ import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart
 /// Modal Bộ lọc tìm kiếm xe (Slide 09 - Bộ lọc tìm kiếm xe)
 class VehicleFilterBottomSheet extends StatefulWidget {
   const VehicleFilterBottomSheet({
-    this.initialRentalType = 'Tất cả',
-    this.initialSeats = 'Tất cả',
-    this.initialBrand = 'Tất cả',
-    this.initialFuelType = 'Tất cả',
-    this.initialCarType = 'Tất cả',
-    this.initialSort = 'Giá thấp đến cao',
+    this.initialFilter = const VehicleFilter(),
+    this.initialRentalType,
+    this.initialSeats,
+    this.initialBrand,
+    this.initialFuelType,
+    this.initialCarType,
+    this.initialSort,
     this.onApplyFilter,
     super.key,
   });
 
-  final String initialRentalType;
-  final String initialSeats;
-  final String initialBrand;
-  final String initialFuelType;
-  final String initialCarType;
-  final String initialSort;
+  final VehicleFilter initialFilter;
+  final String? initialRentalType;
+  final String? initialSeats;
+  final String? initialBrand;
+  final String? initialFuelType;
+  final String? initialCarType;
+  final String? initialSort;
   final ValueChanged<VehicleFilter>? onApplyFilter;
 
   static Future<VehicleFilter?> show(
@@ -31,6 +33,7 @@ class VehicleFilterBottomSheet extends StatefulWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => VehicleFilterBottomSheet(
+        initialFilter: initialFilter,
         initialRentalType: initialFilter.rentalType,
         initialSeats: initialFilter.seats,
         initialBrand: initialFilter.brand,
@@ -42,7 +45,8 @@ class VehicleFilterBottomSheet extends StatefulWidget {
   }
 
   @override
-  State<VehicleFilterBottomSheet> createState() => _VehicleFilterBottomSheetState();
+  State<VehicleFilterBottomSheet> createState() =>
+      _VehicleFilterBottomSheetState();
 }
 
 class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
@@ -56,12 +60,12 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _rentalType = widget.initialRentalType;
-    _seats = widget.initialSeats;
-    _brand = widget.initialBrand;
-    _fuelType = widget.initialFuelType;
-    _carType = widget.initialCarType;
-    _sort = widget.initialSort;
+    _rentalType = widget.initialRentalType ?? widget.initialFilter.rentalType;
+    _seats = widget.initialSeats ?? widget.initialFilter.seats;
+    _brand = widget.initialBrand ?? widget.initialFilter.brand;
+    _fuelType = widget.initialFuelType ?? widget.initialFilter.fuelType;
+    _carType = widget.initialCarType ?? widget.initialFilter.carType;
+    _sort = widget.initialSort ?? widget.initialFilter.sort;
   }
 
   void _reset() {
@@ -147,7 +151,15 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
 
                 _buildSectionTitle('Hãng xe'),
                 _buildFilterChips(
-                  options: ['Tất cả', 'Audi', 'Mercedes', 'VinFast', 'Toyota', 'KIA', 'BMW'],
+                  options: [
+                    'Tất cả',
+                    'Audi',
+                    'Mercedes',
+                    'VinFast',
+                    'Toyota',
+                    'KIA',
+                    'BMW',
+                  ],
                   selected: _brand,
                   onSelected: (val) => setState(() => _brand = val),
                 ),
@@ -171,7 +183,11 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
 
                 _buildSectionTitle('Sắp xếp theo'),
                 _buildFilterChips(
-                  options: ['Giá thấp đến cao', 'Giá cao đến thấp', 'Phổ biến nhất'],
+                  options: [
+                    'Giá thấp đến cao',
+                    'Giá cao đến thấp',
+                    'Phổ biến nhất',
+                  ],
                   selected: _sort,
                   onSelected: (val) => setState(() => _sort = val),
                 ),
@@ -187,9 +203,7 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                border: Border(
-                  top: BorderSide(color: Color(0xFFE2E8F0)),
-                ),
+                border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
               ),
               child: Row(
                 children: [
@@ -228,7 +242,7 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
                         ),
                       ),
                       onPressed: () {
-                        final filter = VehicleFilter(
+                        final filter = widget.initialFilter.copyWith(
                           rentalType: _rentalType,
                           seats: _seats,
                           brand: _brand,
@@ -288,10 +302,14 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFF1976D2) : const Color(0xFFF8FAFC),
+              color: isSelected
+                  ? const Color(0xFF1976D2)
+                  : const Color(0xFFF8FAFC),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected ? const Color(0xFF1976D2) : const Color(0xFFE2E8F0),
+                color: isSelected
+                    ? const Color(0xFF1976D2)
+                    : const Color(0xFFE2E8F0),
               ),
             ),
             child: Text(

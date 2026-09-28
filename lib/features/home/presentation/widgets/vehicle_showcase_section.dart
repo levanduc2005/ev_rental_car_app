@@ -173,13 +173,11 @@ class _RentalVehicleCard extends StatelessWidget {
   final VehicleCardData vehicle;
 
   void _onSelect(BuildContext context) {
-    if (vehicle.id != null) {
-      context.push(
-        AppRoute.vehicleDetail.path.replaceFirst(':id', vehicle.id.toString()),
-      );
-    } else {
-      context.goNamed(AppRoute.mapSearch.name);
-    }
+    final vehicleId = (vehicle.id ?? 1).toString();
+    context.pushNamed(
+      AppRoute.vehicleDetail.name,
+      pathParameters: {'id': vehicleId},
+    );
   }
 
   @override

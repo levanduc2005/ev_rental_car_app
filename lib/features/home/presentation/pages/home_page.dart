@@ -5,6 +5,8 @@ import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/home/presentation/providers/home_providers.dart';
 import 'package:rental_car/features/home/presentation/widgets/brand_selector_section.dart';
+import 'package:rental_car/features/home/presentation/widgets/faq_section.dart';
+import 'package:rental_car/features/home/presentation/widgets/how_it_works_section.dart';
 import 'package:rental_car/features/home/presentation/widgets/insurance_banner.dart';
 import 'package:rental_car/features/home/presentation/widgets/rental_hero_search_card.dart';
 import 'package:rental_car/features/home/presentation/widgets/vehicle_showcase_section.dart';
@@ -15,6 +17,7 @@ class HomePage extends ConsumerWidget {
   // Danh sách xe dự phòng: "Xe có thể bạn sẽ thích" (fallback khi chưa khởi động BE)
   static const List<VehicleCardData> _fallbackRecommendedVehicles = [
     VehicleCardData(
+      id: 1,
       name: 'KIA K3 2024',
       imageUrl:
           'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=800&auto=format&fit=crop',
@@ -30,6 +33,7 @@ class HomePage extends ConsumerWidget {
       bottomBadgeText: 'Tự nhận xe',
     ),
     VehicleCardData(
+      id: 2,
       name: 'VinFast VF 8',
       imageUrl:
           'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=800&auto=format&fit=crop',
@@ -50,6 +54,7 @@ class HomePage extends ConsumerWidget {
   // Danh sách xe dự phòng: "Xế xịn • Xe sang" (fallback khi chưa khởi động BE)
   static const List<VehicleCardData> _fallbackLuxuryVehicles = [
     VehicleCardData(
+      id: 3,
       name: 'AUDI A4 2018',
       imageUrl:
           'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=800&auto=format&fit=crop',
@@ -67,6 +72,7 @@ class HomePage extends ConsumerWidget {
       isLuxury: true,
     ),
     VehicleCardData(
+      id: 4,
       name: 'BMW 320i Sport',
       imageUrl:
           'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop',
@@ -221,8 +227,16 @@ class HomePage extends ConsumerWidget {
                 ),
               const SizedBox(height: AppSpacing.xl),
 
-              // 5. Bảo hiểm chuyến đi trọn gói
+              // 5. Hướng dẫn thuê xe (4 bước đơn giản)
+              const HowItWorksSection(),
+              const SizedBox(height: AppSpacing.xl),
+
+              // 6. Bảo hiểm chuyến đi trọn gói
               const InsuranceBanner(),
+              const SizedBox(height: AppSpacing.xl),
+
+              // 7. Câu hỏi thường gặp
+              const FaqSection(),
 
               // Khoảng đệm đáy tránh che khuất bởi Bottom Navigation Bar
               const SizedBox(height: AppSpacing.xxl),

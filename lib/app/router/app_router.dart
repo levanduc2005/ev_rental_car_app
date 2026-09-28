@@ -83,8 +83,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           final queryId = state.uri.queryParameters['vehicleId'];
           final extraId = state.extra is int
               ? state.extra as int
-              : (state.extra is String ? int.tryParse(state.extra as String) : null);
-          final vehicleId = extraId ?? (queryId != null ? int.tryParse(queryId) : null);
+              : (state.extra is String
+                    ? int.tryParse(state.extra as String)
+                    : null);
+          final vehicleId =
+              extraId ?? (queryId != null ? int.tryParse(queryId) : null);
           return BookingConfirmationPage(vehicleId: vehicleId);
         },
       ),
@@ -109,17 +112,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.mapSearch.path,
         name: AppRoute.mapSearch.name,
-        builder: (_, _) => const MapSearchPage(),
+        builder: (_, state) => MapSearchPage(
+          initialCity: state.uri.queryParameters['city'],
+          initialStationId: state.uri.queryParameters['stationId'],
+          initialLocation: state.uri.queryParameters['location'],
+          initialStart: state.uri.queryParameters['start'],
+          initialEnd: state.uri.queryParameters['end'],
+          initialType: state.uri.queryParameters['type'],
+          initialPackage: state.uri.queryParameters['package'],
+        ),
         routes: [
           GoRoute(
             path: ':id',
-            name: AppRoute.vehicleDetail.name,
-            builder: (_, state) {
-              final id = state.pathParameters['id'] ?? '1';
-              return VehicleDetailPage(vehicleId: id);
-            },
+            redirect: (context, state) =>
+                '/vehicles/${state.pathParameters['id'] ?? '1'}',
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoute.vehicleDetail.path,
+        name: AppRoute.vehicleDetail.name,
+        builder: (_, state) {
+          final id = state.pathParameters['id'] ?? '1';
+          return VehicleDetailPage(vehicleId: id);
+        },
       ),
       GoRoute(
         path: AppRoute.profile.path,

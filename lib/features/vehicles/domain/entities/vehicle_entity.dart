@@ -39,3 +39,43 @@ abstract class VehicleEntity with _$VehicleEntity {
     String? stationName,
   }) = _VehicleEntity;
 }
+
+extension VehicleEntityPricingX on VehicleEntity {
+  /// Lấy giá bán (đơn vị K: nghìn đồng) dựa theo số giờ thuê
+  int priceKForDuration(int hours) {
+    if (hours <= 4) {
+      if (pricePer4Hours != null && pricePer4Hours! > 0) {
+        return (pricePer4Hours! / 1000).round();
+      }
+      return (salePriceK * 0.45).round();
+    } else if (hours <= 8) {
+      if (pricePer8Hours != null && pricePer8Hours! > 0) {
+        return (pricePer8Hours! / 1000).round();
+      }
+      return (salePriceK * 0.70).round();
+    } else if (hours <= 12) {
+      if (pricePer12Hours != null && pricePer12Hours! > 0) {
+        return (pricePer12Hours! / 1000).round();
+      }
+      return (salePriceK * 0.85).round();
+    } else if (hours <= 24) {
+      if (pricePerDay != null && pricePerDay! > 0) {
+        return (pricePerDay! / 1000).round();
+      }
+      return salePriceK;
+    } else {
+      // Thuê nhiều ngày
+      final days = (hours / 24).ceil();
+      final dailyK = (pricePerDay != null && pricePerDay! > 0)
+          ? (pricePerDay! / 1000).round()
+          : salePriceK;
+      return dailyK * days;
+    }
+  }
+
+  /// Giá gốc (trước khuyến mãi) tương ứng theo số giờ thuê
+  int originalPriceKForDuration(int hours) {
+    final sale = priceKForDuration(hours);
+    return (sale * 1.15).round();
+  }
+}
