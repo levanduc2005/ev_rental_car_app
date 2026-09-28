@@ -30,9 +30,28 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    _startDateTime = DateTime(now.year, now.month, now.day + 1, 14);
-    _endDateTime = _startDateTime.add(const Duration(hours: 8));
+    final filter = ref.read(vehicleFilterProvider);
+    if (filter.hourPackage != null && filter.hourPackage! > 0) {
+      _selectedPackageId = '${filter.hourPackage}h';
+    } else if (filter.durationHours <= 4) {
+      _selectedPackageId = '4h';
+    } else if (filter.durationHours <= 8) {
+      _selectedPackageId = '8h';
+    } else if (filter.durationHours <= 12) {
+      _selectedPackageId = '12h';
+    } else {
+      _selectedPackageId = '24h';
+    }
+
+    if (filter.startTime != null && filter.endTime != null) {
+      _startDateTime = filter.startTime!;
+      _endDateTime = filter.endTime!;
+    } else {
+      final now = DateTime.now();
+      _startDateTime = DateTime(now.year, now.month, now.day + 1, 14);
+      final hours = _getPackageHours(_selectedPackageId);
+      _endDateTime = _startDateTime.add(Duration(hours: hours));
+    }
   }
 
   void _onPackageSelected(String id) {
@@ -125,9 +144,9 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
 
   String _formatVnd(double val) {
     final str = val.round().toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (m) => '${m[1]}.',
-        );
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]}.',
+    );
     return '$strđ';
   }
 
@@ -138,28 +157,24 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
   ) {
     // Đồng bộ thời gian nhận - trả xe vào BookingFormController để flow Booking kế thừa chính xác
     try {
-      ref.read(bookingFormControllerProvider.notifier).updateRentalSchedule(
-            _startDateTime,
-            _endDateTime,
-          );
+      ref
+          .read(bookingFormControllerProvider.notifier)
+          .updateRentalSchedule(_startDateTime, _endDateTime);
     } catch (_) {}
 
     final extraId = int.tryParse(vehicle.id) ?? 1;
-    context.pushNamed(
-      AppRoute.booking.name,
-      extra: extraId,
-    );
+    context.pushNamed(AppRoute.booking.name, extra: extraId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final vehicleDetailAsync =
-        ref.watch(vehicleDetailControllerProvider(widget.vehicleId));
+    final vehicleDetailAsync = ref.watch(
+      vehicleDetailControllerProvider(widget.vehicleId),
+    );
 
     return vehicleDetailAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (err, stack) => Scaffold(
         appBar: AppBar(title: const Text('Chi tiết xe')),
         body: Center(child: Text('Lỗi: $err')),
@@ -170,9 +185,11 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
         // Tính toán chi phí động theo gói thời gian thuê và tùy chọn
         final rentalFee = _getPackageRentalFee(detail, _selectedPackageId);
         final locationFee = (_selectedLocationIndex == 1) ? 150000.0 : 0.0;
-        final insuranceFee =
-            _isInsuranceSelected ? (rentalFee * 0.08).roundToDouble() : 0.0;
-        final discountAmount = (rentalFee * 0.10).roundToDouble(); // Voucher 10%
+        final insuranceFee = _isInsuranceSelected
+            ? (rentalFee * 0.08).roundToDouble()
+            : 0.0;
+        final discountAmount = (rentalFee * 0.10)
+            .roundToDouble(); // Voucher 10%
         final vatAmount =
             ((rentalFee + locationFee + insuranceFee - discountAmount) * 0.10)
                 .roundToDouble();
@@ -200,7 +217,10 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.share_outlined, color: Color(0xFF0F172A)),
+                icon: const Icon(
+                  Icons.share_outlined,
+                  color: Color(0xFF0F172A),
+                ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Đã sao chép liên kết xe!')),
@@ -309,8 +329,10 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       // 5. THỜI GIAN THUÊ XE
                       RentalTimeCard(
                         durationText: 'Thời gian thuê ($durationLabel)',
-                        timeRangeText:
-                            _formatTimeRange(_startDateTime, _endDateTime),
+                        timeRangeText: _formatTimeRange(
+                          _startDateTime,
+                          _endDateTime,
+                        ),
                         onChangeSchedule: _openSchedulePicker,
                       ),
                       const SizedBox(height: 20),
@@ -575,9 +597,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                     offset: const Offset(0, -4),
                   ),
                 ],
-                border: const Border(
-                  top: BorderSide(color: Color(0xFFE2E8F0)),
-                ),
+                border: const Border(top: BorderSide(color: Color(0xFFE2E8F0))),
               ),
               child: Row(
                 children: [

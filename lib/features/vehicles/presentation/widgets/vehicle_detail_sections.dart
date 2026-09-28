@@ -11,9 +11,7 @@ class SmartPickupBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF0F7FF),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFBAE6FD),
-        ),
+        border: Border.all(color: const Color(0xFFBAE6FD)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +48,9 @@ class SmartPickupBanner extends StatelessWidget {
           const SizedBox(height: 4),
           _buildCheckItem('Nhận xe và mở rộng 100% qua ứng dụng e-Motion'),
           const SizedBox(height: 4),
-          _buildCheckItem('Đặt xe nhanh chóng, nhận xe ngay không chờ duyệt đơn'),
+          _buildCheckItem(
+            'Đặt xe nhanh chóng, nhận xe ngay không chờ duyệt đơn',
+          ),
           const SizedBox(height: 8),
           const Text(
             'Cách thức hoạt động >',
@@ -69,11 +69,7 @@ class SmartPickupBanner extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(
-          Icons.check,
-          size: 15,
-          color: Color(0xFF1976D2),
-        ),
+        const Icon(Icons.check, size: 15, color: Color(0xFF1976D2)),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
@@ -215,8 +211,10 @@ class LocationSelectorCard extends StatelessWidget {
           index: 0,
           title: 'Khách nhận tại vị trí xe đậu',
           badgeText: 'Miễn phí',
-          address: '29D/38, đường Thống Nhất, Phường Bình An, TP. Dĩ An, Bình Dương',
-          note: 'Địa điểm xe mát có mái che & quạt, khi nhận cần thanh toán cọc xe 24/24.',
+          address:
+              '29D/38, đường Thống Nhất, Phường Bình An, TP. Dĩ An, Bình Dương',
+          note:
+              'Địa điểm xe mát có mái che & quạt, khi nhận cần thanh toán cọc xe 24/24.',
         ),
         const SizedBox(height: 10),
 
@@ -226,7 +224,8 @@ class LocationSelectorCard extends StatelessWidget {
           title: 'e-Motion giao & nhận xe tận nơi',
           badgeText: '+150.000đ',
           badgeColor: const Color(0xFFEA580C),
-          address: 'VRG2+57M, Lưu Hữu Phước, P. Đông Hòa, Dĩ An / TP. Thủ Đức, TP. HCM',
+          address:
+              'VRG2+57M, Lưu Hữu Phước, P. Đông Hòa, Dĩ An / TP. Thủ Đức, TP. HCM',
           note: 'Nhân viên giao nhận xe trong bán kính 15km.',
         ),
       ],
@@ -253,7 +252,9 @@ class LocationSelectorCard extends StatelessWidget {
           color: isSelected ? const Color(0xFFF8FAFC) : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected ? const Color(0xFF1976D2) : const Color(0xFFE2E8F0),
+            color: isSelected
+                ? const Color(0xFF1976D2)
+                : const Color(0xFFE2E8F0),
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -263,9 +264,13 @@ class LocationSelectorCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
                   size: 20,
-                  color: isSelected ? const Color(0xFF1976D2) : const Color(0xFF94A3B8),
+                  color: isSelected
+                      ? const Color(0xFF1976D2)
+                      : const Color(0xFF94A3B8),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -273,15 +278,22 @@ class LocationSelectorCard extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 13.5,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w600,
                       color: const Color(0xFF0F172A),
                     ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: (badgeColor ?? const Color(0xFF1976D2)).withValues(alpha: 0.1),
+                    color: (badgeColor ?? const Color(0xFF1976D2)).withValues(
+                      alpha: 0.1,
+                    ),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -319,10 +331,7 @@ class LocationSelectorCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               note,
-              style: const TextStyle(
-                fontSize: 11,
-                color: Color(0xFF94A3B8),
-              ),
+              style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
             ),
           ],
         ),
@@ -392,7 +401,9 @@ class TripInsuranceCard extends StatelessWidget {
                 color: const Color(0xFFF0F7FF),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF1976D2) : const Color(0xFFE2E8F0),
+                  color: isSelected
+                      ? const Color(0xFF1976D2)
+                      : const Color(0xFFE2E8F0),
                   width: isSelected ? 1.5 : 1.0,
                 ),
               ),
@@ -414,7 +425,10 @@ class TripInsuranceCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 1,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF1976D2),
                                 borderRadius: BorderRadius.circular(4),
@@ -460,8 +474,12 @@ class TripInsuranceCard extends StatelessWidget {
                     ),
                   ),
                   Icon(
-                    isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                    color: isSelected ? const Color(0xFF1976D2) : const Color(0xFF94A3B8),
+                    isSelected
+                        ? Icons.check_circle
+                        : Icons.radio_button_unchecked,
+                    color: isSelected
+                        ? const Color(0xFF1976D2)
+                        : const Color(0xFF94A3B8),
                     size: 24,
                   ),
                 ],
@@ -612,10 +630,7 @@ class PricingBreakdownCard extends StatelessWidget {
           const SizedBox(height: 2),
           const Text(
             'Tiền giữ chỗ không phải phụ phí và sẽ được hoàn lại 100% sau chuyến đi.',
-            style: TextStyle(
-              fontSize: 11,
-              color: Color(0xFF94A3B8),
-            ),
+            style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
           ),
           const SizedBox(height: 12),
 
@@ -624,10 +639,7 @@ class PricingBreakdownCard extends StatelessWidget {
           const SizedBox(height: 2),
           const Text(
             'Thanh toán khi nhận xe hoặc gửi lại xe máy & giấy tờ xe chính chủ.',
-            style: TextStyle(
-              fontSize: 11,
-              color: Color(0xFF94A3B8),
-            ),
+            style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
           ),
         ],
       ),
@@ -652,7 +664,11 @@ class PricingBreakdownCard extends StatelessWidget {
               ),
               if (hasInfoIcon) ...[
                 const SizedBox(width: 4),
-                const Icon(Icons.info_outline, size: 14, color: Color(0xFF94A3B8)),
+                const Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: Color(0xFF94A3B8),
+                ),
               ],
             ],
           ),
@@ -689,7 +705,11 @@ class AdditionalFeesCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.info_outline_rounded, size: 18, color: Color(0xFF1976D2)),
+              Icon(
+                Icons.info_outline_rounded,
+                size: 18,
+                color: Color(0xFF1976D2),
+              ),
               SizedBox(width: 6),
               Text(
                 'PHỤ PHÍ CÓ THỂ PHÁT SINH',
@@ -707,20 +727,23 @@ class AdditionalFeesCard extends StatelessWidget {
             stepNumber: '1',
             title: 'Phí vượt định mức di chuyển',
             feeRight: '5.000 đ/km',
-            desc: 'Giới hạn 400km/ngày (hoặc 20km/giờ). Quá 400km: 5.000đ/km. Thu thêm trên mỗi km vượt.',
+            desc:
+                'Giới hạn 400km/ngày (hoặc 20km/giờ). Quá 400km: 5.000đ/km. Thu thêm trên mỗi km vượt.',
           ),
           const SizedBox(height: 12),
           _buildFeeItem(
             stepNumber: '2',
             title: 'Phí cầu đường (VETC / ePass)',
-            desc: 'Thanh toán đúng số tiền thực tế phát sinh trên tài khoản thu phí tự động trong hành trình.',
+            desc:
+                'Thanh toán đúng số tiền thực tế phát sinh trên tài khoản thu phí tự động trong hành trình.',
           ),
           const SizedBox(height: 12),
           _buildFeeItem(
             stepNumber: '3',
             title: 'Phụ thu chênh lệch nhiên liệu',
             feeRight: '120% giá thị trường',
-            desc: 'Áp dụng nếu mức xăng/pin khi trả thấp hơn mức ban đầu lúc nhận xe.',
+            desc:
+                'Áp dụng nếu mức xăng/pin khi trả thấp hơn mức ban đầu lúc nhận xe.',
           ),
         ],
       ),
@@ -900,10 +923,7 @@ class VehicleSpecsGrid extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Color(0xFF64748B),
-                ),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
               ),
               const SizedBox(height: 1),
               Text(
@@ -1032,21 +1052,30 @@ class CancellationPolicyTable extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                     child: Text(
                       'Quy định',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     child: Text(
                       'Ngày thường',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     child: Text(
                       'Lễ, Tết',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

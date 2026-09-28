@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Carousel trượt ảnh xe kèm chỉ báo Dots và nút VR 360 (Slide 10)
 class VehicleDetailCarousel extends StatefulWidget {
-  const VehicleDetailCarousel({
-    required this.imageUrls,
-    super.key,
-  });
+  const VehicleDetailCarousel({required this.imageUrls, super.key});
 
   final List<String> imageUrls;
 
@@ -79,7 +76,9 @@ class _VehicleDetailCarouselState extends State<VehicleDetailCarousel> {
                 width: isActive ? 18 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
+                  color: isActive
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(3),
                 ),
               );
@@ -100,11 +99,7 @@ class _VehicleDetailCarouselState extends State<VehicleDetailCarousel> {
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.view_in_ar_rounded,
-                  color: Colors.white,
-                  size: 15,
-                ),
+                Icon(Icons.view_in_ar_rounded, color: Colors.white, size: 15),
                 SizedBox(width: 4),
                 Text(
                   'VR',

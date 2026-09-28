@@ -74,22 +74,41 @@ abstract class VehicleModel with _$VehicleModel {
       loc = st['address'] as String? ?? st['name'] as String? ?? loc;
     }
 
-    // 3. Phân tích giá cả
-    final priceDay = (json['pricePerDay'] as num?)?.toDouble() ??
+    // 3. Phân tích giá cả & Đơn vị theo số giờ thuê từ backend
+    final pDay =
+        (json['pricePerDay'] as num?)?.toDouble() ??
         (json['priceRate'] as num?)?.toDouble() ??
         1560000.0;
-    final saleK = (priceDay / 1000).round();
-    final origK = (saleK * 1.15).round();
+    final defaultDailyK = (pDay / 1000).round();
 
-    final p4h = (json['pricePer4Hours'] as num?)?.toDouble() ??
-        (saleK * 1000 * 0.45).roundToDouble();
-    final p8h = (json['pricePer8Hours'] as num?)?.toDouble() ??
-        (saleK * 1000 * 0.70).roundToDouble();
-    final p12h = (json['pricePer12Hours'] as num?)?.toDouble() ??
-        (saleK * 1000 * 0.85).roundToDouble();
-    final pDay = (json['pricePerDay'] as num?)?.toDouble() ??
-        (json['priceRate'] as num?)?.toDouble() ??
-        (saleK * 1000).toDouble();
+    final p4h =
+        (json['pricePer4Hours'] as num?)?.toDouble() ??
+        (defaultDailyK * 1000 * 0.45).roundToDouble();
+    final p8h =
+        (json['pricePer8Hours'] as num?)?.toDouble() ??
+        (defaultDailyK * 1000 * 0.70).roundToDouble();
+    final p12h =
+        (json['pricePer12Hours'] as num?)?.toDouble() ??
+        (defaultDailyK * 1000 * 0.85).roundToDouble();
+
+    final hourRate = (json['hourRate'] as num?)?.toInt();
+    final priceRate = (json['priceRate'] as num?)?.toDouble();
+
+    final double activePrice;
+    final String activeUnit;
+    final String activeDuration;
+
+    if (priceRate != null && hourRate != null && hourRate < 24) {
+      activePrice = priceRate;
+      activeUnit = '$hourRate giờ';
+      activeDuration = '≈ $hourRate giờ';
+    } else {
+      activePrice = priceRate ?? pDay;
+      activeUnit = 'ngày';
+      activeDuration = '≈ 24 giờ';
+    }
+    final saleK = (activePrice / 1000).round();
+    final origK = (saleK * 1.15).round();
 
     // 4. Nhiên liệu / Pin
     final batteryLvl = (json['batteryLevel'] as num?)?.toInt();
@@ -99,7 +118,8 @@ abstract class VehicleModel with _$VehicleModel {
     // 5. Phân khúc & Hạng sang
     final brandStr = (json['brand'] ?? '').toString().toUpperCase();
     final catStr = (json['category'] ?? '').toString().toUpperCase();
-    final isLux = brandStr.contains('MERCEDES') ||
+    final isLux =
+        brandStr.contains('MERCEDES') ||
         brandStr.contains('BMW') ||
         brandStr.contains('AUDI') ||
         brandStr.contains('LEXUS') ||
@@ -109,9 +129,9 @@ abstract class VehicleModel with _$VehicleModel {
 
     String formatVnd(double val) {
       final str = val.round().toString().replaceAllMapped(
-            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-            (m) => '${m[1]}.',
-          );
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+        (m) => '${m[1]}.',
+      );
       return '$strđ';
     }
 
@@ -122,8 +142,8 @@ abstract class VehicleModel with _$VehicleModel {
       distanceKm: (json['distanceKm'] as num?)?.toDouble() ?? 11.9,
       originalPriceK: origK,
       salePriceK: saleK,
-      priceUnit: 'ngày',
-      estimatedDuration: '≈ 2 ngày 4 giờ',
+      priceUnit: activeUnit,
+      estimatedDuration: activeDuration,
       viewingCount: (json['point'] as num?)?.toInt() ?? 4,
       seats: (json['seats'] as num?)?.toInt() ?? 5,
       transmission: 'Số tự động',
@@ -136,14 +156,15 @@ abstract class VehicleModel with _$VehicleModel {
       consumption: json['consumptionRate'] != null
           ? '${json['consumptionRate']} ${isEv ? 'kWh' : 'L'}/100km'
           : '6.3L / 100km',
-      description: json['description'] as String? ??
+      description:
+          json['description'] as String? ??
           'Xe được kiểm định kỹ thuật định kỳ, bảo dưỡng chính hãng, đầy đủ bảo hiểm và sẵn sàng di chuyển.',
       imageUrls: imgList,
-      rentalFee: formatVnd(priceDay * 2.18),
+      rentalFee: formatVnd(pDay * 2.18),
       insuranceFee: '132.821đ',
       discountAmount: '-287.000đ',
       vatAmount: '257.582đ',
-      totalRental: formatVnd(priceDay * 2.18 + 132821 - 287000 + 257582),
+      totalRental: formatVnd(pDay * 2.18 + 132821 - 287000 + 257582),
       holdingDeposit: '500.000đ',
       collateralDeposit: formatVnd(deposit),
       pricePer4Hours: p4h,
@@ -156,36 +177,36 @@ abstract class VehicleModel with _$VehicleModel {
 
 extension VehicleModelX on VehicleModel {
   VehicleEntity toEntity() => VehicleEntity(
-        id: id,
-        name: name,
-        location: location,
-        distanceKm: distanceKm,
-        originalPriceK: originalPriceK,
-        salePriceK: salePriceK,
-        priceUnit: priceUnit,
-        estimatedDuration: estimatedDuration,
-        viewingCount: viewingCount,
-        seats: seats,
-        transmission: transmission,
-        fuelType: fuelType,
-        imageUrl: imageUrl,
-        discountText: discountText,
-        deliveryType: deliveryType,
-        isLuxury: isLuxury,
-        luxuryTag: luxuryTag,
-        consumption: consumption,
-        description: description,
-        imageUrls: imageUrls,
-        rentalFee: rentalFee,
-        insuranceFee: insuranceFee,
-        discountAmount: discountAmount,
-        vatAmount: vatAmount,
-        totalRental: totalRental,
-        holdingDeposit: holdingDeposit,
-        collateralDeposit: collateralDeposit,
-        pricePer4Hours: pricePer4Hours,
-        pricePer8Hours: pricePer8Hours,
-        pricePer12Hours: pricePer12Hours,
-        pricePerDay: pricePerDay,
-      );
+    id: id,
+    name: name,
+    location: location,
+    distanceKm: distanceKm,
+    originalPriceK: originalPriceK,
+    salePriceK: salePriceK,
+    priceUnit: priceUnit,
+    estimatedDuration: estimatedDuration,
+    viewingCount: viewingCount,
+    seats: seats,
+    transmission: transmission,
+    fuelType: fuelType,
+    imageUrl: imageUrl,
+    discountText: discountText,
+    deliveryType: deliveryType,
+    isLuxury: isLuxury,
+    luxuryTag: luxuryTag,
+    consumption: consumption,
+    description: description,
+    imageUrls: imageUrls,
+    rentalFee: rentalFee,
+    insuranceFee: insuranceFee,
+    discountAmount: discountAmount,
+    vatAmount: vatAmount,
+    totalRental: totalRental,
+    holdingDeposit: holdingDeposit,
+    collateralDeposit: collateralDeposit,
+    pricePer4Hours: pricePer4Hours,
+    pricePer8Hours: pricePer8Hours,
+    pricePer12Hours: pricePer12Hours,
+    pricePerDay: pricePerDay,
+  );
 }

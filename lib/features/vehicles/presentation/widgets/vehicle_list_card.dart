@@ -6,14 +6,47 @@ class VehicleListCard extends StatelessWidget {
   const VehicleListCard({
     required this.item,
     required this.onTap,
+    this.targetHours,
+    this.targetUnit,
     super.key,
   });
 
   final VehicleEntity item;
   final VoidCallback onTap;
+  final int? targetHours;
+  final String? targetUnit;
 
   @override
   Widget build(BuildContext context) {
+    final int effectiveSalePriceK;
+    final int effectiveOriginalPriceK;
+    final String effectiveUnit;
+    final String effectiveDuration;
+
+    if (targetHours != null && targetHours! > 0) {
+      effectiveSalePriceK = item.priceKForDuration(targetHours!);
+      effectiveOriginalPriceK = item.originalPriceKForDuration(targetHours!);
+      effectiveUnit =
+          targetUnit ??
+          (targetHours! <= 4
+              ? '4 giờ'
+              : (targetHours! <= 8
+                    ? '8 giờ'
+                    : (targetHours! <= 12
+                          ? '12 giờ'
+                          : (targetHours! <= 24
+                                ? 'ngày'
+                                : '${(targetHours! / 24).ceil()} ngày'))));
+      effectiveDuration = targetHours! < 24
+          ? '≈ $effectiveUnit'
+          : '≈ ${(targetHours! / 24).ceil()} ngày';
+    } else {
+      effectiveSalePriceK = item.salePriceK;
+      effectiveOriginalPriceK = item.originalPriceK;
+      effectiveUnit = item.priceUnit;
+      effectiveDuration = item.estimatedDuration;
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -26,10 +59,7 @@ class VehicleListCard extends StatelessWidget {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(
-          color: const Color(0xFFE2E8F0),
-          width: 0.8,
-        ),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
       ),
       child: Material(
         color: Colors.transparent,
@@ -261,9 +291,10 @@ class VehicleListCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           textBaseline: TextBaseline.alphabetic,
                           children: [
-                            if (item.originalPriceK > item.salePriceK) ...[
+                            if (effectiveOriginalPriceK >
+                                effectiveSalePriceK) ...[
                               Text(
-                                '${item.originalPriceK}K',
+                                '${effectiveOriginalPriceK}K',
                                 style: const TextStyle(
                                   fontSize: 12.5,
                                   color: Color(0xFF94A3B8),
@@ -274,7 +305,7 @@ class VehicleListCard extends StatelessWidget {
                               const SizedBox(width: 6),
                             ],
                             Text(
-                              '${item.salePriceK}K',
+                              '${effectiveSalePriceK}K',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
@@ -282,7 +313,7 @@ class VehicleListCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '/${item.priceUnit}',
+                              '/$effectiveUnit',
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -326,7 +357,7 @@ class VehicleListCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          item.estimatedDuration,
+                          effectiveDuration,
                           style: const TextStyle(
                             fontSize: 11.5,
                             color: Color(0xFF94A3B8),
@@ -399,11 +430,7 @@ class VehicleListCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 14,
-          color: const Color(0xFF64748B),
-        ),
+        Icon(icon, size: 14, color: const Color(0xFF64748B)),
         const SizedBox(width: 4),
         Text(
           text,

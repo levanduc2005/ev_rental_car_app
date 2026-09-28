@@ -9,7 +9,9 @@ import 'package:rental_car/features/vehicles/domain/usecases/get_vehicle_detail_
 import 'package:rental_car/features/vehicles/domain/usecases/get_vehicles_usecase.dart';
 import 'package:rental_car/features/vehicles/domain/usecases/search_vehicles_filter_usecase.dart';
 
-final vehicleRemoteDataSourceProvider = Provider<VehicleRemoteDataSource>((ref) {
+final vehicleRemoteDataSourceProvider = Provider<VehicleRemoteDataSource>((
+  ref,
+) {
   final dio = ref.watch(dioProvider);
   return VehicleRemoteDataSourceImpl(dio: dio);
 });
@@ -26,11 +28,13 @@ final getVehiclesUseCaseProvider = Provider<GetVehiclesUseCase>((ref) {
 
 final searchVehiclesFilterUseCaseProvider =
     Provider<SearchVehiclesFilterUseCase>((ref) {
-  final repository = ref.watch(vehicleRepositoryProvider);
-  return SearchVehiclesFilterUseCase(repository);
-});
+      final repository = ref.watch(vehicleRepositoryProvider);
+      return SearchVehiclesFilterUseCase(repository);
+    });
 
-final getVehicleDetailUseCaseProvider = Provider<GetVehicleDetailUseCase>((ref) {
+final getVehicleDetailUseCaseProvider = Provider<GetVehicleDetailUseCase>((
+  ref,
+) {
   final repository = ref.watch(vehicleRepositoryProvider);
   return GetVehicleDetailUseCase(repository);
 });
@@ -38,8 +42,8 @@ final getVehicleDetailUseCaseProvider = Provider<GetVehicleDetailUseCase>((ref) 
 /// Quản lý trạng thái bộ lọc xe
 final vehicleFilterProvider =
     NotifierProvider<VehicleFilterNotifier, VehicleFilter>(
-  VehicleFilterNotifier.new,
-);
+      VehicleFilterNotifier.new,
+    );
 
 class VehicleFilterNotifier extends Notifier<VehicleFilter> {
   @override
@@ -55,8 +59,9 @@ class VehicleFilterNotifier extends Notifier<VehicleFilter> {
 }
 
 /// Controller lấy danh sách xe phản ứng theo filter
-final vehicleListControllerProvider =
-    FutureProvider<List<VehicleEntity>>((ref) async {
+final vehicleListControllerProvider = FutureProvider<List<VehicleEntity>>((
+  ref,
+) async {
   final filter = ref.watch(vehicleFilterProvider);
   final useCase = ref.watch(getVehiclesUseCaseProvider);
   final result = await useCase(filter);
@@ -69,10 +74,10 @@ final vehicleListControllerProvider =
 /// Controller lấy chi tiết xe theo id
 final vehicleDetailControllerProvider =
     FutureProvider.family<VehicleEntity, String>((ref, id) async {
-  final useCase = ref.watch(getVehicleDetailUseCaseProvider);
-  final result = await useCase(id);
-  return result.when(
-    ok: (detail) => detail,
-    err: (failure) => throw Exception(failure.message),
-  );
-});
+      final useCase = ref.watch(getVehicleDetailUseCaseProvider);
+      final result = await useCase(id);
+      return result.when(
+        ok: (detail) => detail,
+        err: (failure) => throw Exception(failure.message),
+      );
+    });
