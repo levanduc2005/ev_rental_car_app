@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rental_car/core/config/app_config.dart';
 import 'package:rental_car/core/network/logging_interceptor.dart';
 
@@ -9,7 +10,11 @@ import 'package:rental_car/core/network/logging_interceptor.dart';
 /// tests (see `test/` for examples that inject a mock adapter).
 abstract final class DioClient {
   static Dio create({List<Interceptor>? interceptors}) {
-    const rawBaseUrl = AppConfig.apiBaseUrl;
+    var rawBaseUrl = AppConfig.apiBaseUrl;
+    if (rawBaseUrl.contains('10.0.2.2') &&
+        (kIsWeb || defaultTargetPlatform != TargetPlatform.android)) {
+      rawBaseUrl = rawBaseUrl.replaceAll('10.0.2.2', 'localhost');
+    }
     final baseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl : '$rawBaseUrl/';
 
     final dio = Dio(

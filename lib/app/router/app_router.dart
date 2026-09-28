@@ -21,8 +21,8 @@ import 'package:rental_car/features/profile/presentation/pages/kyc_upload_screen
 import 'package:rental_car/features/profile/presentation/pages/rental_history_screen.dart';
 import 'package:rental_car/features/profile/presentation/profile_page.dart';
 import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dart';
-import 'package:rental_car/features/vehicles/presentation/map_search_page.dart';
-import 'package:rental_car/features/vehicles/presentation/vehicle_detail_page.dart';
+import 'package:rental_car/features/vehicles/presentation/pages/map_search_page.dart';
+import 'package:rental_car/features/vehicles/presentation/pages/vehicle_detail_page.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
