@@ -9,9 +9,11 @@ import 'package:rental_car/features/booking/domain/entities/reservation_entity.d
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_providers.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
+import 'package:rental_car/features/booking/presentation/utils/booking_formatters.dart';
 import 'package:rental_car/features/booking/presentation/widgets/booking_payment_breakdown_card.dart';
 import 'package:rental_car/features/booking/presentation/widgets/booking_schedule_card.dart';
 import 'package:rental_car/features/booking/presentation/widgets/booking_vehicle_summary_card.dart';
+import 'package:rental_car/features/booking/presentation/widgets/checkin_qr_card.dart';
 import 'package:rental_car/features/booking/presentation/widgets/reservation_status_badge.dart';
 
 /// Trang xem Chi tiết Đơn đặt xe (Gọi API GET /api/reservations/me/{id})
@@ -151,6 +153,18 @@ class _ReservationDetailPageState
             ),
             const SizedBox(height: 16),
 
+            // Check-in QR Card for Confirmed / Active reservations
+            if (isConfirmed || res.isActive) ...[
+              CheckinQrCard(
+                reservationCode: res.reservationCode,
+                vehicleName: res.vehicle?.name,
+                stationName: res.vehicle?.stationName,
+                stationAddress:
+                    res.vehicle?.stationAddress ?? res.pickupLocation,
+              ),
+              const SizedBox(height: 16),
+            ],
+
             // Reusable Rental Schedule Card
             BookingScheduleCard(
               startDateTime: res.startDateTime,
@@ -188,9 +202,11 @@ class _ReservationDetailPageState
                       .setPaymentReservation(res);
                   context.pushNamed(AppRoute.payment.name);
                 },
-                child: const Text('Tiếp tục thanh toán cọc 500.000đ',
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'Tiếp tục thanh toán cọc ${BookingFormatters.formatCurrency(res.depositFee)}',
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: 12),
               OutlinedButton(

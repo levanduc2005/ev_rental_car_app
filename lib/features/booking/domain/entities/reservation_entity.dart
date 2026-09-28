@@ -43,6 +43,9 @@ class ReservationEntity {
       status.toUpperCase() == 'CONFIRM' ||
       status.toUpperCase() == 'CONFIRMED' ||
       status.toUpperCase() == 'DEPOSITED';
+  bool get isActive =>
+      status.toUpperCase() == 'ACTIVE' ||
+      status.toUpperCase() == 'IN_PROGRESS';
   bool get isCancelled => status.toUpperCase() == 'CANCELLED';
   bool get isCompleted => status.toUpperCase() == 'COMPLETED';
   bool get isFailed => status.toUpperCase() == 'FAILED';
@@ -69,7 +72,7 @@ class ReservationEntity {
   /// Tiền cọc giữ chỗ: lấy từ cổng thanh toán PayOS hoặc deposit backend
   int get depositFee =>
       paymentInfo?.depositFee ??
-      (depositAmount != null ? depositAmount!.toInt() : 500000);
+      (depositAmount != null ? depositAmount!.toInt() : (vehicle?.holdDepositFee ?? 5000));
 
   /// Tổng tiền thuê xe dự tính: lấy từ API biểu phí hoặc tính theo giá xe theo giờ
   int get totalAmount {

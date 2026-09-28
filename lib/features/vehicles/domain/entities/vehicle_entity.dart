@@ -36,5 +36,6 @@ abstract class VehicleEntity with _$VehicleEntity {
     double? pricePer8Hours,
     double? pricePer12Hours,
     double? pricePerDay,
+    String? stationName,
   }) = _VehicleEntity;
 }

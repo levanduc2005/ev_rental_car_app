@@ -29,7 +29,7 @@ class PayOSPaymentInfoModel {
     final code = json['orderCode']?.toString() ??
         json['code']?.toString() ??
         DateTime.now().millisecondsSinceEpoch.toString();
-    final amount = (json['amount'] as num?)?.toDouble() ?? 500000.0;
+    final amount = (json['amount'] as num?)?.toDouble() ?? 0.0;
     final checkoutUrl = json['checkoutUrl'] as String? ?? json['vnpayUrl'] as String?;
     final bin = json['bin']?.toString() ?? '970422';
     final accountNumber = json['accountNumber']?.toString() ?? '';

@@ -6,6 +6,7 @@ import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/utils/booking_formatters.dart';
+import 'package:rental_car/features/booking/presentation/widgets/checkin_qr_card.dart';
 
 /// Màn hình Đặt xe & Giữ chỗ thành công
 class BookingSuccessPage extends ConsumerWidget {
@@ -17,9 +18,6 @@ class BookingSuccessPage extends ConsumerWidget {
     final vehicle = bookingState.vehicle;
     final reservation = bookingState.createdReservation;
     final reservationCode = reservation?.reservationCode ?? '1789616882506';
-
-    final checkinQrUrl =
-        'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=CHECKIN_EMOTION_$reservationCode';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -73,10 +71,10 @@ class BookingSuccessPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Hệ thống e-Motion đã nhận được khoản giữ chỗ 500.000đ của bạn. Chiếc xe đã được bảo lưu lịch trình!',
+            Text(
+              'Hệ thống e-Motion đã nhận được khoản giữ chỗ ${BookingFormatters.formatCurrency(reservation?.depositFee ?? 5000)} của bạn. Chiếc xe đã được bảo lưu lịch trình!',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
                 height: 1.4,
@@ -85,85 +83,11 @@ class BookingSuccessPage extends ConsumerWidget {
             const SizedBox(height: 20),
 
             // Station Check-in QR Voucher Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    'MÃ CHECK-IN NHẬN XE TẠI BÃI',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.8,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  // QR Code image
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Image.network(
-                      checkinQrUrl,
-                      width: 160,
-                      height: 160,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, _, _) => Container(
-                        width: 160,
-                        height: 160,
-                        color: Colors.grey.shade100,
-                        child: const Icon(Icons.qr_code, size: 80),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                          fontSize: 13, color: AppColors.textSecondary),
-                      children: [
-                        const TextSpan(text: 'Mã đơn thuê: '),
-                        TextSpan(
-                          text: reservationCode,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'monospace',
-                            color: Color(0xFF2563EB),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Quét mã này tại trạm sạc/bãi xe e-Motion hoặc bấm mở khóa trên điện thoại khi đến nơi.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                      height: 1.3,
-                    ),
-                  ),
-                ],
-              ),
+            CheckinQrCard(
+              reservationCode: reservationCode,
+              vehicleName: vehicle?.name,
+              stationName: vehicle?.stationName,
+              stationAddress: vehicle?.stationAddress,
             ),
             const SizedBox(height: 16),
 

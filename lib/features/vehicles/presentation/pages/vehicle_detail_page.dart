@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/widgets/rental_schedule_bottom_sheet.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
@@ -22,8 +23,6 @@ class VehicleDetailPage extends ConsumerStatefulWidget {
 
 class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
   String _selectedPackageId = '8h';
-  int _selectedLocationIndex = 0;
-  bool _isInsuranceSelected = true;
   late DateTime _startDateTime;
   late DateTime _endDateTime;
 
@@ -131,6 +130,12 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
     return '$strđ';
   }
 
+  double _parseVnd(String? text, [double defaultVal = 0.0]) {
+    if (text == null || text.isEmpty) return defaultVal;
+    final cleaned = text.replaceAll(RegExp(r'[^\d]'), '');
+    return double.tryParse(cleaned) ?? defaultVal;
+  }
+
   void _onBookNow(
     VehicleEntity vehicle,
     double calculatedTotal,
@@ -167,18 +172,22 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
       data: (detail) {
         final images = detail.imageUrls ?? [detail.imageUrl];
 
-        // Tính toán chi phí động theo gói thời gian thuê và tùy chọn
+        // Chi phí thực tế theo gói thời gian thuê niêm yết (chuẩn nghiệp vụ FE & BE)
         final rentalFee = _getPackageRentalFee(detail, _selectedPackageId);
-        final locationFee = (_selectedLocationIndex == 1) ? 150000.0 : 0.0;
-        final insuranceFee =
-            _isInsuranceSelected ? (rentalFee * 0.08).roundToDouble() : 0.0;
-        final discountAmount = (rentalFee * 0.10).roundToDouble(); // Voucher 10%
-        final vatAmount =
-            ((rentalFee + locationFee + insuranceFee - discountAmount) * 0.10)
-                .roundToDouble();
-        final totalRental =
-            rentalFee + locationFee + insuranceFee - discountAmount + vatAmount;
+        final collateralDepositVal = _parseVnd(detail.collateralDeposit, 3000000.0);
+        final holdingDepositVal = _parseVnd(detail.holdingDeposit, 5000.0);
+        final totalRental = rentalFee + collateralDepositVal;
+        final remainingAtStation = totalRental > holdingDepositVal
+            ? (totalRental - holdingDepositVal)
+            : 0.0;
+        final depositAfterHold = collateralDepositVal > holdingDepositVal
+            ? (collateralDepositVal - holdingDepositVal)
+            : 0.0;
         final durationLabel = _getPackageDurationLabel(_selectedPackageId);
+        final packageHours = _getPackageHours(_selectedPackageId);
+        final pointPerHour = detail.viewingCount > 0 ? detail.viewingCount : 4;
+        final earnedPoints = packageHours * pointPerHour;
+        final userPoints = ref.watch(authControllerProvider).user?.point ?? 0;
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -279,12 +288,16 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                             color: Color(0xFF1976D2),
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            detail.location,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF64748B),
-                              fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Text(
+                              detail.location,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],
@@ -315,44 +328,25 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // 6. VỊ TRÍ NHẬN & TRẢ XE
+                      // 6. VỊ TRÍ NHẬN & TRẢ XE (TẠI TRẠM e-Motion)
                       LocationSelectorCard(
-                        selectedLocationIndex: _selectedLocationIndex,
-                        onLocationChanged: (index) {
-                          setState(() {
-                            _selectedLocationIndex = index;
-                          });
-                        },
+                        stationAddress: detail.location,
+                        stationName: detail.stationName,
                       ),
                       const SizedBox(height: 20),
 
-                      // 7. BẢO HIỂM CHUYẾN ĐI AN TÂM
-                      TripInsuranceCard(
-                        isSelected: _isInsuranceSelected,
-                        onToggle: () {
-                          setState(() {
-                            _isInsuranceSelected = !_isInsuranceSelected;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      // 8. CHI TIẾT THANH TOÁN (Cập nhật động theo gói và tùy chọn)
+                      // 7. CHI TIẾT THANH TOÁN (Cập nhật động theo gói và quy định đặt cọc FE & BE)
                       PricingBreakdownCard(
                         rentalDurationLabel: 'Phí thuê xe ($durationLabel)',
                         rentalFeeText: _formatVnd(rentalFee),
-                        locationFeeText: (_selectedLocationIndex == 1)
-                            ? '+150.000đ'
-                            : null,
-                        insuranceFeeText: _isInsuranceSelected
-                            ? _formatVnd(insuranceFee)
-                            : '0đ (Không chọn)',
-                        discountText: '-${_formatVnd(discountAmount)}',
-                        vatText: _formatVnd(vatAmount),
+                        collateralDepositText: _formatVnd(collateralDepositVal),
+                        holdingDepositText: _formatVnd(holdingDepositVal),
                         totalRentalText: _formatVnd(totalRental),
-                        holdingDepositText: detail.holdingDeposit ?? '500.000đ',
-                        collateralDepositText:
-                            detail.collateralDeposit ?? '3.000.000đ',
+                        remainingAtStationText: _formatVnd(remainingAtStation),
+                        depositAfterHoldText: _formatVnd(depositAfterHold),
+                        earnedPoints: earnedPoints,
+                        pointPerHour: pointPerHour,
+                        userPoints: userPoints,
                       ),
                       const SizedBox(height: 20),
 
@@ -366,6 +360,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                         transmission: detail.transmission,
                         fuelType: detail.fuelType,
                         consumption: detail.consumption ?? '6.3L / 100km',
+                        pointPerHour: pointPerHour,
                       ),
                       const SizedBox(height: 20),
 
@@ -390,82 +385,14 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // 12. VỊ TRÍ XE TRÊN BẢN ĐỒ PREVIEW
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Vị trí xe',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF0F172A),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              detail.location.split('•').first.trim(),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1976D2),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        height: 160,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          image: const DecorationImage(
-                            image: NetworkImage(
-                              'https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop',
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: Center(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1976D2),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.25),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.directions_car_filled,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Vị trí ${detail.name}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      // 11. VỊ TRÍ XE & TRẠM SẠC TRÊN BẢN ĐỒ
+                      VehicleStationMapCard(
+                        stationAddress: detail.location,
+                        stationName: detail.stationName,
+                        vehicleName: detail.name,
+                        onOpenMap: () {
+                          context.pushNamed(AppRoute.mapSearch.name);
+                        },
                       ),
                       const SizedBox(height: 20),
 
@@ -476,81 +403,6 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       // 14. CHÍNH SÁCH HUỶ CHUYẾN
                       const CancellationPolicyTable(),
                       const SizedBox(height: 20),
-
-                      // 15. THÔNG TIN CHỦ XE
-                      const Text(
-                        'Thông tin chủ xe',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF1976D2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  'e',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Vận hành bởi e-Motion',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF0F172A),
-                                        ),
-                                      ),
-                                      SizedBox(width: 4),
-                                      Icon(
-                                        Icons.verified,
-                                        size: 16,
-                                        color: Color(0xFF1976D2),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    'Xe tự lái thông minh, hỗ trợ kỹ thuật 24/7',
-                                    style: TextStyle(
-                                      fontSize: 11.5,
-                                      color: Color(0xFF64748B),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
 
                       // Khoảng đệm tránh bị che bởi thanh Sticky Bottom Bar
                       const SizedBox(height: 90),
@@ -590,7 +442,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                         Row(
                           children: [
                             const Text(
-                              'Tổng tiền thuê',
+                              'Tổng cộng',
                               style: TextStyle(
                                 fontSize: 11.5,
                                 color: Color(0xFF64748B),
@@ -608,7 +460,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(
-                                'Thanh toán',
+                                'Gồm cọc xe',
                                 style: TextStyle(
                                   fontSize: 9.5,
                                   fontWeight: FontWeight.bold,

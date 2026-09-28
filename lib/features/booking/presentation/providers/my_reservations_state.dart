@@ -26,6 +26,31 @@ class MyReservationsState {
   final String? errorMessage;
   final String? actionMessage;
 
+  /// Danh sách các đơn còn hiệu lực / chuyến đi (không bao gồm đơn đã hủy / quá hạn)
+  List<ReservationEntity> get activeTrips =>
+      reservations.where((r) => !r.isCancelled && !r.isFailed && !r.isOverdue).toList();
+
+  /// Danh sách các đơn đã hủy / quá hạn / hết hạn thanh toán
+  List<ReservationEntity> get cancelledTrips =>
+      reservations.where((r) => r.isCancelled || r.isFailed || r.isOverdue).toList();
+
+  /// Các đơn theo bộ lọc trong tab Chuyến đi
+  List<ReservationEntity> get filteredActiveTrips {
+    return switch (selectedFilter) {
+      ReservationTabFilter.all => activeTrips,
+      ReservationTabFilter.pending =>
+        activeTrips.where((r) => r.isPending).toList(),
+      ReservationTabFilter.confirmed =>
+        activeTrips.where((r) => r.isConfirmed).toList(),
+      ReservationTabFilter.active => activeTrips
+          .where((r) => r.isActive)
+          .toList(),
+      ReservationTabFilter.completed =>
+        activeTrips.where((r) => r.isCompleted).toList(),
+      ReservationTabFilter.cancelled => activeTrips,
+    };
+  }
+
   List<ReservationEntity> get filteredReservations {
     return switch (selectedFilter) {
       ReservationTabFilter.all => reservations,
@@ -34,9 +59,7 @@ class MyReservationsState {
       ReservationTabFilter.confirmed =>
         reservations.where((r) => r.isConfirmed).toList(),
       ReservationTabFilter.active => reservations
-          .where((r) =>
-              r.status.toUpperCase() == 'ACTIVE' ||
-              r.status.toUpperCase() == 'IN_PROGRESS')
+          .where((r) => r.isActive)
           .toList(),
       ReservationTabFilter.completed =>
         reservations.where((r) => r.isCompleted).toList(),

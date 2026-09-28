@@ -44,7 +44,7 @@ class BookingFeeModel {
   factory BookingFeeModel.fromList(List<dynamic> list) {
     double booking = 0.0;
     double deposit = 0.0;
-    double holdCar = 500000.0;
+    double holdCar = 0.0;
     double total = 0.0;
     final List<FeeItemModel> parsedItems = [];
 
@@ -58,7 +58,7 @@ class BookingFeeModel {
         } else if (type == 'DEPOSIT') {
           deposit = item.value;
         } else if (type == 'HOLD_CAR') {
-          holdCar = item.value > 0 ? item.value : 500000.0;
+          holdCar = item.value;
         } else if (type == 'TOTAL_AMOUNT') {
           total = item.value;
         }

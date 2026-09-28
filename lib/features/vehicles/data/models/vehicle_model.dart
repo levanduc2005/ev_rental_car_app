@@ -38,6 +38,7 @@ abstract class VehicleModel with _$VehicleModel {
     double? pricePer8Hours,
     double? pricePer12Hours,
     double? pricePerDay,
+    String? stationName,
   }) = _VehicleModel;
 
   factory VehicleModel.fromJson(Map<String, dynamic> json) =>
@@ -69,9 +70,13 @@ abstract class VehicleModel with _$VehicleModel {
 
     // 2. Phân tích địa điểm từ trạm
     String loc = 'Thành Phố Thủ Đức';
+    String? stName;
     if (json['station'] is Map<String, dynamic>) {
       final st = json['station'] as Map<String, dynamic>;
       loc = st['address'] as String? ?? st['name'] as String? ?? loc;
+      stName = st['name'] as String?;
+    } else if (json['stationName'] != null) {
+      stName = json['stationName'] as String?;
     }
 
     // 3. Phân tích giá cả
@@ -115,6 +120,16 @@ abstract class VehicleModel with _$VehicleModel {
       return '$strđ';
     }
 
+    num? holdFeeNum;
+    final rawHold = json['holdFee'] ?? json['holdFeeValue'] ?? json['holdingDeposit'];
+    if (rawHold is num) {
+      holdFeeNum = rawHold;
+    } else if (rawHold is String) {
+      final cleaned = rawHold.replaceAll(RegExp(r'[^0-9.]'), '');
+      holdFeeNum = num.tryParse(cleaned);
+    }
+    final holdFeeVal = holdFeeNum?.toDouble() ?? 5000.0;
+
     return VehicleModel(
       id: (json['id'] ?? '').toString(),
       name: json['name'] as String? ?? 'Xe điện E-Motion',
@@ -144,12 +159,13 @@ abstract class VehicleModel with _$VehicleModel {
       discountAmount: '-287.000đ',
       vatAmount: '257.582đ',
       totalRental: formatVnd(priceDay * 2.18 + 132821 - 287000 + 257582),
-      holdingDeposit: '500.000đ',
+      holdingDeposit: formatVnd(holdFeeVal),
       collateralDeposit: formatVnd(deposit),
       pricePer4Hours: p4h,
       pricePer8Hours: p8h,
       pricePer12Hours: p12h,
       pricePerDay: pDay,
+      stationName: stName,
     );
   }
 }
@@ -187,5 +203,6 @@ extension VehicleModelX on VehicleModel {
         pricePer8Hours: pricePer8Hours,
         pricePer12Hours: pricePer12Hours,
         pricePerDay: pricePerDay,
+        stationName: stationName,
       );
 }

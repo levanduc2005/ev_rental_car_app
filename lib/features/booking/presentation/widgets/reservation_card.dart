@@ -232,7 +232,7 @@ class ReservationCard extends StatelessWidget {
                               ),
                             ),
                           const SizedBox(width: 8),
-                          OutlinedButton(
+                          OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: const Color(0xFF2563EB),
                               side: const BorderSide(color: Color(0xFF2563EB)),
@@ -245,8 +245,30 @@ class ReservationCard extends StatelessWidget {
                                 pathParameters: {'id': reservation.id.toString()},
                               );
                             },
-                            child: const Text('Chi tiết',
-                                style: TextStyle(fontSize: 11)),
+                            icon: const Icon(Icons.qr_code, size: 14),
+                            label: const Text('Mã QR Check-in',
+                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+
+                        // ACTIVE / IN_PROGRESS: Đang thuê, hiển thị QR / Chi tiết
+                        if (reservation.isActive) ...[
+                          OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF2563EB),
+                              side: const BorderSide(color: Color(0xFF2563EB)),
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                            ),
+                            onPressed: () {
+                              context.pushNamed(
+                                AppRoute.reservationDetail.name,
+                                pathParameters: {'id': reservation.id.toString()},
+                              );
+                            },
+                            icon: const Icon(Icons.qr_code, size: 14),
+                            label: const Text('Mã QR Check-in',
+                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                           ),
                         ],
 

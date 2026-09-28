@@ -41,8 +41,8 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
       return const BookingFeeModel(
         bookingFee: 0,
         depositFee: 0,
-        holdCarFee: 500000,
-        totalAmount: 500000,
+        holdCarFee: 0,
+        totalAmount: 0,
       );
     });
   }

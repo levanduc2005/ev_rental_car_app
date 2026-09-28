@@ -220,7 +220,7 @@ class _BookingConfirmationPageState
 
             // --- 4. Cost Breakdown (Reusable BookingPaymentBreakdownCard) ---
             BookingPaymentBreakdownCard(
-              depositFee: fee?.holdDepositFee ?? 500000,
+              depositFee: fee?.holdDepositFee ?? vehicle.holdDepositFee,
               totalRent: totalRent,
               collateralFee: fee?.collateralFee ?? vehicle.depositFee?.toInt() ?? 3000000,
             ),

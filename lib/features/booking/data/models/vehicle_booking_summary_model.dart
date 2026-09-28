@@ -9,6 +9,7 @@ class VehicleBookingSummaryModel {
     this.batteryPercentage,
     this.pricePerHour,
     this.depositFee,
+    this.holdFee,
     this.stationId,
     this.stationName,
     this.stationAddress,
@@ -30,6 +31,7 @@ class VehicleBookingSummaryModel {
   final int? batteryPercentage;
   final double? pricePerHour;
   final double? depositFee;
+  final double? holdFee;
   final int? stationId;
   final String? stationName;
   final String? stationAddress;
@@ -100,6 +102,8 @@ class VehicleBookingSummaryModel {
           100,
       pricePerHour: calculatedHourly,
       depositFee: (json['depositFee'] as num?)?.toDouble(),
+      holdFee: (json['holdFee'] as num?)?.toDouble() ??
+          (json['holdFeeValue'] as num?)?.toDouble(),
       stationId: stationId,
       stationName: stationName,
       stationAddress: stationAddress,
@@ -124,6 +128,7 @@ class VehicleBookingSummaryModel {
       batteryPercentage: batteryPercentage,
       pricePerHour: pricePerHour,
       depositFee: depositFee,
+      holdFee: holdFee,
       stationId: stationId,
       stationName: stationName,
       stationAddress: stationAddress,
