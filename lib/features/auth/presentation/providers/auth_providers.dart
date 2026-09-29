@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/providers/core_providers.dart';
 import 'package:rental_car/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:rental_car/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:rental_car/features/auth/data/datasources/google_auth_service.dart';
 import 'package:rental_car/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:rental_car/features/auth/domain/repositories/auth_repository.dart';
 import 'package:rental_car/features/auth/domain/usecases/check_profile_setup_skipped_usecase.dart';
@@ -10,9 +11,14 @@ import 'package:rental_car/features/auth/domain/usecases/get_current_user_usecas
 import 'package:rental_car/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/set_profile_setup_skipped_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/verify_otp_usecase.dart';
 
 // --- Data Layer Providers ---
+final googleAuthServiceProvider = Provider<GoogleAuthService>((ref) {
+  return GoogleAuthServiceImpl();
+});
+
 final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
   final secureStore = ref.watch(secureStoreProvider);
   final keyValueStore = ref.watch(keyValueStoreProvider);
@@ -31,10 +37,12 @@ final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final remoteDataSource = ref.watch(authRemoteDataSourceProvider);
   final localDataSource = ref.watch(authLocalDataSourceProvider);
+  final googleAuthService = ref.watch(googleAuthServiceProvider);
 
   return AuthRepositoryImpl(
     remoteDataSource: remoteDataSource,
     localDataSource: localDataSource,
+    googleAuthService: googleAuthService,
   );
 });
 
@@ -68,3 +76,9 @@ final setProfileSetupSkippedUseCaseProvider =
     Provider<SetProfileSetupSkippedUseCase>((ref) {
       return SetProfileSetupSkippedUseCase(ref.watch(authRepositoryProvider));
     });
+
+final signInWithGoogleUseCaseProvider = Provider<SignInWithGoogleUseCase>((
+  ref,
+) {
+  return SignInWithGoogleUseCase(ref.watch(authRepositoryProvider));
+});

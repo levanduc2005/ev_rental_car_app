@@ -29,4 +29,7 @@ abstract interface class AuthRepository {
 
   /// Kiểm tra xem đã từng bỏ qua bước hoàn tất hồ sơ chưa
   Future<Result<bool>> isProfileSetupSkipped(String email);
+
+  /// Đăng nhập bằng tài khoản Google (OAuth 2.0)
+  Future<Result<UserEntity>> signInWithGoogle();
 }

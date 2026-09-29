@@ -13,6 +13,7 @@ abstract interface class AuthRemoteDataSource {
   Future<UserModel> getCurrentUser();
   Future<void> logout();
   Future<AuthTokensModel> refreshToken({required String refreshToken});
+  Future<AuthTokensModel> loginWithGoogle({required String idToken});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -84,6 +85,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await _dio.post<Map<String, dynamic>>(
         '/auth/verify-otp',
         data: {'email': email, 'verificationCode': otp},
+        options: Options(extra: {'isPublic': true}),
+      );
+
+      final data = response.data!['data'] as Map<String, dynamic>;
+      return AuthTokensModel.fromJson(data);
+    });
+  }
+
+  @override
+  Future<AuthTokensModel> loginWithGoogle({required String idToken}) {
+    return guardApiCall(() async {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/auth/google',
+        data: {'idToken': idToken},
         options: Options(extra: {'isPublic': true}),
       );
 

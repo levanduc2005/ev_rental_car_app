@@ -5,6 +5,7 @@ import 'package:rental_car/features/auth/domain/usecases/get_current_user_usecas
 import 'package:rental_car/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/set_profile_setup_skipped_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_state.dart';
@@ -17,6 +18,7 @@ class AuthController extends Notifier<AuthState> {
   late final VerifyOtpUseCase _verifyOtpUseCase;
   late final CompleteProfileUseCase _completeProfileUseCase;
   late final LogoutUseCase _logoutUseCase;
+  late final SignInWithGoogleUseCase _signInWithGoogleUseCase;
 
   @override
   AuthState build() {
@@ -31,6 +33,7 @@ class AuthController extends Notifier<AuthState> {
     _verifyOtpUseCase = ref.watch(verifyOtpUseCaseProvider);
     _completeProfileUseCase = ref.watch(completeProfileUseCaseProvider);
     _logoutUseCase = ref.watch(logoutUseCaseProvider);
+    _signInWithGoogleUseCase = ref.watch(signInWithGoogleUseCaseProvider);
 
     // Tự động kiểm tra phiên đăng nhập khi mở app
     Future.microtask(checkAuthStatus);
@@ -150,6 +153,32 @@ class AuthController extends Notifier<AuthState> {
 
   void clearError() {
     state = state.copyWith(clearError: true);
+  }
+
+  Future<bool> signInWithGoogle() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    final result = await _signInWithGoogleUseCase();
+
+    return await result.when(
+      ok: (user) async {
+        final skippedResult = await _checkProfileSetupSkippedUseCase(
+          user.email,
+        );
+        final hasSkipped = skippedResult.when(ok: (v) => v, err: (_) => false);
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: user,
+          hasSkippedProfile: hasSkipped,
+          isLoading: false,
+        );
+        return true;
+      },
+      err: (failure) {
+        state = state.copyWith(errorMessage: failure.message, isLoading: false);
+        return false;
+      },
+    );
   }
 
   Future<void> logout() async {

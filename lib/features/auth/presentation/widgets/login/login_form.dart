@@ -158,9 +158,30 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           const SizedBox(height: 24),
 
           GoogleSignInButton(
-            onPressed: () {
-              // TODO: Tích hợp Google Sign-in sau
-            },
+            onPressed: isLoading
+                ? null
+                : () async {
+                    final success = await ref
+                        .read(authControllerProvider.notifier)
+                        .signInWithGoogle();
+
+                    if (!context.mounted) return;
+
+                    if (!success) {
+                      final error = ref
+                          .read(authControllerProvider)
+                          .errorMessage;
+                      if (error != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(error),
+                            backgroundColor: AppColors.error,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    }
+                  },
           ),
         ],
       ),

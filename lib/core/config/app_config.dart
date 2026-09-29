@@ -1,14 +1,3 @@
-/// Compile-time application configuration.
-///
-/// Values are injected at build time via `--dart-define` (or
-/// `--dart-define-from-file`) so that no secrets are hardcoded in source.
-///
-/// Run with an environment file:
-/// ```sh
-/// flutter run --dart-define-from-file=config/dev.json
-/// ```
-///
-/// See `config/dev.example.json` for the expected keys.
 enum Flavor { dev, staging, prod }
 
 abstract final class AppConfig {
@@ -38,11 +27,18 @@ abstract final class AppConfig {
     defaultValue: true,
   );
 
+  /// Google OAuth Web Client ID (Server Client ID).
+  static const String googleServerClientId = String.fromEnvironment(
+    'GOOGLE_SERVER_CLIENT_ID',
+    defaultValue:
+        '14848507995-qc19oj7m5b55qlbtlklej355rf0fnmpk.apps.googleusercontent.com',
+  );
+
   /// Human-readable app name shown in the UI.
   static String get appName => switch (flavor) {
-    Flavor.prod => 'Flutter Template',
-    Flavor.staging => 'Flutter Template (Staging)',
-    Flavor.dev => 'Flutter Template (Dev)',
+    Flavor.prod => 'E-Motion',
+    Flavor.staging => 'E-Motion (Staging)',
+    Flavor.dev => 'E-Motion (Dev)',
   };
 
   static bool get isProd => flavor == Flavor.prod;

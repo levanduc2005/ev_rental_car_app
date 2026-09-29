@@ -9,6 +9,7 @@ import 'package:rental_car/features/auth/domain/usecases/get_current_user_usecas
 import 'package:rental_car/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/send_otp_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/set_profile_setup_skipped_usecase.dart';
+import 'package:rental_car/features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/verify_otp_usecase.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
@@ -146,5 +147,21 @@ void main() {
         ).called(1);
       },
     );
+  });
+
+  group('SignInWithGoogleUseCase', () {
+    test('delegates sign in to repository and returns user', () async {
+      final useCase = SignInWithGoogleUseCase(mockRepository);
+
+      when(
+        () => mockRepository.signInWithGoogle(),
+      ).thenAnswer((_) async => const Result.ok(testUser));
+
+      final result = await useCase();
+
+      expect(result.isOk, isTrue);
+      expect(result.valueOrNull, equals(testUser));
+      verify(() => mockRepository.signInWithGoogle()).called(1);
+    });
   });
 }
