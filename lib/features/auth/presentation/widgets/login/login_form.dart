@@ -52,6 +52,27 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     }
   }
 
+  Future<void> _handleSignInWithGoogle() async {
+    final success = await ref
+        .read(authControllerProvider.notifier)
+        .signInWithGoogle();
+
+    if (!mounted) return;
+
+    if (!success) {
+      final error = ref.read(authControllerProvider).errorMessage;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(
@@ -158,30 +179,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           const SizedBox(height: 24),
 
           GoogleSignInButton(
-            onPressed: isLoading
-                ? null
-                : () async {
-                    final success = await ref
-                        .read(authControllerProvider.notifier)
-                        .signInWithGoogle();
-
-                    if (!context.mounted) return;
-
-                    if (!success) {
-                      final error = ref
-                          .read(authControllerProvider)
-                          .errorMessage;
-                      if (error != null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(error),
-                            backgroundColor: AppColors.error,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      }
-                    }
-                  },
+            onPressed: isLoading ? null : _handleSignInWithGoogle,
           ),
         ],
       ),
