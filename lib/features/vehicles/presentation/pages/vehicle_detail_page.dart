@@ -86,14 +86,22 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
   }
 
   double _getPackageRentalFee(VehicleEntity detail, String packageId) {
-    final dayPrice = detail.pricePerDay ?? (detail.salePriceK * 1000.0);
+    final dayPrice = detail.pricePerDay > 0
+        ? detail.pricePerDay
+        : (detail.salePriceK * 1000.0);
     switch (packageId) {
       case '4h':
-        return detail.pricePer4Hours ?? (dayPrice * 0.45).roundToDouble();
+        return detail.pricePer4Hours > 0
+            ? detail.pricePer4Hours
+            : (dayPrice * 0.45).roundToDouble();
       case '8h':
-        return detail.pricePer8Hours ?? (dayPrice * 0.70).roundToDouble();
+        return detail.pricePer8Hours > 0
+            ? detail.pricePer8Hours
+            : (dayPrice * 0.70).roundToDouble();
       case '12h':
-        return detail.pricePer12Hours ?? (dayPrice * 0.85).roundToDouble();
+        return detail.pricePer12Hours > 0
+            ? detail.pricePer12Hours
+            : (dayPrice * 0.85).roundToDouble();
       case '24h':
       default:
         return dayPrice;
@@ -167,7 +175,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
           .updateRentalSchedule(_startDateTime, _endDateTime);
     } catch (_) {}
 
-    final extraId = int.tryParse(vehicle.id) ?? 1;
+    final extraId = vehicle.id;
     context.pushNamed(AppRoute.booking.name, extra: extraId);
   }
 
@@ -382,7 +390,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                         seats: '${detail.seats} chỗ',
                         transmission: detail.transmission,
                         fuelType: detail.fuelType,
-                        consumption: detail.consumption ?? '6.3L / 100km',
+                        consumption: detail.consumption,
                         pointPerHour: pointPerHour,
                       ),
                       const SizedBox(height: 20),

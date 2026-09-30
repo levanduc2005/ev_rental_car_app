@@ -44,8 +44,8 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
       _errorMessage = null;
     });
 
-    final repo = ref.read(bookingRepositoryProvider);
-    final result = await repo.getReservationDetail(widget.reservationId);
+    final useCase = ref.read(getReservationDetailUseCaseProvider);
+    final result = await useCase(widget.reservationId);
 
     if (!mounted) return;
 

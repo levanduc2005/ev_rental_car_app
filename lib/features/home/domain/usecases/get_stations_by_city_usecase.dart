@@ -1,6 +1,6 @@
 import 'package:rental_car/core/utils/result.dart';
-import 'package:rental_car/features/home/domain/entities/station_entity.dart';
 import 'package:rental_car/features/home/domain/repositories/home_repository.dart';
+import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
 
 class GetStationsByCityUseCase {
   const GetStationsByCityUseCase({required HomeRepository repository})

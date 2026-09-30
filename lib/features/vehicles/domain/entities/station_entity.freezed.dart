@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StationEntity {
 
- String get id; String get name; String get address; double get latitude; double get longitude; int get availableVehiclesCount; int get totalSlots;
+ int get id; String get name; String get address; String? get city; double? get latitude; double? get longitude; String? get status; int? get availableVehiclesCount; int? get totalSlots;
 /// Create a copy of StationEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $StationEntityCopyWith<StationEntity> get copyWith => _$StationEntityCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StationEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.availableVehiclesCount, availableVehiclesCount) || other.availableVehiclesCount == availableVehiclesCount)&&(identical(other.totalSlots, totalSlots) || other.totalSlots == totalSlots));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StationEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.status, status) || other.status == status)&&(identical(other.availableVehiclesCount, availableVehiclesCount) || other.availableVehiclesCount == availableVehiclesCount)&&(identical(other.totalSlots, totalSlots) || other.totalSlots == totalSlots));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,address,latitude,longitude,availableVehiclesCount,totalSlots);
+int get hashCode => Object.hash(runtimeType,id,name,address,city,latitude,longitude,status,availableVehiclesCount,totalSlots);
 
 @override
 String toString() {
-  return 'StationEntity(id: $id, name: $name, address: $address, latitude: $latitude, longitude: $longitude, availableVehiclesCount: $availableVehiclesCount, totalSlots: $totalSlots)';
+  return 'StationEntity(id: $id, name: $name, address: $address, city: $city, latitude: $latitude, longitude: $longitude, status: $status, availableVehiclesCount: $availableVehiclesCount, totalSlots: $totalSlots)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $StationEntityCopyWith<$Res>  {
   factory $StationEntityCopyWith(StationEntity value, $Res Function(StationEntity) _then) = _$StationEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String address, double latitude, double longitude, int availableVehiclesCount, int totalSlots
+ int id, String name, String address, String? city, double? latitude, double? longitude, String? status, int? availableVehiclesCount, int? totalSlots
 });
 
 
@@ -62,16 +62,18 @@ class _$StationEntityCopyWithImpl<$Res>
 
 /// Create a copy of StationEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? address = null,Object? latitude = null,Object? longitude = null,Object? availableVehiclesCount = null,Object? totalSlots = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? address = null,Object? city = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? status = freezed,Object? availableVehiclesCount = freezed,Object? totalSlots = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,availableVehiclesCount: null == availableVehiclesCount ? _self.availableVehiclesCount : availableVehiclesCount // ignore: cast_nullable_to_non_nullable
-as int,totalSlots: null == totalSlots ? _self.totalSlots : totalSlots // ignore: cast_nullable_to_non_nullable
-as int,
+as String,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,availableVehiclesCount: freezed == availableVehiclesCount ? _self.availableVehiclesCount : availableVehiclesCount // ignore: cast_nullable_to_non_nullable
+as int?,totalSlots: freezed == totalSlots ? _self.totalSlots : totalSlots // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -156,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String address,  double latitude,  double longitude,  int availableVehiclesCount,  int totalSlots)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status,  int? availableVehiclesCount,  int? totalSlots)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StationEntity() when $default != null:
-return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude,_that.availableVehiclesCount,_that.totalSlots);case _:
+return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status,_that.availableVehiclesCount,_that.totalSlots);case _:
   return orElse();
 
 }
@@ -177,10 +179,10 @@ return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String address,  double latitude,  double longitude,  int availableVehiclesCount,  int totalSlots)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status,  int? availableVehiclesCount,  int? totalSlots)  $default,) {final _that = this;
 switch (_that) {
 case _StationEntity():
-return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude,_that.availableVehiclesCount,_that.totalSlots);case _:
+return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status,_that.availableVehiclesCount,_that.totalSlots);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +199,10 @@ return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String address,  double latitude,  double longitude,  int availableVehiclesCount,  int totalSlots)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status,  int? availableVehiclesCount,  int? totalSlots)?  $default,) {final _that = this;
 switch (_that) {
 case _StationEntity() when $default != null:
-return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude,_that.availableVehiclesCount,_that.totalSlots);case _:
+return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status,_that.availableVehiclesCount,_that.totalSlots);case _:
   return null;
 
 }
@@ -212,16 +214,18 @@ return $default(_that.id,_that.name,_that.address,_that.latitude,_that.longitude
 
 
 class _StationEntity implements StationEntity {
-  const _StationEntity({required this.id, required this.name, required this.address, required this.latitude, required this.longitude, required this.availableVehiclesCount, required this.totalSlots});
+  const _StationEntity({required this.id, required this.name, this.address = '', this.city, this.latitude, this.longitude, this.status, this.availableVehiclesCount, this.totalSlots});
   
 
-@override final  String id;
+@override final  int id;
 @override final  String name;
-@override final  String address;
-@override final  double latitude;
-@override final  double longitude;
-@override final  int availableVehiclesCount;
-@override final  int totalSlots;
+@override@JsonKey() final  String address;
+@override final  String? city;
+@override final  double? latitude;
+@override final  double? longitude;
+@override final  String? status;
+@override final  int? availableVehiclesCount;
+@override final  int? totalSlots;
 
 /// Create a copy of StationEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +237,16 @@ _$StationEntityCopyWith<_StationEntity> get copyWith => __$StationEntityCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StationEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.availableVehiclesCount, availableVehiclesCount) || other.availableVehiclesCount == availableVehiclesCount)&&(identical(other.totalSlots, totalSlots) || other.totalSlots == totalSlots));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StationEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.status, status) || other.status == status)&&(identical(other.availableVehiclesCount, availableVehiclesCount) || other.availableVehiclesCount == availableVehiclesCount)&&(identical(other.totalSlots, totalSlots) || other.totalSlots == totalSlots));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,address,latitude,longitude,availableVehiclesCount,totalSlots);
+int get hashCode => Object.hash(runtimeType,id,name,address,city,latitude,longitude,status,availableVehiclesCount,totalSlots);
 
 @override
 String toString() {
-  return 'StationEntity(id: $id, name: $name, address: $address, latitude: $latitude, longitude: $longitude, availableVehiclesCount: $availableVehiclesCount, totalSlots: $totalSlots)';
+  return 'StationEntity(id: $id, name: $name, address: $address, city: $city, latitude: $latitude, longitude: $longitude, status: $status, availableVehiclesCount: $availableVehiclesCount, totalSlots: $totalSlots)';
 }
 
 
@@ -253,7 +257,7 @@ abstract mixin class _$StationEntityCopyWith<$Res> implements $StationEntityCopy
   factory _$StationEntityCopyWith(_StationEntity value, $Res Function(_StationEntity) _then) = __$StationEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String address, double latitude, double longitude, int availableVehiclesCount, int totalSlots
+ int id, String name, String address, String? city, double? latitude, double? longitude, String? status, int? availableVehiclesCount, int? totalSlots
 });
 
 
@@ -270,16 +274,18 @@ class __$StationEntityCopyWithImpl<$Res>
 
 /// Create a copy of StationEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? address = null,Object? latitude = null,Object? longitude = null,Object? availableVehiclesCount = null,Object? totalSlots = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? address = null,Object? city = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? status = freezed,Object? availableVehiclesCount = freezed,Object? totalSlots = freezed,}) {
   return _then(_StationEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,latitude: null == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
-as double,longitude: null == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
-as double,availableVehiclesCount: null == availableVehiclesCount ? _self.availableVehiclesCount : availableVehiclesCount // ignore: cast_nullable_to_non_nullable
-as int,totalSlots: null == totalSlots ? _self.totalSlots : totalSlots // ignore: cast_nullable_to_non_nullable
-as int,
+as String,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,availableVehiclesCount: freezed == availableVehiclesCount ? _self.availableVehiclesCount : availableVehiclesCount // ignore: cast_nullable_to_non_nullable
+as int?,totalSlots: freezed == totalSlots ? _self.totalSlots : totalSlots // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

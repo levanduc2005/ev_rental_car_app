@@ -5,12 +5,14 @@ part 'station_entity.freezed.dart';
 @freezed
 abstract class StationEntity with _$StationEntity {
   const factory StationEntity({
-    required String id,
+    required int id,
     required String name,
-    required String address,
-    required double latitude,
-    required double longitude,
-    required int availableVehiclesCount,
-    required int totalSlots,
+    @Default('') String address,
+    String? city,
+    double? latitude,
+    double? longitude,
+    String? status,
+    int? availableVehiclesCount,
+    int? totalSlots,
   }) = _StationEntity;
 }

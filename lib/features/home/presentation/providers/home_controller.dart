@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rental_car/features/home/domain/usecases/get_home_vehicles_usecase.dart';
-import 'package:rental_car/features/home/domain/usecases/get_vehicle_brands_usecase.dart';
-import 'package:rental_car/features/home/presentation/providers/home_providers.dart';
 import 'package:rental_car/features/home/presentation/providers/home_state.dart';
+import 'package:rental_car/features/vehicles/domain/usecases/get_home_vehicles_usecase.dart';
+import 'package:rental_car/features/vehicles/domain/usecases/get_vehicle_brands_usecase.dart';
+import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
 
 class HomeController extends Notifier<HomeState> {
   late final GetHomeVehiclesUseCase _getHomeVehiclesUseCase;

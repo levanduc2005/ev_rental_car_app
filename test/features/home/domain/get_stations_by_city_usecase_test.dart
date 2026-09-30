@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rental_car/core/utils/result.dart';
-import 'package:rental_car/features/home/domain/entities/station_entity.dart';
 import 'package:rental_car/features/home/domain/repositories/home_repository.dart';
 import 'package:rental_car/features/home/domain/usecases/get_stations_by_city_usecase.dart';
+import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
 
 class MockHomeRepository extends Mock implements HomeRepository {}
 

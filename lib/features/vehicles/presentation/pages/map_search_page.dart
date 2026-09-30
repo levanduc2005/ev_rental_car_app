@@ -87,7 +87,7 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
   void _onVehicleSelected(VehicleEntity vehicle) {
     context.pushNamed(
       AppRoute.vehicleDetail.name,
-      pathParameters: {'id': vehicle.id},
+      pathParameters: {'id': vehicle.stringId},
     );
   }
 

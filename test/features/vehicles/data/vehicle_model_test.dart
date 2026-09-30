@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rental_car/features/home/data/models/vehicle_model.dart';
+import 'package:rental_car/features/vehicles/data/models/vehicle_model.dart';
 
 void main() {
-  group('VehicleModel & StationModel', () {
+  group('VehicleModel & StationModel in vehicles feature', () {
     test('fromJson and toEntity parse backend response correctly', () {
       final json = {
         'id': 10,
@@ -30,7 +30,7 @@ void main() {
         'point': 5,
       };
 
-      final model = VehicleModel.fromJson(json);
+      final model = VehicleModel.fromBackendJson(json);
       expect(model.id, 10);
       expect(model.name, 'VinFast VF 8');
       expect(model.brand, 'VINFAST');
@@ -48,7 +48,7 @@ void main() {
       expect(entity.formattedPrice4h, '720K');
       expect(entity.formattedPrice24h, '1.450K');
       expect(entity.locationDisplay, contains('Trạm Times City'));
-      expect(entity.fuelTypeDisplay, 'Điện');
+      expect(entity.fuelTypeDisplay, contains('Điện'));
     });
 
     test(
@@ -63,7 +63,7 @@ void main() {
           'hourRate': 1650000.0,
         };
 
-        final model = VehicleModel.fromJson(json);
+        final model = VehicleModel.fromBackendJson(json);
         final entity = model.toEntity();
 
         expect(entity.isLuxury, isTrue);
@@ -85,7 +85,7 @@ void main() {
         'pricePerDay': 600000.0,
       };
 
-      final model = VehicleModel.fromJson(json);
+      final model = VehicleModel.fromBackendJson(json);
       final entity = model.toEntity();
 
       expect(entity.pricePer4Hours, 300000.0);

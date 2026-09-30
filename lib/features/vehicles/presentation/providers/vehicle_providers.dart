@@ -5,6 +5,8 @@ import 'package:rental_car/features/vehicles/data/repositories/vehicle_repositor
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart';
 import 'package:rental_car/features/vehicles/domain/repositories/vehicle_repository.dart';
+import 'package:rental_car/features/vehicles/domain/usecases/get_home_vehicles_usecase.dart';
+import 'package:rental_car/features/vehicles/domain/usecases/get_vehicle_brands_usecase.dart';
 import 'package:rental_car/features/vehicles/domain/usecases/get_vehicle_detail_usecase.dart';
 import 'package:rental_car/features/vehicles/domain/usecases/get_vehicles_usecase.dart';
 import 'package:rental_car/features/vehicles/domain/usecases/search_vehicles_filter_usecase.dart';
@@ -24,6 +26,18 @@ final vehicleRepositoryProvider = Provider<VehicleRepository>((ref) {
 final getVehiclesUseCaseProvider = Provider<GetVehiclesUseCase>((ref) {
   final repository = ref.watch(vehicleRepositoryProvider);
   return GetVehiclesUseCase(repository);
+});
+
+final getHomeVehiclesUseCaseProvider = Provider<GetHomeVehiclesUseCase>((ref) {
+  final repository = ref.watch(vehicleRepositoryProvider);
+  return GetHomeVehiclesUseCase(repository);
+});
+
+final getVehicleBrandsUseCaseProvider = Provider<GetVehicleBrandsUseCase>((
+  ref,
+) {
+  final repository = ref.watch(vehicleRepositoryProvider);
+  return GetVehicleBrandsUseCase(repository);
 });
 
 final searchVehiclesFilterUseCaseProvider =

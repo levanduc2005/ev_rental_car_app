@@ -2,13 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/providers/core_providers.dart';
 import 'package:rental_car/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:rental_car/features/home/data/repositories/home_repository_impl.dart';
-import 'package:rental_car/features/home/domain/entities/station_entity.dart';
 import 'package:rental_car/features/home/domain/repositories/home_repository.dart';
-import 'package:rental_car/features/home/domain/usecases/get_home_vehicles_usecase.dart';
 import 'package:rental_car/features/home/domain/usecases/get_stations_by_city_usecase.dart';
-import 'package:rental_car/features/home/domain/usecases/get_vehicle_brands_usecase.dart';
 import 'package:rental_car/features/home/presentation/providers/home_controller.dart';
 import 'package:rental_car/features/home/presentation/providers/home_state.dart';
+import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
 
 // --- Data Layer Providers ---
 final homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>((ref) {
@@ -22,16 +20,6 @@ final homeRepositoryProvider = Provider<HomeRepository>((ref) {
 });
 
 // --- Domain Layer UseCase Providers ---
-final getHomeVehiclesUseCaseProvider = Provider<GetHomeVehiclesUseCase>((ref) {
-  return GetHomeVehiclesUseCase(ref.watch(homeRepositoryProvider));
-});
-
-final getVehicleBrandsUseCaseProvider = Provider<GetVehicleBrandsUseCase>((
-  ref,
-) {
-  return GetVehicleBrandsUseCase(ref.watch(homeRepositoryProvider));
-});
-
 final getStationsByCityUseCaseProvider = Provider<GetStationsByCityUseCase>((
   ref,
 ) {

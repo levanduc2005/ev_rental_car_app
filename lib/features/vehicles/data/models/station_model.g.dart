@@ -15,6 +15,8 @@ _StationModel _$StationModelFromJson(Map<String, dynamic> json) =>
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       status: json['status'] as String?,
+      availableVehiclesCount: (json['availableVehiclesCount'] as num?)?.toInt(),
+      totalSlots: (json['totalSlots'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$StationModelToJson(_StationModel instance) =>
@@ -26,4 +28,6 @@ Map<String, dynamic> _$StationModelToJson(_StationModel instance) =>
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'status': instance.status,
+      'availableVehiclesCount': instance.availableVehiclesCount,
+      'totalSlots': instance.totalSlots,
     };

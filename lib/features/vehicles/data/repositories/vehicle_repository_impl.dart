@@ -22,10 +22,28 @@ class VehicleRepositoryImpl implements VehicleRepository {
   }
 
   @override
+  Future<Result<List<VehicleEntity>>> getHomeVehicles() {
+    return safeCall(() async {
+      final models = await _remoteDataSource.getVehicles();
+      return models.map((m) => m.toEntity()).toList();
+    });
+  }
+
+  @override
   Future<Result<VehicleEntity>> getVehicleDetail(String id) {
     return safeCall(() async {
       final model = await _remoteDataSource.getVehicleDetail(id);
       return model.toEntity();
     });
+  }
+
+  @override
+  Future<Result<List<String>>> getVehicleBrands() {
+    return safeCall(() => _remoteDataSource.getVehicleBrands());
+  }
+
+  @override
+  Future<Result<List<String>>> getVehicleCategories() {
+    return safeCall(() => _remoteDataSource.getVehicleCategories());
   }
 }

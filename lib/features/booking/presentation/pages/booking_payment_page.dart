@@ -92,8 +92,8 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
     }
 
     // Gọi API thật tới Spring Boot Backend để xác nhận giao dịch cọc PayOS
-    final repo = ref.read(bookingRepositoryProvider);
-    final result = await repo.confirmPayOSPayment(reservationCode);
+    final useCase = ref.read(confirmPayOSPaymentUseCaseProvider);
+    final result = await useCase(reservationCode);
 
     if (!mounted) return;
     setState(() => _isCheckingStatus = false);

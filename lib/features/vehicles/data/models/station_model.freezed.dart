@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StationModel {
 
- int get id; String get name; String get address; String? get city; double? get latitude; double? get longitude; String? get status;
+ int get id; String get name; String get address; String? get city; double? get latitude; double? get longitude; String? get status; int? get availableVehiclesCount; int? get totalSlots;
 /// Create a copy of StationModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $StationModelCopyWith<StationModel> get copyWith => _$StationModelCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is StationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is StationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.status, status) || other.status == status)&&(identical(other.availableVehiclesCount, availableVehiclesCount) || other.availableVehiclesCount == availableVehiclesCount)&&(identical(other.totalSlots, totalSlots) || other.totalSlots == totalSlots));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,address,city,latitude,longitude,status);
+int get hashCode => Object.hash(runtimeType,id,name,address,city,latitude,longitude,status,availableVehiclesCount,totalSlots);
 
 @override
 String toString() {
-  return 'StationModel(id: $id, name: $name, address: $address, city: $city, latitude: $latitude, longitude: $longitude, status: $status)';
+  return 'StationModel(id: $id, name: $name, address: $address, city: $city, latitude: $latitude, longitude: $longitude, status: $status, availableVehiclesCount: $availableVehiclesCount, totalSlots: $totalSlots)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $StationModelCopyWith<$Res>  {
   factory $StationModelCopyWith(StationModel value, $Res Function(StationModel) _then) = _$StationModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, String address, String? city, double? latitude, double? longitude, String? status
+ int id, String name, String address, String? city, double? latitude, double? longitude, String? status, int? availableVehiclesCount, int? totalSlots
 });
 
 
@@ -65,7 +65,7 @@ class _$StationModelCopyWithImpl<$Res>
 
 /// Create a copy of StationModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? address = null,Object? city = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? status = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? address = null,Object? city = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? status = freezed,Object? availableVehiclesCount = freezed,Object? totalSlots = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -74,7 +74,9 @@ as String,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_
 as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,availableVehiclesCount: freezed == availableVehiclesCount ? _self.availableVehiclesCount : availableVehiclesCount // ignore: cast_nullable_to_non_nullable
+as int?,totalSlots: freezed == totalSlots ? _self.totalSlots : totalSlots // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -159,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status,  int? availableVehiclesCount,  int? totalSlots)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StationModel() when $default != null:
-return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status);case _:
+return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status,_that.availableVehiclesCount,_that.totalSlots);case _:
   return orElse();
 
 }
@@ -180,10 +182,10 @@ return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status,  int? availableVehiclesCount,  int? totalSlots)  $default,) {final _that = this;
 switch (_that) {
 case _StationModel():
-return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status);case _:
+return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status,_that.availableVehiclesCount,_that.totalSlots);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +202,10 @@ return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String address,  String? city,  double? latitude,  double? longitude,  String? status,  int? availableVehiclesCount,  int? totalSlots)?  $default,) {final _that = this;
 switch (_that) {
 case _StationModel() when $default != null:
-return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status);case _:
+return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_that.longitude,_that.status,_that.availableVehiclesCount,_that.totalSlots);case _:
   return null;
 
 }
@@ -215,7 +217,7 @@ return $default(_that.id,_that.name,_that.address,_that.city,_that.latitude,_tha
 @JsonSerializable()
 
 class _StationModel implements StationModel {
-  const _StationModel({required this.id, required this.name, this.address = '', this.city, this.latitude, this.longitude, this.status});
+  const _StationModel({required this.id, required this.name, this.address = '', this.city, this.latitude, this.longitude, this.status, this.availableVehiclesCount, this.totalSlots});
   factory _StationModel.fromJson(Map<String, dynamic> json) => _$StationModelFromJson(json);
 
 @override final  int id;
@@ -225,6 +227,8 @@ class _StationModel implements StationModel {
 @override final  double? latitude;
 @override final  double? longitude;
 @override final  String? status;
+@override final  int? availableVehiclesCount;
+@override final  int? totalSlots;
 
 /// Create a copy of StationModel
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StationModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.status, status) || other.status == status)&&(identical(other.availableVehiclesCount, availableVehiclesCount) || other.availableVehiclesCount == availableVehiclesCount)&&(identical(other.totalSlots, totalSlots) || other.totalSlots == totalSlots));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,address,city,latitude,longitude,status);
+int get hashCode => Object.hash(runtimeType,id,name,address,city,latitude,longitude,status,availableVehiclesCount,totalSlots);
 
 @override
 String toString() {
-  return 'StationModel(id: $id, name: $name, address: $address, city: $city, latitude: $latitude, longitude: $longitude, status: $status)';
+  return 'StationModel(id: $id, name: $name, address: $address, city: $city, latitude: $latitude, longitude: $longitude, status: $status, availableVehiclesCount: $availableVehiclesCount, totalSlots: $totalSlots)';
 }
 
 
@@ -259,7 +263,7 @@ abstract mixin class _$StationModelCopyWith<$Res> implements $StationModelCopyWi
   factory _$StationModelCopyWith(_StationModel value, $Res Function(_StationModel) _then) = __$StationModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, String address, String? city, double? latitude, double? longitude, String? status
+ int id, String name, String address, String? city, double? latitude, double? longitude, String? status, int? availableVehiclesCount, int? totalSlots
 });
 
 
@@ -276,7 +280,7 @@ class __$StationModelCopyWithImpl<$Res>
 
 /// Create a copy of StationModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? address = null,Object? city = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? status = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? address = null,Object? city = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? status = freezed,Object? availableVehiclesCount = freezed,Object? totalSlots = freezed,}) {
   return _then(_StationModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -285,7 +289,9 @@ as String,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_
 as String?,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,availableVehiclesCount: freezed == availableVehiclesCount ? _self.availableVehiclesCount : availableVehiclesCount // ignore: cast_nullable_to_non_nullable
+as int?,totalSlots: freezed == totalSlots ? _self.totalSlots : totalSlots // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

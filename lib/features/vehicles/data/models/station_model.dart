@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rental_car/features/home/domain/entities/station_entity.dart';
+import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
 
 part 'station_model.freezed.dart';
 part 'station_model.g.dart';
@@ -14,6 +14,8 @@ abstract class StationModel with _$StationModel {
     double? latitude,
     double? longitude,
     String? status,
+    int? availableVehiclesCount,
+    int? totalSlots,
   }) = _StationModel;
 
   factory StationModel.fromJson(Map<String, dynamic> json) =>
@@ -30,6 +32,8 @@ extension StationModelX on StationModel {
       latitude: latitude,
       longitude: longitude,
       status: status,
+      availableVehiclesCount: availableVehiclesCount,
+      totalSlots: totalSlots,
     );
   }
 }

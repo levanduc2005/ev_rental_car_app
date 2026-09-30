@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
-import 'package:rental_car/features/home/domain/entities/station_entity.dart';
 import 'package:rental_car/features/home/presentation/providers/home_providers.dart';
+import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
 
 class RentalHeroSearchCard extends ConsumerStatefulWidget {
   const RentalHeroSearchCard({super.key});

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
-import 'package:rental_car/features/home/domain/entities/vehicle_entity.dart';
+import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 
 class VehicleCardData {
   const VehicleCardData({
