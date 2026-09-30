@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -45,5 +47,10 @@ jobs:
       - name: Run Static Analysis
         run: flutter analyze --fatal-infos --fatal-warnings
 
-      - name: Run 50+ Unit & Widget Tests
-        run: flutter test
+      - name: Run 50+ Unit & Widget Tests with Coverage
+        run: flutter test --coverage
+        
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
