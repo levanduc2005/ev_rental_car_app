@@ -43,7 +43,7 @@ run: ## Run the app with the dev flavor config
 	flutter run --dart-define-from-file=config/dev.json
 
 reverse: ## Forward phone port 8080 to computer port 8080 via adb
-	D:\Android\Sdk\platform-tools\adb.exe reverse tcp:8080 tcp:8080
+	cmd /c reverse-port.bat
 
 run-staging: ## Run the app with the staging flavor config
 	flutter run --dart-define-from-file=config/staging.json

@@ -42,5 +42,10 @@ class GoogleAuthServiceImpl implements GoogleAuthService {
     } catch (_) {
       // Bỏ qua lỗi nếu Google Sign In chưa được khởi tạo
     }
+    try {
+      await _googleSignIn.disconnect();
+    } catch (_) {
+      // Bỏ qua lỗi nếu disconnect thất bại khi chưa liên kết
+    }
   }
 }

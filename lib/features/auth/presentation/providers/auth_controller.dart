@@ -10,31 +10,25 @@ import 'package:rental_car/features/auth/domain/usecases/verify_otp_usecase.dart
 import 'package:rental_car/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_state.dart';
 
+export 'package:rental_car/features/auth/presentation/providers/auth_state.dart';
+
 class AuthController extends Notifier<AuthState> {
-  late final GetCurrentUserUseCase _getCurrentUserUseCase;
-  late final CheckProfileSetupSkippedUseCase _checkProfileSetupSkippedUseCase;
-  late final SetProfileSetupSkippedUseCase _setProfileSetupSkippedUseCase;
-  late final SendOtpUseCase _sendOtpUseCase;
-  late final VerifyOtpUseCase _verifyOtpUseCase;
-  late final CompleteProfileUseCase _completeProfileUseCase;
-  late final LogoutUseCase _logoutUseCase;
-  late final SignInWithGoogleUseCase _signInWithGoogleUseCase;
+  GetCurrentUserUseCase get _getCurrentUserUseCase =>
+      ref.read(getCurrentUserUseCaseProvider);
+  CheckProfileSetupSkippedUseCase get _checkProfileSetupSkippedUseCase =>
+      ref.read(checkProfileSetupSkippedUseCaseProvider);
+  SetProfileSetupSkippedUseCase get _setProfileSetupSkippedUseCase =>
+      ref.read(setProfileSetupSkippedUseCaseProvider);
+  SendOtpUseCase get _sendOtpUseCase => ref.read(sendOtpUseCaseProvider);
+  VerifyOtpUseCase get _verifyOtpUseCase => ref.read(verifyOtpUseCaseProvider);
+  CompleteProfileUseCase get _completeProfileUseCase =>
+      ref.read(completeProfileUseCaseProvider);
+  LogoutUseCase get _logoutUseCase => ref.read(logoutUseCaseProvider);
+  SignInWithGoogleUseCase get _signInWithGoogleUseCase =>
+      ref.read(signInWithGoogleUseCaseProvider);
 
   @override
   AuthState build() {
-    _getCurrentUserUseCase = ref.watch(getCurrentUserUseCaseProvider);
-    _checkProfileSetupSkippedUseCase = ref.watch(
-      checkProfileSetupSkippedUseCaseProvider,
-    );
-    _setProfileSetupSkippedUseCase = ref.watch(
-      setProfileSetupSkippedUseCaseProvider,
-    );
-    _sendOtpUseCase = ref.watch(sendOtpUseCaseProvider);
-    _verifyOtpUseCase = ref.watch(verifyOtpUseCaseProvider);
-    _completeProfileUseCase = ref.watch(completeProfileUseCaseProvider);
-    _logoutUseCase = ref.watch(logoutUseCaseProvider);
-    _signInWithGoogleUseCase = ref.watch(signInWithGoogleUseCaseProvider);
-
     // Tự động kiểm tra phiên đăng nhập khi mở app
     Future.microtask(checkAuthStatus);
 

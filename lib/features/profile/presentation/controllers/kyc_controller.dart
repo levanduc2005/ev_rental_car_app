@@ -1,15 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
 import 'package:rental_car/features/profile/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:rental_car/features/profile/presentation/controllers/kyc_state.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 
 class KycController extends Notifier<KycState> {
-  late final UploadKycDocumentUseCase _uploadKycDocumentUseCase;
+  UploadKycDocumentUseCase get _uploadKycDocumentUseCase =>
+      ref.read(uploadKycDocumentUseCaseProvider);
 
   @override
   KycState build() {
-    _uploadKycDocumentUseCase = ref.watch(uploadKycDocumentUseCaseProvider);
+    // Tự động reset form KYC khi đăng xuất hoặc đổi tài khoản
+    ref.watch(authControllerProvider);
     return const KycState();
   }
 

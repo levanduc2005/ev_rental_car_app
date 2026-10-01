@@ -5,12 +5,16 @@ import 'package:rental_car/features/profile/presentation/controllers/rental_hist
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 
 class RentalHistoryController extends Notifier<RentalHistoryState> {
-  late final GetRentalHistoryUseCase _getRentalHistoryUseCase;
+  GetRentalHistoryUseCase get _getRentalHistoryUseCase =>
+      ref.read(getRentalHistoryUseCaseProvider);
 
   @override
   RentalHistoryState build() {
-    _getRentalHistoryUseCase = ref.watch(getRentalHistoryUseCaseProvider);
-    Future.microtask(() => loadHistory());
+    final authState = ref.watch(authControllerProvider);
+    if (authState.status == AuthStatus.authenticated &&
+        authState.user != null) {
+      Future.microtask(() => loadHistory());
+    }
     return const RentalHistoryState();
   }
 

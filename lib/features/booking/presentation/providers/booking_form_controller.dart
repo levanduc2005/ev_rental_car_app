@@ -8,11 +8,12 @@ import 'package:rental_car/features/booking/presentation/providers/booking_provi
 
 /// Controller quản lý luồng chọn thời gian, tính giá và đặt xe.
 class BookingFormController extends Notifier<BookingFormState> {
-  late final BookingRepository _repository;
+  BookingRepository get _repository => ref.read(bookingRepositoryProvider);
 
   @override
   BookingFormState build() {
-    _repository = ref.watch(bookingRepositoryProvider);
+    // Tự động reset form đặt xe khi đăng xuất hoặc đổi tài khoản
+    ref.watch(authControllerProvider);
 
     // Tính thời gian mặc định tuân theo luật của Spring Boot Backend:
     // 1. Phút bắt buộc là :00
