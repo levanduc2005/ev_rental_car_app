@@ -30,14 +30,9 @@ abstract interface class ProfileRemoteDataSource {
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
-  const ProfileRemoteDataSourceImpl({required Dio dio, Dio? cloudinaryDio})
-    : _dio = dio,
-      _cloudinaryDio = cloudinaryDio;
+  const ProfileRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   final Dio _dio;
-  final Dio? _cloudinaryDio;
-
-  static const String _cloudinaryCloudName = 'dy45rrkhf';
 
   @override
   Future<UserProfileModel> getProfile() {
@@ -71,71 +66,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
   @override
   Future<String> uploadImage(String filePath) async {
-    // Phương án 1: Thử gọi backend /media/upload
-    try {
-      final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath),
-      });
-
-      final response = await _dio.post<Map<String, dynamic>>(
-        '/media/upload',
-        data: formData,
-      );
-
-      final data = response.data?['data'];
-      if (data is Map<String, dynamic> && data['url'] is String) {
-        return data['url'] as String;
-      }
-      if (data is String && data.isNotEmpty) {
-        return data;
-      }
-    } catch (_) {
-      // Nếu backend chưa có /media/upload, chuyển sang upload trực tiếp Cloudinary
-    }
-
-    // Phương án 2: Tải trực tiếp lên Cloudinary dy45rrkhf
-    try {
-      final cDio = _cloudinaryDio ?? Dio();
-      final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath),
-        'upload_preset': 'ev_rental',
-      });
-
-      final response = await cDio.post<Map<String, dynamic>>(
-        'https://api.cloudinary.com/v1_1/$_cloudinaryCloudName/image/upload',
-        data: formData,
-      );
-
-      final secureUrl = response.data?['secure_url'] as String?;
-      if (secureUrl != null && secureUrl.isNotEmpty) {
-        return secureUrl;
-      }
-
-      final url = response.data?['url'] as String?;
-      if (url != null && url.isNotEmpty) {
-        return url;
-      }
-
-      throw const ServerException(
-        message: 'Không nhận được đường dẫn ảnh từ Cloudinary.',
-      );
-    } on DioException catch (e) {
-      String? resMsg;
-      final responseData = e.response?.data;
-      if (responseData is Map<String, dynamic>) {
-        final err = responseData['error'];
-        if (err is Map<String, dynamic>) {
-          resMsg = err['message'] as String?;
-        } else if (err is String) {
-          resMsg = err;
-        }
-      }
-      throw ServerException(
-        statusCode: e.response?.statusCode,
-        message: resMsg ?? 'Lỗi tải ảnh lên máy chủ.',
-        cause: e,
-      );
-    }
+    // Không gọi /media/upload vì backend nhận imgUrl trực tiếp tại POST /api/documents.
+    return filePath;
   }
 
   @override
