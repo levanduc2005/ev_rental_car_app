@@ -2,5 +2,7 @@
   "FLAVOR": "prod",
   "API_BASE_URL": "https://api.example.com",
   "API_TIMEOUT_MS": 20000,
-  "ENABLE_LOGGING": false
+  "ENABLE_LOGGING": false,
+  "CLOUDINARY_CLOUD_NAME": "dxa6upoxl",
+  "CLOUDINARY_UPLOAD_PRESET": "emotion_mobile_preset"
 }

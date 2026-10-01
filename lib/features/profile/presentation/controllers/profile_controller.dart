@@ -1,19 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/profile/domain/usecases/get_profile_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:rental_car/features/profile/presentation/controllers/profile_state.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 
 class ProfileController extends Notifier<ProfileState> {
-  late final GetProfileUseCase _getProfileUseCase;
-  late final UpdateProfileUseCase _updateProfileUseCase;
+  GetProfileUseCase get _getProfileUseCase =>
+      ref.read(getProfileUseCaseProvider);
+  UpdateProfileUseCase get _updateProfileUseCase =>
+      ref.read(updateProfileUseCaseProvider);
 
   @override
   ProfileState build() {
-    _getProfileUseCase = ref.watch(getProfileUseCaseProvider);
-    _updateProfileUseCase = ref.watch(updateProfileUseCaseProvider);
-
-    Future.microtask(loadProfile);
+    // Tự động reset state khi đăng xuất và tải thông tin mới khi đăng nhập
+    final authState = ref.watch(authControllerProvider);
+    if (authState.status == AuthStatus.authenticated &&
+        authState.user != null) {
+      Future.microtask(loadProfile);
+    }
 
     return const ProfileState();
   }

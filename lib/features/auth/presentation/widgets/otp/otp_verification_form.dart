@@ -20,7 +20,22 @@ class OtpVerificationForm extends ConsumerStatefulWidget {
 }
 
 class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
-  int _resetCount = 0;
+  late final TextEditingController _otpController;
+  late final FocusNode _otpFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _otpController = TextEditingController();
+    _otpFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    _otpFocusNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleVerify(String otp) async {
     final success = await ref
@@ -30,9 +45,8 @@ class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
     if (!mounted) return;
 
     if (!success) {
-      setState(() {
-        _resetCount++;
-      });
+      _otpController.clear();
+      _otpFocusNode.requestFocus();
 
       final error = ref.read(authControllerProvider).errorMessage;
       if (error != null) {
@@ -55,9 +69,8 @@ class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
     if (!mounted) return;
 
     if (success) {
-      setState(() {
-        _resetCount++;
-      });
+      _otpController.clear();
+      _otpFocusNode.requestFocus();
     } else {
       final error = ref.read(authControllerProvider).errorMessage;
       if (error != null) {
@@ -91,7 +104,8 @@ class _OtpVerificationFormState extends ConsumerState<OtpVerificationForm> {
 
         const SizedBox(height: 32),
         OtpInputField(
-          key: ValueKey(_resetCount),
+          controller: _otpController,
+          focusNode: _otpFocusNode,
           enabled: !isLoading,
           onCompleted: _handleVerify,
         ),

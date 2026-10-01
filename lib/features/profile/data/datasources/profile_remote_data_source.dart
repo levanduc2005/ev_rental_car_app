@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:rental_car/core/config/app_config.dart';
 import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/core/network/api_handler.dart';
 import 'package:rental_car/features/profile/data/models/kyc_document_model.dart';
@@ -30,14 +32,23 @@ abstract interface class ProfileRemoteDataSource {
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
-  const ProfileRemoteDataSourceImpl({required Dio dio, Dio? cloudinaryDio})
-    : _dio = dio,
-      _cloudinaryDio = cloudinaryDio;
+  ProfileRemoteDataSourceImpl({
+    required Dio dio,
+    Dio? cloudinaryDio,
+  })  : _dio = dio,
+        _cloudinaryDio = cloudinaryDio;
 
   final Dio _dio;
   final Dio? _cloudinaryDio;
 
-  static const String _cloudinaryCloudName = 'dy45rrkhf';
+  Dio get _effectiveCloudinaryDio =>
+      _cloudinaryDio ??
+      Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      );
 
   @override
   Future<UserProfileModel> getProfile() {
@@ -71,68 +82,51 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
   @override
   Future<String> uploadImage(String filePath) async {
-    // Phương án 1: Thử gọi backend /media/upload
     try {
+      final file = File(filePath);
+      if (!file.existsSync()) {
+        throw const ServerException(
+          message: 'File ảnh không tồn tại trên thiết bị.',
+        );
+      }
+
+      final fileName = filePath.split(Platform.pathSeparator).last;
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath),
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+        'upload_preset': AppConfig.cloudinaryUploadPreset,
+        'folder': 'documents',
       });
 
-      final response = await _dio.post<Map<String, dynamic>>(
-        '/media/upload',
-        data: formData,
-      );
-
-      final data = response.data?['data'];
-      if (data is Map<String, dynamic> && data['url'] is String) {
-        return data['url'] as String;
-      }
-      if (data is String && data.isNotEmpty) {
-        return data;
-      }
-    } catch (_) {
-      // Nếu backend chưa có /media/upload, chuyển sang upload trực tiếp Cloudinary
-    }
-
-    // Phương án 2: Tải trực tiếp lên Cloudinary dy45rrkhf
-    try {
-      final cDio = _cloudinaryDio ?? Dio();
-      final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(filePath),
-        'upload_preset': 'ev_rental',
-      });
-
-      final response = await cDio.post<Map<String, dynamic>>(
-        'https://api.cloudinary.com/v1_1/$_cloudinaryCloudName/image/upload',
+      final response = await _effectiveCloudinaryDio.post<Map<String, dynamic>>(
+        'https://api.cloudinary.com/v1_1/${AppConfig.cloudinaryCloudName}/image/upload',
         data: formData,
       );
 
       final secureUrl = response.data?['secure_url'] as String?;
-      if (secureUrl != null && secureUrl.isNotEmpty) {
-        return secureUrl;
+      if (secureUrl == null || secureUrl.isEmpty) {
+        throw const ServerException(
+          message: 'Tải ảnh lên Cloudinary thất bại: Không nhận được URL ảnh.',
+        );
       }
 
-      final url = response.data?['url'] as String?;
-      if (url != null && url.isNotEmpty) {
-        return url;
-      }
-
-      throw const ServerException(
-        message: 'Không nhận được đường dẫn ảnh từ Cloudinary.',
-      );
+      return secureUrl;
     } on DioException catch (e) {
-      String? resMsg;
-      final responseData = e.response?.data;
-      if (responseData is Map<String, dynamic>) {
-        final err = responseData['error'];
-        if (err is Map<String, dynamic>) {
-          resMsg = err['message'] as String?;
-        } else if (err is String) {
-          resMsg = err;
+      String errorMsg = e.message ?? 'Lỗi không xác định.';
+      final respData = e.response?.data;
+      if (respData is Map<String, dynamic>) {
+        final errObj = respData['error'];
+        if (errObj is Map<String, dynamic>) {
+          errorMsg = errObj['message'] as String? ?? errorMsg;
         }
       }
       throw ServerException(
-        statusCode: e.response?.statusCode,
-        message: resMsg ?? 'Lỗi tải ảnh lên máy chủ.',
+        message: 'Tải ảnh lên Cloudinary thất bại: $errorMsg',
+        cause: e,
+      );
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      throw ServerException(
+        message: 'Lỗi tải ảnh lên Cloudinary: $e',
         cause: e,
       );
     }
