@@ -5,16 +5,19 @@ import 'package:rental_car/features/booking/presentation/providers/booking_provi
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_state.dart';
 
 class MyReservationsController extends Notifier<MyReservationsState> {
-  late final BookingRepository _repository;
+  BookingRepository get _repository => ref.read(bookingRepositoryProvider);
 
   @override
   MyReservationsState build() {
-    _repository = ref.watch(bookingRepositoryProvider);
+    final authState = ref.watch(authControllerProvider);
 
-    // Tự động tải danh sách đơn thuê khi vào trang
-    Future.microtask(loadReservations);
-
-    return const MyReservationsState(isLoading: true);
+    if (authState.status == AuthStatus.authenticated &&
+        authState.user != null) {
+      Future.microtask(loadReservations);
+      return const MyReservationsState(isLoading: true);
+    } else {
+      return const MyReservationsState();
+    }
   }
 
   /// Tải danh sách đơn đặt xe thực tế của user từ API GET /api/reservations/email

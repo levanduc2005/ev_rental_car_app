@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rental_car/core/config/app_config.dart';
 import 'package:rental_car/core/providers/core_providers.dart';
 import 'package:rental_car/core/storage/key_value_store.dart';
 import 'package:rental_car/core/utils/app_logger.dart';
@@ -36,6 +37,8 @@ Future<void> bootstrap(Widget Function() builder) async {
         );
         return true;
       };
+
+      AppLogger.instance.i('API Base URL configured: ${AppConfig.apiBaseUrl}');
 
       // Resolve async dependencies before the first frame.
       final keyValueStore = await SharedPreferencesStore.create();
