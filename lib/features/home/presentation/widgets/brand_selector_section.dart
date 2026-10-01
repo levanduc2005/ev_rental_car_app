@@ -12,6 +12,23 @@ class BrandItem {
     required this.color,
   });
 
+  factory BrandItem.create({
+    required String name,
+    required String slug,
+    required IconData icon,
+    required Color color,
+    String? remoteSlug,
+  }) {
+    return BrandItem(
+      name: name,
+      logoAsset: 'public/brands/$slug.png',
+      logoUrl:
+          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/${remoteSlug ?? slug}.png',
+      icon: icon,
+      color: color,
+    );
+  }
+
   final String name;
   final String? logoAsset;
   final String? logoUrl;
@@ -31,229 +48,134 @@ class BrandSelectorSection extends StatelessWidget {
   final String? selectedBrand;
   final ValueChanged<String>? onSelectBrand;
 
-  static const List<BrandItem> _defaultBrands = [
-    BrandItem(
+  static final Map<String, BrandItem> _knownBrands = {
+    'VINFAST': BrandItem.create(
       name: 'VinFast',
-      logoAsset: 'public/brands/vinfast.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/vinfast.png',
+      slug: 'vinfast',
       icon: Icons.bolt_rounded,
-      color: Color(0xFF1976D2),
+      color: const Color(0xFF1976D2),
     ),
-    BrandItem(
+    'TESLA': BrandItem.create(
       name: 'Tesla',
-      logoAsset: 'public/brands/tesla.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/tesla.png',
+      slug: 'tesla',
       icon: Icons.electric_bolt_rounded,
-      color: Color(0xFFD32F2F),
+      color: const Color(0xFFD32F2F),
     ),
-    BrandItem(
+    'HYUNDAI': BrandItem.create(
       name: 'Hyundai',
-      logoAsset: 'public/brands/hyundai.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/hyundai.png',
+      slug: 'hyundai',
       icon: Icons.speed_rounded,
-      color: Color(0xFF0D47A1),
+      color: const Color(0xFF0D47A1),
     ),
-    BrandItem(
+    'BMW': BrandItem.create(
       name: 'BMW',
-      logoAsset: 'public/brands/bmw.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/bmw.png',
+      slug: 'bmw',
       icon: Icons.stars_rounded,
-      color: Color(0xFF0288D1),
+      color: const Color(0xFF0288D1),
     ),
-    BrandItem(
+    'MERCEDES': BrandItem.create(
       name: 'Mercedes',
-      logoAsset: 'public/brands/mercedes.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/mercedes-benz.png',
+      slug: 'mercedes',
+      remoteSlug: 'mercedes-benz',
       icon: Icons.star_border_rounded,
-      color: Color(0xFF37474F),
+      color: const Color(0xFF37474F),
     ),
-    BrandItem(
+    'TOYOTA': BrandItem.create(
       name: 'Toyota',
-      logoAsset: 'public/brands/toyota.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/toyota.png',
+      slug: 'toyota',
       icon: Icons.directions_car_rounded,
-      color: Color(0xFFC62828),
+      color: const Color(0xFFC62828),
     ),
-    BrandItem(
+    'KIA': BrandItem.create(
       name: 'KIA',
-      logoAsset: 'public/brands/kia.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/kia.png',
+      slug: 'kia',
       icon: Icons.auto_awesome_rounded,
-      color: Color(0xFF880E4F),
+      color: const Color(0xFF880E4F),
     ),
-    BrandItem(
+    'AUDI': BrandItem.create(
       name: 'Audi',
-      logoAsset: 'public/brands/audi.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/audi.png',
+      slug: 'audi',
       icon: Icons.all_inclusive_rounded,
-      color: Color(0xFFB71C1C),
+      color: const Color(0xFFB71C1C),
     ),
-    BrandItem(
+    'BYD': BrandItem.create(
       name: 'BYD',
-      logoAsset: 'public/brands/byd.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/byd.png',
+      slug: 'byd',
       icon: Icons.energy_savings_leaf_rounded,
-      color: Color(0xFF00796B),
+      color: const Color(0xFF00796B),
     ),
+    'MAZDA': BrandItem.create(
+      name: 'Mazda',
+      slug: 'mazda',
+      icon: Icons.motion_photos_on_rounded,
+      color: const Color(0xFFC2185B),
+    ),
+    'FORD': BrandItem.create(
+      name: 'Ford',
+      slug: 'ford',
+      icon: Icons.airport_shuttle_rounded,
+      color: const Color(0xFF1565C0),
+    ),
+    'LEXUS': BrandItem.create(
+      name: 'Lexus',
+      slug: 'lexus',
+      icon: Icons.diamond_rounded,
+      color: const Color(0xFF263238),
+    ),
+    'HONDA': BrandItem.create(
+      name: 'Honda',
+      slug: 'honda',
+      icon: Icons.directions_car_rounded,
+      color: const Color(0xFFC62828),
+    ),
+    'PEUGEOT': BrandItem.create(
+      name: 'Peugeot',
+      slug: 'peugeot',
+      icon: Icons.directions_car_rounded,
+      color: const Color(0xFF1565C0),
+    ),
+    'NISSAN': BrandItem.create(
+      name: 'Nissan',
+      slug: 'nissan',
+      icon: Icons.directions_car_rounded,
+      color: const Color(0xFFC2185B),
+    ),
+    'MITSUBISHI': BrandItem.create(
+      name: 'Mitsubishi',
+      slug: 'mitsubishi',
+      icon: Icons.directions_car_rounded,
+      color: const Color(0xFFD32F2F),
+    ),
+  };
+
+  static const List<String> _defaultBrandKeys = [
+    'VINFAST',
+    'TESLA',
+    'HYUNDAI',
+    'BMW',
+    'MERCEDES',
+    'TOYOTA',
+    'KIA',
+    'AUDI',
+    'BYD',
   ];
 
+  static List<BrandItem> get _defaultBrands =>
+      _defaultBrandKeys.map((k) => _knownBrands[k]!).toList();
+
+  static String _normalizeKey(String brandName) {
+    final upper = brandName.trim().toUpperCase().replaceAll('-', '_');
+    if (upper == 'MERCEDES_BENZ' || upper == 'MERCEDES') {
+      return 'MERCEDES';
+    }
+    return upper;
+  }
+
   static BrandItem _mapBrand(String brandName) {
-    final upper = brandName.trim().toUpperCase();
-    if (upper == 'VINFAST') {
-      return const BrandItem(
-        name: 'VinFast',
-        logoAsset: 'public/brands/vinfast.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/vinfast.png',
-        icon: Icons.bolt_rounded,
-        color: Color(0xFF1976D2),
-      );
-    } else if (upper == 'TESLA') {
-      return const BrandItem(
-        name: 'Tesla',
-        logoAsset: 'public/brands/tesla.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/tesla.png',
-        icon: Icons.electric_bolt_rounded,
-        color: Color(0xFFD32F2F),
-      );
-    } else if (upper == 'BMW') {
-      return const BrandItem(
-        name: 'BMW',
-        logoAsset: 'public/brands/bmw.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/bmw.png',
-        icon: Icons.stars_rounded,
-        color: Color(0xFF0288D1),
-      );
-    } else if (upper == 'HYUNDAI') {
-      return const BrandItem(
-        name: 'Hyundai',
-        logoAsset: 'public/brands/hyundai.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/hyundai.png',
-        icon: Icons.speed_rounded,
-        color: Color(0xFF0D47A1),
-      );
-    } else if (upper == 'MERCEDES_BENZ' ||
-        upper == 'MERCEDES' ||
-        upper == 'MERCEDES-BENZ') {
-      return const BrandItem(
-        name: 'Mercedes',
-        logoAsset: 'public/brands/mercedes.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/mercedes-benz.png',
-        icon: Icons.star_border_rounded,
-        color: Color(0xFF37474F),
-      );
-    } else if (upper == 'KIA') {
-      return const BrandItem(
-        name: 'KIA',
-        logoAsset: 'public/brands/kia.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/kia.png',
-        icon: Icons.auto_awesome_rounded,
-        color: Color(0xFF880E4F),
-      );
-    } else if (upper == 'TOYOTA') {
-      return const BrandItem(
-        name: 'Toyota',
-        logoAsset: 'public/brands/toyota.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/toyota.png',
-        icon: Icons.directions_car_rounded,
-        color: Color(0xFFC62828),
-      );
-    } else if (upper == 'AUDI') {
-      return const BrandItem(
-        name: 'Audi',
-        logoAsset: 'public/brands/audi.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/audi.png',
-        icon: Icons.all_inclusive_rounded,
-        color: Color(0xFFB71C1C),
-      );
-    } else if (upper == 'BYD') {
-      return const BrandItem(
-        name: 'BYD',
-        logoAsset: 'public/brands/byd.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/byd.png',
-        icon: Icons.energy_savings_leaf_rounded,
-        color: Color(0xFF00796B),
-      );
-    } else if (upper == 'MAZDA') {
-      return const BrandItem(
-        name: 'Mazda',
-        logoAsset: 'public/brands/mazda.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/mazda.png',
-        icon: Icons.motion_photos_on_rounded,
-        color: Color(0xFFC2185B),
-      );
-    } else if (upper == 'FORD') {
-      return const BrandItem(
-        name: 'Ford',
-        logoAsset: 'public/brands/ford.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/ford.png',
-        icon: Icons.airport_shuttle_rounded,
-        color: Color(0xFF1565C0),
-      );
-    } else if (upper == 'LEXUS') {
-      return const BrandItem(
-        name: 'Lexus',
-        logoAsset: 'public/brands/lexus.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/lexus.png',
-        icon: Icons.diamond_rounded,
-        color: Color(0xFF263238),
-      );
-    } else if (upper == 'HONDA') {
-      return const BrandItem(
-        name: 'Honda',
-        logoAsset: 'public/brands/honda.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/honda.png',
-        icon: Icons.directions_car_rounded,
-        color: Color(0xFFC62828),
-      );
-    } else if (upper == 'PEUGEOT') {
-      return const BrandItem(
-        name: 'Peugeot',
-        logoAsset: 'public/brands/peugeot.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/peugeot.png',
-        icon: Icons.directions_car_rounded,
-        color: Color(0xFF1565C0),
-      );
-    } else if (upper == 'NISSAN') {
-      return const BrandItem(
-        name: 'Nissan',
-        logoAsset: 'public/brands/nissan.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/nissan.png',
-        icon: Icons.directions_car_rounded,
-        color: Color(0xFFC2185B),
-      );
-    } else if (upper == 'MITSUBISHI') {
-      return const BrandItem(
-        name: 'Mitsubishi',
-        logoAsset: 'public/brands/mitsubishi.png',
-        logoUrl:
-            'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/mitsubishi.png',
-        icon: Icons.directions_car_rounded,
-        color: Color(0xFFD32F2F),
-      );
+    final key = _normalizeKey(brandName);
+    final known = _knownBrands[key];
+    if (known != null) {
+      return known;
     }
 
     final slug = brandName.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '-');
@@ -268,7 +190,15 @@ class BrandSelectorSection extends StatelessWidget {
 
   List<BrandItem> get _displayBrands {
     if (brands != null && brands!.isNotEmpty) {
-      return brands!.map(_mapBrand).toList();
+      final seen = <String>{};
+      final uniqueBrands = <BrandItem>[];
+      for (final raw in brands!) {
+        final item = _mapBrand(raw);
+        if (seen.add(item.name.toUpperCase())) {
+          uniqueBrands.add(item);
+        }
+      }
+      return uniqueBrands;
     }
     return _defaultBrands;
   }
