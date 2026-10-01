@@ -375,7 +375,17 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.file(File(imagePath), fit: BoxFit.cover),
+            Image.file(
+              File(imagePath),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Center(
+                child: Icon(
+                  Icons.broken_image_rounded,
+                  size: 48,
+                  color: AppColors.error,
+                ),
+              ),
+            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(

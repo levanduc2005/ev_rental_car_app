@@ -8,6 +8,8 @@ class OtpInputField extends StatefulWidget {
     this.onChanged,
     this.enabled = true,
     this.autoFocus = true,
+    this.controller,
+    this.focusNode,
     super.key,
   });
 
@@ -15,20 +17,35 @@ class OtpInputField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final bool enabled;
   final bool autoFocus;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
 
   @override
   State<OtpInputField> createState() => _OtpInputFieldState();
 }
 
 class _OtpInputFieldState extends State<OtpInputField> {
-  late final TextEditingController _controller;
-  late final FocusNode _focusNode;
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+  bool _internalController = false;
+  bool _internalFocusNode = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
-    _focusNode = FocusNode();
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+    } else {
+      _controller = TextEditingController();
+      _internalController = true;
+    }
+
+    if (widget.focusNode != null) {
+      _focusNode = widget.focusNode!;
+    } else {
+      _focusNode = FocusNode();
+      _internalFocusNode = true;
+    }
 
     _controller.addListener(_handleTextChange);
 
@@ -42,8 +59,12 @@ class _OtpInputFieldState extends State<OtpInputField> {
   @override
   void dispose() {
     _controller.removeListener(_handleTextChange);
-    _controller.dispose();
-    _focusNode.dispose();
+    if (_internalController) {
+      _controller.dispose();
+    }
+    if (_internalFocusNode) {
+      _focusNode.dispose();
+    }
     super.dispose();
   }
 
@@ -137,21 +158,23 @@ class _OtpInputFieldState extends State<OtpInputField> {
         ),
 
         // TextField ẩn tiếp nhận phím gõ, paste và backspace
-        Opacity(
-          opacity: 0.0,
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            enabled: widget.enabled,
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            decoration: const InputDecoration(
-              counterText: '',
-              border: InputBorder.none,
+        Positioned.fill(
+          child: Opacity(
+            opacity: 0.0,
+            child: TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              enabled: widget.enabled,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(6),
+              ],
+              decoration: const InputDecoration(
+                counterText: '',
+                border: InputBorder.none,
+              ),
             ),
           ),
         ),
