@@ -58,11 +58,9 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
 
   String _pad(int n) => n.toString().padLeft(2, '0');
 
-  String _formatDate(DateTime d) =>
-      '${_pad(d.day)}/${_pad(d.month)}/${d.year}';
+  String _formatDate(DateTime d) => '${_pad(d.day)}/${_pad(d.month)}/${d.year}';
 
-  String _formatTime(TimeOfDay t) =>
-      '${_pad(t.hour)}:${_pad(t.minute)}';
+  String _formatTime(TimeOfDay t) => '${_pad(t.hour)}:${_pad(t.minute)}';
 
   String get _selectedLocationDisplayText {
     if (_selectedStationId == null) {
@@ -173,7 +171,10 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.grey.shade600,
                         ),
-                        child: const Text('Hủy', style: TextStyle(fontSize: 15)),
+                        child: const Text(
+                          'Hủy',
+                          style: TextStyle(fontSize: 15),
+                        ),
                       ),
                       Text(
                         isStart ? 'Chọn giờ nhận xe' : 'Chọn giờ trả xe',
@@ -200,9 +201,11 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                                 _endDate.day,
                                 _endTime.hour,
                               );
-                              if (currentEndDt.difference(startDt).inHours < 4) {
-                                final newEndDt =
-                                    startDt.add(const Duration(hours: 4));
+                              if (currentEndDt.difference(startDt).inHours <
+                                  4) {
+                                final newEndDt = startDt.add(
+                                  const Duration(hours: 4),
+                                );
                                 _endDate = DateTime(
                                   newEndDt.year,
                                   newEndDt.month,
@@ -495,7 +498,8 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
       itemBuilder: (context, index) {
         final station = allItems[index];
         final isAll = station == null;
-        final isSelected = _selectedCityName == currentTab &&
+        final isSelected =
+            _selectedCityName == currentTab &&
             (isAll
                 ? _selectedStationId == null
                 : _selectedStationId == station.id);
@@ -570,7 +574,9 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
           ),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -584,14 +590,14 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
             children: [
               Icon(Icons.info_outline, color: Colors.white, size: 20),
               SizedBox(width: 8),
-              Expanded(
-                child: Text('Thời gian thuê tối thiểu là 4 giờ.'),
-              ),
+              Expanded(child: Text('Thời gian thuê tối thiểu là 4 giờ.')),
             ],
           ),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -614,7 +620,9 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
           ),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
       return;
@@ -754,10 +762,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                 const SizedBox(height: 4),
                 Text(
                   'Nhập thông tin để tìm chiếc xe phù hợp với bạn.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: AppSpacing.md),
 

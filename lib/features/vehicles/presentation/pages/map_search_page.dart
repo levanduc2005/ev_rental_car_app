@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
+import 'package:rental_car/features/vehicles/presentation/widgets/rental_time_bottom_sheet.dart';
 import 'package:rental_car/features/vehicles/presentation/widgets/vehicle_filter_bottom_sheet.dart';
-import 'package:rental_car/features/vehicles/presentation/widgets/vehicle_filter_chips_bar.dart';
 import 'package:rental_car/features/vehicles/presentation/widgets/vehicle_list_card.dart';
 import 'package:rental_car/features/vehicles/presentation/widgets/vehicle_search_header.dart';
 
@@ -35,8 +35,6 @@ class MapSearchPage extends ConsumerStatefulWidget {
 }
 
 class _MapSearchPageState extends ConsumerState<MapSearchPage> {
-  int _selectedFilterIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -84,6 +82,27 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
     }
   }
 
+  Future<void> _openRentalTimeModal() async {
+    final current = ref.read(vehicleFilterProvider);
+    final result = await RentalTimeBottomSheet.show(
+      context,
+      initialStartTime: current.startTime,
+      initialEndTime: current.endTime,
+      initialHourPackage: current.hourPackage,
+    );
+    if (result != null) {
+      ref
+          .read(vehicleFilterProvider.notifier)
+          .updateFilter(
+            current.copyWith(
+              startTime: result['startTime'] as DateTime?,
+              endTime: result['endTime'] as DateTime?,
+              hourPackage: result['hourPackage'] as int?,
+            ),
+          );
+    }
+  }
+
   void _onVehicleSelected(VehicleEntity vehicle) {
     context.pushNamed(
       AppRoute.vehicleDetail.name,
@@ -96,11 +115,24 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
     final currentFilter = ref.watch(vehicleFilterProvider);
     final vehicleListAsync = ref.watch(vehicleListControllerProvider);
 
+    int activeFilterCount = 0;
+    if (currentFilter.city != null &&
+        currentFilter.city!.isNotEmpty &&
+        !currentFilter.city!.contains('Hà Nội')) {
+      activeFilterCount++;
+    }
+    if (currentFilter.seats != 'Tất cả') activeFilterCount++;
+    if (currentFilter.brand != 'Tất cả' && currentFilter.brand.isNotEmpty) {
+      activeFilterCount++;
+    }
+    if (currentFilter.carType != 'Tất cả') activeFilterCount++;
+    if (currentFilter.priceRange != 'Tất cả') activeFilterCount++;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       body: Column(
         children: [
-          // 1. THANH TÌM KIẾM TRÊN CÙNG (Slide 08)
+          // 1. THANH TÌM KIẾM TRÊN CÙNG: Ô tìm kiếm + Nút Lọc + Thanh chọn Ngày & Giờ thuê
           VehicleSearchHeader(
             onBack: () {
               if (context.canPop()) {
@@ -110,35 +142,27 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
               }
             },
             onOpenFilter: _openFilterModal,
-            locationText: currentFilter.location?.isNotEmpty == true
-                ? currentFilter.location!
-                : (currentFilter.city?.isNotEmpty == true
-                      ? currentFilter.city!
-                      : 'Hà Nội • Tất cả các trạm'),
+            initialSearchText: currentFilter.search,
+            onSearchChanged: (query) {
+              final current = ref.read(vehicleFilterProvider);
+              ref
+                  .read(vehicleFilterProvider.notifier)
+                  .updateFilter(
+                    current.copyWith(
+                      search: query,
+                      clearSearch: query.trim().isEmpty,
+                    ),
+                  );
+            },
             dateTimeRangeText: currentFilter.formattedTimeRange,
-            onTapSearchBox: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.goNamed(AppRoute.home.name);
-              }
-            },
-          ),
-
-          // 2. THANH BỘ LỌC CUỘN NGANG (Slide 08)
-          VehicleFilterChipsBar(
-            selectedFilterIndex: _selectedFilterIndex,
-            onFilterSelected: (index) {
-              setState(() {
-                _selectedFilterIndex = index;
-              });
-            },
-            onOpenFilterSheet: _openFilterModal,
+            durationLabel: currentFilter.durationUnitLabel,
+            onTapTime: _openRentalTimeModal,
+            activeFilterCount: activeFilterCount,
           ),
 
           const Divider(height: 1, color: Color(0xFFE2E8F0)),
 
-          // 3. DANH SÁCH THẺ XE (Slide 08) kết nối trực tiếp API Backend qua Riverpod
+          // 2. DANH SÁCH THẺ XE (Slide 08) kết nối trực tiếp API Backend qua Riverpod
           Expanded(
             child: vehicleListAsync.when(
               data: (vehicles) {

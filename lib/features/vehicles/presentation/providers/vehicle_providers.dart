@@ -80,7 +80,24 @@ final vehicleListControllerProvider = FutureProvider<List<VehicleEntity>>((
   final useCase = ref.watch(getVehiclesUseCaseProvider);
   final result = await useCase(filter);
   return result.when(
-    ok: (list) => list,
+    ok: (list) {
+      if (filter.sort.isEmpty || filter.sort == 'Tất cả') return list;
+      final sorted = List<VehicleEntity>.from(list);
+      switch (filter.sort) {
+        case 'Giá thấp đến cao':
+          sorted.sort((a, b) => a.salePriceK.compareTo(b.salePriceK));
+          break;
+        case 'Giá cao đến thấp':
+          sorted.sort((a, b) => b.salePriceK.compareTo(a.salePriceK));
+          break;
+        case 'Phổ biến nhất':
+          sorted.sort((a, b) => b.viewingCount.compareTo(a.viewingCount));
+          break;
+        default:
+          break;
+      }
+      return sorted;
+    },
     err: (failure) => throw Exception(failure.message),
   );
 });

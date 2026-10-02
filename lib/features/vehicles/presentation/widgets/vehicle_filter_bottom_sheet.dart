@@ -5,23 +5,27 @@ import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart
 class VehicleFilterBottomSheet extends StatefulWidget {
   const VehicleFilterBottomSheet({
     this.initialFilter = const VehicleFilter(),
-    this.initialRentalType,
+    this.initialCity,
     this.initialSeats,
     this.initialBrand,
-    this.initialFuelType,
     this.initialCarType,
+    this.initialPriceRange,
     this.initialSort,
+    this.initialRentalType,
+    this.initialFuelType,
     this.onApplyFilter,
     super.key,
   });
 
   final VehicleFilter initialFilter;
-  final String? initialRentalType;
+  final String? initialCity;
   final String? initialSeats;
   final String? initialBrand;
-  final String? initialFuelType;
   final String? initialCarType;
+  final String? initialPriceRange;
   final String? initialSort;
+  final String? initialRentalType;
+  final String? initialFuelType;
   final ValueChanged<VehicleFilter>? onApplyFilter;
 
   static Future<VehicleFilter?> show(
@@ -34,11 +38,11 @@ class VehicleFilterBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => VehicleFilterBottomSheet(
         initialFilter: initialFilter,
-        initialRentalType: initialFilter.rentalType,
+        initialCity: initialFilter.city,
         initialSeats: initialFilter.seats,
         initialBrand: initialFilter.brand,
-        initialFuelType: initialFilter.fuelType,
         initialCarType: initialFilter.carType,
+        initialPriceRange: initialFilter.priceRange,
         initialSort: initialFilter.sort,
       ),
     );
@@ -50,31 +54,38 @@ class VehicleFilterBottomSheet extends StatefulWidget {
 }
 
 class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
-  late String _rentalType;
+  late String _city;
   late String _seats;
   late String _brand;
-  late String _fuelType;
   late String _carType;
+  late String _priceRange;
   late String _sort;
 
   @override
   void initState() {
     super.initState();
-    _rentalType = widget.initialRentalType ?? widget.initialFilter.rentalType;
+    final rawCity = widget.initialCity ?? widget.initialFilter.city ?? 'Hà Nội';
+    if (rawCity.toUpperCase().contains('HCM') ||
+        rawCity.toUpperCase().contains('HỒ CHÍ MINH') ||
+        rawCity.toUpperCase().contains('TP_HCM')) {
+      _city = 'Hồ Chí Minh';
+    } else {
+      _city = 'Hà Nội';
+    }
     _seats = widget.initialSeats ?? widget.initialFilter.seats;
     _brand = widget.initialBrand ?? widget.initialFilter.brand;
-    _fuelType = widget.initialFuelType ?? widget.initialFilter.fuelType;
     _carType = widget.initialCarType ?? widget.initialFilter.carType;
+    _priceRange = widget.initialPriceRange ?? widget.initialFilter.priceRange;
     _sort = widget.initialSort ?? widget.initialFilter.sort;
   }
 
   void _reset() {
     setState(() {
-      _rentalType = 'Tất cả';
+      _city = 'Hà Nội';
       _seats = 'Tất cả';
       _brand = 'Tất cả';
-      _fuelType = 'Tất cả';
       _carType = 'Tất cả';
+      _priceRange = 'Tất cả';
       _sort = 'Giá thấp đến cao';
     });
   }
@@ -133,57 +144,67 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               children: [
-                _buildSectionTitle('Hình thức thuê'),
+                // 1. Khu vực / Thành phố (Khớp với BE: Hà Nội, Hồ Chí Minh)
+                _buildSectionTitle('Khu vực / Thành phố'),
                 _buildFilterChips(
-                  options: ['Tất cả', 'Gặp chủ xe', 'Tự nhận xe'],
-                  selected: _rentalType,
-                  onSelected: (val) => setState(() => _rentalType = val),
+                  options: const ['Hà Nội', 'Hồ Chí Minh'],
+                  selected: _city,
+                  onSelected: (val) => setState(() => _city = val),
                 ),
                 const SizedBox(height: 18),
 
+                // 2. Số chỗ (Khớp với BE: 4 chỗ, 5 chỗ, 7 chỗ)
                 _buildSectionTitle('Số chỗ'),
                 _buildFilterChips(
-                  options: ['Tất cả', '4 chỗ', '5 chỗ', '7 chỗ'],
+                  options: const ['Tất cả', '4 chỗ', '5 chỗ', '7 chỗ'],
                   selected: _seats,
                   onSelected: (val) => setState(() => _seats = val),
                 ),
                 const SizedBox(height: 18),
 
+                // 3. Hãng xe (Khớp thực tế các hãng xe có trong DB: VinFast, Tesla, BYD)
                 _buildSectionTitle('Hãng xe'),
                 _buildFilterChips(
-                  options: [
-                    'Tất cả',
-                    'Audi',
-                    'Mercedes',
-                    'VinFast',
-                    'Toyota',
-                    'KIA',
-                    'BMW',
-                  ],
+                  options: const ['Tất cả', 'VinFast', 'Tesla', 'BYD'],
                   selected: _brand,
                   onSelected: (val) => setState(() => _brand = val),
                 ),
                 const SizedBox(height: 18),
 
+                // 3. Loại xe (Khớp với enum BE: SUV, SEDAN, CROSSOVER, MPV, HATCHBACK)
                 _buildSectionTitle('Loại xe'),
                 _buildFilterChips(
-                  options: ['Tất cả', 'Sedan', 'SUV', 'Crossover', 'Hatchback'],
+                  options: const [
+                    'Tất cả',
+                    'SUV',
+                    'Sedan',
+                    'Crossover',
+                    'MPV',
+                    'Hatchback',
+                  ],
                   selected: _carType,
                   onSelected: (val) => setState(() => _carType = val),
                 ),
                 const SizedBox(height: 18),
 
-                _buildSectionTitle('Nhiên liệu / Năng lượng'),
+                // 4. Mức giá thuê (Khớp với minPrice, maxPrice của BE)
+                _buildSectionTitle('Mức giá thuê'),
                 _buildFilterChips(
-                  options: ['Tất cả', 'Xăng', 'Điện (EV)', 'Dầu'],
-                  selected: _fuelType,
-                  onSelected: (val) => setState(() => _fuelType = val),
+                  options: const [
+                    'Tất cả',
+                    'Dưới 500K',
+                    '500K - 1 Triệu',
+                    'Trên 1 Triệu',
+                  ],
+                  selected: _priceRange,
+                  onSelected: (val) => setState(() => _priceRange = val),
                 ),
                 const SizedBox(height: 18),
 
+                // 5. Sắp xếp theo
                 _buildSectionTitle('Sắp xếp theo'),
                 _buildFilterChips(
-                  options: [
+                  options: const [
                     'Giá thấp đến cao',
                     'Giá cao đến thấp',
                     'Phổ biến nhất',
@@ -243,11 +264,13 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
                       ),
                       onPressed: () {
                         final filter = widget.initialFilter.copyWith(
-                          rentalType: _rentalType,
+                          city: _city,
+                          location: '$_city • Tất cả các trạm',
+                          clearStation: true,
                           seats: _seats,
                           brand: _brand,
-                          fuelType: _fuelType,
                           carType: _carType,
+                          priceRange: _priceRange,
                           sort: _sort,
                         );
                         widget.onApplyFilter?.call(filter);
