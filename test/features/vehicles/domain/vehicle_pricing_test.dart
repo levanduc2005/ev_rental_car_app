@@ -37,7 +37,7 @@ void main() {
       expect(filter.durationUnitLabel, '4 giờ');
       expect(filter.formattedTimeRange, contains('08:00'));
       expect(filter.formattedTimeRange, contains('12:00'));
-      expect(filter.formattedTimeRange, contains('(4 giờ)'));
+      expect(filter.formattedTimeRange, contains('→'));
     });
   });
 

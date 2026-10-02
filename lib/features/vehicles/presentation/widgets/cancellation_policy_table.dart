@@ -1,8 +1,37 @@
 import 'package:flutter/material.dart';
 
+class _PolicyItem {
+  const _PolicyItem({
+    required this.title,
+    required this.color,
+    required this.regularDays,
+    required this.holidayDays,
+  });
+
+  final String title;
+  final Color color;
+  final String regularDays;
+  final String holidayDays;
+}
+
 /// Bảng chính sách huỷ chuyến (Chuẩn e-Motion CarCancellationPolicy.jsx)
 class CancellationPolicyTable extends StatelessWidget {
   const CancellationPolicyTable({super.key});
+
+  static const List<_PolicyItem> _items = [
+    _PolicyItem(
+      title: 'Hoàn 100% tiền giữ chỗ',
+      color: Color(0xFF10B981),
+      regularDays: 'Trước chuyến đi > 5 ngày',
+      holidayDays: 'Trước chuyến đi > 5 ngày',
+    ),
+    _PolicyItem(
+      title: 'Không hoàn tiền giữ chỗ',
+      color: Color(0xFFEF4444),
+      regularDays: 'Trong vòng 5 ngày trước chuyến đi',
+      holidayDays: 'Trong vòng 5 ngày trước chuyến đi',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -54,218 +83,134 @@ class CancellationPolicyTable extends StatelessWidget {
                   2: FlexColumnWidth(),
                 },
                 children: [
-                  // Header (bg-gray-100)
-                  const TableRow(
-                    decoration: BoxDecoration(color: Color(0xFFF1F5F9)),
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          'Quy định',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          'Ngày thường',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          'Ngày lễ, Tết',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Row 1: Hoàn 100% tiền giữ chỗ
-                  TableRow(
-                    decoration: const BoxDecoration(
-                      border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-                    ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF10B981),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            const Expanded(
-                              child: Text(
-                                'Hoàn 100% tiền giữ chỗ',
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          'Trước chuyến đi > 5 ngày',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF475569),
-                          ),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          'Trước chuyến đi > 5 ngày',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF475569),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Row 2: Không hoàn tiền giữ chỗ
-                  TableRow(
-                    decoration: const BoxDecoration(
-                      border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-                    ),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFEF4444),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            const Expanded(
-                              child: Text(
-                                'Không hoàn tiền giữ chỗ',
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          'Trong vòng 5 ngày trước chuyến đi',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF475569),
-                          ),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 10,
-                        ),
-                        child: Text(
-                          'Trong vòng 5 ngày trước chuyến đi',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF475569),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  _buildHeaderRow(),
+                  ..._items.map(_buildDataRow),
                 ],
               ),
+              _buildFooterNotice(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  TableRow _buildHeaderRow() {
+    return const TableRow(
+      decoration: BoxDecoration(color: Color(0xFFF1F5F9)),
+      children: [
+        _HeaderCell('Quy định', horizontalPadding: 10),
+        _HeaderCell('Ngày thường'),
+        _HeaderCell('Ngày lễ, Tết'),
+      ],
+    );
+  }
+
+  TableRow _buildDataRow(_PolicyItem item) {
+    return TableRow(
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            children: [
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: item.color,
+                  shape: BoxShape.circle,
                 ),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF8FAFC),
-                  border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-                ),
-                child: const Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 14,
-                      color: Color(0xFF64748B),
-                    ),
-                    SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        'Hoàn tiền giữ chỗ nếu hủy chuyến trong vòng trên 5 ngày trước chuyến đi theo quy chế e-Motion.',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Color(0xFF64748B),
-                          height: 1.35,
-                        ),
-                      ),
-                    ),
-                  ],
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  item.title,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0F172A),
+                  ),
                 ),
               ),
             ],
           ),
         ),
+        _DataCell(item.regularDays),
+        _DataCell(item.holidayDays),
       ],
+    );
+  }
+
+  Widget _buildFooterNotice() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF8FAFC),
+        border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+      ),
+      child: const Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 14, color: Color(0xFF64748B)),
+          SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              'Hoàn tiền giữ chỗ nếu hủy chuyến trong vòng trên 5 ngày trước chuyến đi theo quy chế e-Motion.',
+              style: TextStyle(
+                fontSize: 11,
+                color: Color(0xFF64748B),
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeaderCell extends StatelessWidget {
+  const _HeaderCell(this.text, {this.horizontalPadding = 6});
+
+  final String text;
+  final double horizontalPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 10),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF0F172A),
+        ),
+      ),
+    );
+  }
+}
+
+class _DataCell extends StatelessWidget {
+  const _DataCell(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 11,
+          color: Color(0xFF475569),
+        ),
+      ),
     );
   }
 }

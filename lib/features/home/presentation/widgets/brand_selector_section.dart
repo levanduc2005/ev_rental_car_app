@@ -49,54 +49,6 @@ class BrandSelectorSection extends StatelessWidget {
       color: Color(0xFFD32F2F),
     ),
     BrandItem(
-      name: 'Hyundai',
-      logoAsset: 'public/brands/hyundai.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/hyundai.png',
-      icon: Icons.speed_rounded,
-      color: Color(0xFF0D47A1),
-    ),
-    BrandItem(
-      name: 'BMW',
-      logoAsset: 'public/brands/bmw.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/bmw.png',
-      icon: Icons.stars_rounded,
-      color: Color(0xFF0288D1),
-    ),
-    BrandItem(
-      name: 'Mercedes',
-      logoAsset: 'public/brands/mercedes.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/mercedes-benz.png',
-      icon: Icons.star_border_rounded,
-      color: Color(0xFF37474F),
-    ),
-    BrandItem(
-      name: 'Toyota',
-      logoAsset: 'public/brands/toyota.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/toyota.png',
-      icon: Icons.directions_car_rounded,
-      color: Color(0xFFC62828),
-    ),
-    BrandItem(
-      name: 'KIA',
-      logoAsset: 'public/brands/kia.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/kia.png',
-      icon: Icons.auto_awesome_rounded,
-      color: Color(0xFF880E4F),
-    ),
-    BrandItem(
-      name: 'Audi',
-      logoAsset: 'public/brands/audi.png',
-      logoUrl:
-          'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/audi.png',
-      icon: Icons.all_inclusive_rounded,
-      color: Color(0xFFB71C1C),
-    ),
-    BrandItem(
       name: 'BYD',
       logoAsset: 'public/brands/byd.png',
       logoUrl:

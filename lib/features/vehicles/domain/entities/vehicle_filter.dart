@@ -1,11 +1,10 @@
 /// Lớp thực thể lưu trạng thái bộ lọc xe (Domain)
 class VehicleFilter {
   const VehicleFilter({
-    this.rentalType = 'Tất cả',
     this.seats = 'Tất cả',
     this.brand = 'Tất cả',
-    this.fuelType = 'Tất cả',
     this.carType = 'Tất cả',
+    this.priceRange = 'Tất cả',
     this.sort = 'Giá thấp đến cao',
     this.startTime,
     this.endTime,
@@ -13,13 +12,17 @@ class VehicleFilter {
     this.city,
     this.location,
     this.stationId,
+    this.search,
+    this.minPrice,
+    this.maxPrice,
+    this.rentalType = 'Tất cả',
+    this.fuelType = 'Tất cả',
   });
 
-  final String rentalType;
   final String seats;
   final String brand;
-  final String fuelType;
   final String carType;
+  final String priceRange;
   final String sort;
   final DateTime? startTime;
   final DateTime? endTime;
@@ -27,6 +30,39 @@ class VehicleFilter {
   final String? city;
   final String? location;
   final int? stationId;
+  final String? search;
+  final double? minPrice;
+  final double? maxPrice;
+
+  // Giữ lại để tương thích ngược nếu còn widget tham chiếu
+  final String rentalType;
+  final String fuelType;
+
+  /// Giá trị minPrice tính từ bộ lọc mức giá
+  double? get effectiveMinPrice {
+    if (minPrice != null) return minPrice;
+    switch (priceRange) {
+      case '500K - 1 Triệu':
+        return 500000.0;
+      case 'Trên 1 Triệu':
+        return 1000000.0;
+      default:
+        return null;
+    }
+  }
+
+  /// Giá trị maxPrice tính từ bộ lọc mức giá
+  double? get effectiveMaxPrice {
+    if (maxPrice != null) return maxPrice;
+    switch (priceRange) {
+      case 'Dưới 500K':
+        return 500000.0;
+      case '500K - 1 Triệu':
+        return 1000000.0;
+      default:
+        return null;
+    }
+  }
 
   /// Tính tổng số giờ thuê dựa trên gói giờ hoặc khoảng thời gian bắt đầu - kết thúc
   int get durationHours {
@@ -66,15 +102,14 @@ class VehicleFilter {
         '${pad(s.hour)}:${pad(s.minute)}, ${pad(s.day)}/${pad(s.month)}';
     final eStr =
         '${pad(e.hour)}:${pad(e.minute)}, ${pad(e.day)}/${pad(e.month)}';
-    return '$sStr đến $eStr ($durationUnitLabel)';
+    return '$sStr → $eStr';
   }
 
   VehicleFilter copyWith({
-    String? rentalType,
     String? seats,
     String? brand,
-    String? fuelType,
     String? carType,
+    String? priceRange,
     String? sort,
     DateTime? startTime,
     DateTime? endTime,
@@ -82,20 +117,31 @@ class VehicleFilter {
     String? city,
     String? location,
     int? stationId,
+    bool clearStation = false,
+    String? search,
+    bool clearSearch = false,
+    double? minPrice,
+    double? maxPrice,
+    String? rentalType,
+    String? fuelType,
   }) {
     return VehicleFilter(
-      rentalType: rentalType ?? this.rentalType,
       seats: seats ?? this.seats,
       brand: brand ?? this.brand,
-      fuelType: fuelType ?? this.fuelType,
       carType: carType ?? this.carType,
+      priceRange: priceRange ?? this.priceRange,
       sort: sort ?? this.sort,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       hourPackage: hourPackage ?? this.hourPackage,
       city: city ?? this.city,
       location: location ?? this.location,
-      stationId: stationId ?? this.stationId,
+      stationId: clearStation ? null : (stationId ?? this.stationId),
+      search: clearSearch ? null : (search ?? this.search),
+      minPrice: minPrice ?? this.minPrice,
+      maxPrice: maxPrice ?? this.maxPrice,
+      rentalType: rentalType ?? this.rentalType,
+      fuelType: fuelType ?? this.fuelType,
     );
   }
 }

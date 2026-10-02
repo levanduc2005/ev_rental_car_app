@@ -22,18 +22,29 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
   }
 
   String _mapCategoryToBackend(String cat) {
-    return cat.trim().toUpperCase();
+    final c = cat.trim().toUpperCase();
+    if (c.contains('PICKUP') || c.contains('BÁN TẢI')) return 'PICKUP';
+    return c;
+  }
+
+  String _formatDateTimeForBackend(DateTime dt) {
+    String pad(int n) => n.toString().padLeft(2, '0');
+    return '${dt.year}-${pad(dt.month)}-${pad(dt.day)}T${pad(dt.hour)}:${pad(dt.minute)}:${pad(dt.second)}';
   }
 
   bool _hasFilterConditions(VehicleFilter filter) {
     return filter.brand != 'Tất cả' ||
         filter.seats != 'Tất cả' ||
         filter.carType != 'Tất cả' ||
+        filter.priceRange != 'Tất cả' ||
+        (filter.search != null && filter.search!.trim().isNotEmpty) ||
         filter.startTime != null ||
         filter.endTime != null ||
         filter.hourPackage != null ||
         filter.city != null ||
-        filter.stationId != null;
+        filter.stationId != null ||
+        filter.minPrice != null ||
+        filter.maxPrice != null;
   }
 
   @override
@@ -80,24 +91,25 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
           seatCount = int.tryParse(filter.seats.replaceAll(RegExp(r'\D'), ''));
         }
 
-        String beCity = 'HANOI';
+        String beCity = 'Hà Nội';
         if (filter.city != null) {
-          final c = filter.city!.toUpperCase();
+          final c = filter.city!.trim().toUpperCase();
           if (c.contains('HCM') ||
               c.contains('HỒ CHÍ MINH') ||
               c.contains('TP_HCM')) {
-            beCity = 'TP_HCM';
+            beCity = 'Hồ Chí Minh';
           } else {
-            beCity = 'HANOI';
+            beCity = 'Hà Nội';
           }
         }
 
         final Map<String, dynamic> payload = {
           'city': beCity,
-          'startTime': startTime.toIso8601String(),
-          'endTime': endTime.toIso8601String(),
+          'startTime': _formatDateTimeForBackend(startTime),
+          'endTime': _formatDateTimeForBackend(endTime),
           'page': 1, // BE PageRequest.of(page - 1) => 1 - 1 = 0
           'limit': 20,
+          'search': filter.search?.trim() ?? '',
         };
 
         if (filter.stationId != null) {
@@ -112,6 +124,12 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
         if (seatCount != null) {
           payload['seats'] = seatCount;
         }
+        if (filter.effectiveMinPrice != null) {
+          payload['minPrice'] = filter.effectiveMinPrice;
+        }
+        if (filter.effectiveMaxPrice != null) {
+          payload['maxPrice'] = filter.effectiveMaxPrice;
+        }
 
         try {
           final response = await _dio.post<Map<String, dynamic>>(
@@ -122,51 +140,90 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
           final data = response.data?['data'];
           if (data is Map<String, dynamic> && data['content'] is List) {
             final list = data['content'] as List;
-            if (list.isNotEmpty) {
-              return list
-                  .map(
-                    (item) => VehicleModel.fromBackendJson(
-                      item as Map<String, dynamic>,
-                    ),
-                  )
-                  .toList();
-            }
+            return list
+                .map(
+                  (item) => VehicleModel.fromBackendJson(
+                    item as Map<String, dynamic>,
+                  ),
+                )
+                .toList();
           }
         } catch (_) {
           // Nếu BE gặp lỗi hoặc offline, fallback sang /vehicles/home
         }
       }
 
-      // 2. Mặc định: Lấy danh sách xe trang chủ GET /vehicles/home
+      // 2. Mặc định / Fallback khi BE offline: Lấy danh sách xe và lọc theo điều kiện
+      List<VehicleModel> fallbackList = [];
       try {
         final homeResponse = await _dio.get<Map<String, dynamic>>(
           '/vehicles/home',
         );
         final homeData = homeResponse.data?['data'];
         if (homeData is List && homeData.isNotEmpty) {
-          return homeData
+          fallbackList = homeData
               .map(
                 (item) =>
                     VehicleModel.fromBackendJson(item as Map<String, dynamic>),
               )
               .toList();
         }
-      } catch (_) {
-        // Nếu /vehicles/home không có dữ liệu, thử gọi GET /vehicles
+      } catch (_) {}
+
+      if (fallbackList.isEmpty) {
+        final allResponse = await _dio.get<Map<String, dynamic>>('/vehicles');
+        final allData = allResponse.data?['data'];
+        if (allData is List) {
+          fallbackList = allData
+              .map(
+                (item) =>
+                    VehicleModel.fromBackendJson(item as Map<String, dynamic>),
+              )
+              .toList();
+        }
       }
 
-      final allResponse = await _dio.get<Map<String, dynamic>>('/vehicles');
-      final allData = allResponse.data?['data'];
-      if (allData is List) {
-        return allData
-            .map(
-              (item) =>
-                  VehicleModel.fromBackendJson(item as Map<String, dynamic>),
-            )
-            .toList();
+      if (filter != null) {
+        final targetCity = filter.city ?? filter.location;
+        if (targetCity != null && targetCity.isNotEmpty) {
+          final isHcm = targetCity.toUpperCase().contains('HCM') ||
+              targetCity.toUpperCase().contains('HỒ CHÍ MINH') ||
+              targetCity.toUpperCase().contains('TP_HCM');
+          final expectedCity = isHcm ? 'Hồ Chí Minh' : 'Hà Nội';
+          fallbackList = fallbackList.where((v) {
+            final vCity = v.station?.city ?? v.stationName ?? '';
+            return vCity.toLowerCase().contains(expectedCity.toLowerCase());
+          }).toList();
+        }
+
+        if (filter.brand != 'Tất cả' && filter.brand.isNotEmpty) {
+          fallbackList = fallbackList
+              .where(
+                (v) => v.brand.toUpperCase() == filter.brand.toUpperCase(),
+              )
+              .toList();
+        }
+
+        if (filter.seats != 'Tất cả') {
+          final sCount =
+              int.tryParse(filter.seats.replaceAll(RegExp(r'\D'), ''));
+          if (sCount != null) {
+            fallbackList =
+                fallbackList.where((v) => v.seats == sCount).toList();
+          }
+        }
+
+        if (filter.search != null && filter.search!.trim().isNotEmpty) {
+          final q = filter.search!.trim().toLowerCase();
+          fallbackList = fallbackList.where((v) {
+            return v.name.toLowerCase().contains(q) ||
+                v.brand.toLowerCase().contains(q) ||
+                (v.category?.toLowerCase().contains(q) ?? false);
+          }).toList();
+        }
       }
 
-      return [];
+      return fallbackList;
     });
   }
 
