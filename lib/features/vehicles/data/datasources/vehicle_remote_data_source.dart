@@ -351,6 +351,24 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
   @override
   Future<List<String>> getVehicleBrands() {
     return guardApiCall(() async {
+      try {
+        final res = await _dio.get<Map<String, dynamic>>('/brands');
+        final data = res.data?['data'];
+        if (data is List && data.isNotEmpty) {
+          return data
+              .map((e) {
+                if (e is Map<String, dynamic>) {
+                  return (e['name'] ?? e['code'] ?? '').toString();
+                }
+                return e.toString();
+              })
+              .where((e) => e.isNotEmpty)
+              .toList();
+        }
+      } catch (_) {
+        // Fallback sang /vehicles/brand nếu /brands chưa sẵn sàng
+      }
+
       final response = await _dio.get<Map<String, dynamic>>('/vehicles/brand');
       final data = response.data?['data'];
       if (data is List) {

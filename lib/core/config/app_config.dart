@@ -34,6 +34,18 @@ abstract final class AppConfig {
         '14848507995-qc19oj7m5b55qlbtlklej355rf0fnmpk.apps.googleusercontent.com',
   );
 
+  /// Cloudinary Cloud Name.
+  static const String cloudinaryCloudName = String.fromEnvironment(
+    'CLOUDINARY_CLOUD_NAME',
+    defaultValue: 'dxa6upoxl',
+  );
+
+  /// Cloudinary Upload Preset (unsigned).
+  static const String cloudinaryUploadPreset = String.fromEnvironment(
+    'CLOUDINARY_UPLOAD_PRESET',
+    defaultValue: 'emotion_mobile_preset',
+  );
+
   /// Human-readable app name shown in the UI.
   static String get appName => switch (flavor) {
     Flavor.prod => 'E-Motion',

@@ -5,14 +5,13 @@ import 'package:rental_car/features/vehicles/domain/usecases/get_vehicle_brands_
 import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
 
 class HomeController extends Notifier<HomeState> {
-  late final GetHomeVehiclesUseCase _getHomeVehiclesUseCase;
-  late final GetVehicleBrandsUseCase _getVehicleBrandsUseCase;
+  GetHomeVehiclesUseCase get _getHomeVehiclesUseCase =>
+      ref.read(getHomeVehiclesUseCaseProvider);
+  GetVehicleBrandsUseCase get _getVehicleBrandsUseCase =>
+      ref.read(getVehicleBrandsUseCaseProvider);
 
   @override
   HomeState build() {
-    _getHomeVehiclesUseCase = ref.watch(getHomeVehiclesUseCaseProvider);
-    _getVehicleBrandsUseCase = ref.watch(getVehicleBrandsUseCaseProvider);
-
     Future.microtask(loadHomeData);
 
     return const HomeState(isLoading: true);

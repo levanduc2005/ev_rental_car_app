@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "E-Motion (Dev)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=config/dev.json"
+      ]
+    },
+    {
+      "name": "E-Motion (Staging)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=config/staging.json"
+      ]
+    },
+    {
+      "name": "E-Motion (Production)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=config/prod.json"
+      ]
+    }
+  ]
+}
