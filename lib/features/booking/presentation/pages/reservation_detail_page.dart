@@ -67,13 +67,36 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
 
   Future<void> _handleCancel(ReservationEntity res) async {
     final isPending = res.isPending;
+    final isEligibleForRefund = res.isEligibleForRefund;
+    final depositFormatted =
+        BookingFormatters.formatCurrency(res.depositFee);
+
+    String title;
+    String message;
+    String confirmLabel;
+
+    if (isPending) {
+      title = 'Hủy giữ chỗ tức thì?';
+      message =
+          'Bạn đang hủy đơn giữ chỗ #${res.reservationCode}. Thao tác này sẽ giải phóng xe ngay lập tức để bạn có thể chọn xe khác.';
+      confirmLabel = 'Hủy giữ xe ngay';
+    } else if (isEligibleForRefund) {
+      title = 'Xác nhận hủy & Hoàn cọc';
+      message =
+          'Thời gian nhận xe còn từ 5 ngày trở lên. Bạn sẽ được HOÀN 100% TIỀN CỌC ($depositFormatted) về tài khoản thanh toán của bạn.\n\nBạn có chắc chắn muốn hủy đơn #${res.reservationCode} không?';
+      confirmLabel = 'Xác nhận hủy & Hoàn cọc';
+    } else {
+      title = 'Cảnh báo hủy đơn - MẤT TIỀN CỌC';
+      message =
+          'Thời gian nhận xe còn DƯỚI 5 NGÀY. Theo chính sách của hệ thống, bạn sẽ KHÔNG ĐƯỢC HOÀN LẠI số tiền cọc ($depositFormatted) nếu hủy đơn lúc này.\n\nBạn có chắc chắn muốn chấp nhận mất cọc để hủy đơn #${res.reservationCode} không?';
+      confirmLabel = 'Đồng ý hủy & Mất cọc';
+    }
+
     final confirmed = await showConfirmDialog(
       context,
-      title: isPending ? 'Hủy giữ chỗ tức thì?' : 'Xác nhận hủy đơn đặt xe?',
-      message: isPending
-          ? 'Bạn đang hủy đơn giữ chỗ #${res.reservationCode}. Thao tác này sẽ giải phóng xe ngay lập tức để bạn có thể chọn xe khác.'
-          : 'Bạn đang hủy đơn đã xác nhận cọc #${res.reservationCode}. Đơn sẽ được hoàn cọc theo chính sách (hủy trước ngày nhận xe từ 5 ngày trở lên).',
-      confirmLabel: isPending ? 'Hủy giữ xe ngay' : 'Xác nhận hủy',
+      title: title,
+      message: message,
+      confirmLabel: confirmLabel,
       cancelLabel: 'Quay lại',
       isDestructive: true,
     );
@@ -84,6 +107,23 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
     final success = await controller.cancelReservation(res.reservationCode);
 
     if (success && mounted) {
+      if (!isPending && isEligibleForRefund) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Hủy đơn thành công! Đã hoàn $depositFormatted về tài khoản thanh toán.',
+            ),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      } else if (!isPending) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã hủy đơn đặt xe (Mất tiền cọc theo quy định < 5 ngày).'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
       _fetchDetail();
     }
   }
@@ -230,51 +270,37 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
 
             // Contextual Actions for CONFIRMED
             if (isConfirmed) ...[
-              if (res.canCancel) ...[
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.error,
-                    side: const BorderSide(color: AppColors.error),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () => _handleCancel(res),
-                  child: const Text(
-                    'Hủy đơn đặt xe (Trước 5 ngày)',
-                    style: TextStyle(fontSize: 14),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.error,
+                  side: const BorderSide(color: AppColors.error),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ] else ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.amber.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Colors.amber.shade800,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Theo quy định, đơn không thể hủy khi thời gian nhận xe còn dưới 5 ngày.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.amber.shade900,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                onPressed: () => _handleCancel(res),
+                child: Text(
+                  res.isEligibleForRefund
+                      ? 'Hủy đơn đặt xe (Được hoàn cọc)'
+                      : 'Hủy đơn đặt xe (Mất tiền cọc)',
+                  style: const TextStyle(fontSize: 14),
                 ),
-              ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                res.isEligibleForRefund
+                    ? '• Đang trong thời hạn > 5 ngày: Được hoàn trả 100% tiền cọc.'
+                    : '• Đang trong thời hạn < 5 ngày: Hủy đơn sẽ không được hoàn cọc.',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  color: res.isEligibleForRefund
+                      ? AppColors.textSecondary
+                      : Colors.orange.shade800,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
 
             // Contextual Actions for COMPLETED

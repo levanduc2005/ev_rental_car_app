@@ -51,15 +51,13 @@ class ReservationEntity {
   bool get isOverdue => status.toUpperCase() == 'OVERDUE';
 
   /// Kiểm tra xem đơn có được phép hủy hay không:
-  /// - Đơn PENDING: được hủy tức thì.
-  /// - Đơn CONFIRM: chỉ được hủy nếu còn cách giờ nhận xe trên 5 ngày theo quy định BE.
-  bool get canCancel {
-    if (isPending) return true;
-    if (isConfirmed) {
-      final now = DateTime.now();
-      return startDateTime.isAfter(now.add(const Duration(days: 5)));
-    }
-    return false;
+  /// - Cho phép hủy bất cứ lúc nào đối với đơn PENDING (chưa cọc) và CONFIRM (đã cọc chờ nhận xe).
+  bool get canCancel => isPending || isConfirmed;
+
+  /// Kiểm tra xem đơn CONFIRMED hủy có được hoàn cọc hay không (còn >= 5 ngày trước giờ nhận xe).
+  bool get isEligibleForRefund {
+    final now = DateTime.now();
+    return startDateTime.isAfter(now.add(const Duration(days: 5)));
   }
 
   // Tiện ích tương thích giao diện
@@ -112,6 +110,12 @@ class ReservationEntity {
 
   /// Địa điểm trả xe
   String get returnLocation => pickupLocation;
+
+  /// Tên xe tiện ích
+  String? get vehicleName => vehicle?.name;
+
+  /// Ảnh xe tiện ích
+  String? get vehicleImageUrl => vehicle?.imageUrl;
 
   String get paymentMethod =>
       paymentInfo != null ? 'PayOS (VietQR)' : 'PayOS (VietQR)';

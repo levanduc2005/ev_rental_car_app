@@ -7,6 +7,7 @@ import 'package:rental_car/features/booking/domain/repositories/booking_reposito
 import 'package:rental_car/features/booking/domain/usecases/cancel_reservation_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/confirm_payos_payment_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_reservation_detail_usecase.dart';
+import 'package:rental_car/features/booking/domain/usecases/get_supported_banks_usecase.dart';
 
 // --- Data Layer Providers ---
 final bookingRemoteDataSourceProvider = Provider<BookingRemoteDataSource>((
@@ -37,4 +38,10 @@ final cancelReservationUseCaseProvider = Provider<CancelReservationUseCase>((
   ref,
 ) {
   return CancelReservationUseCase(ref.watch(bookingRepositoryProvider));
+});
+
+final getSupportedBanksUseCaseProvider = Provider<GetSupportedBanksUseCase>((
+  ref,
+) {
+  return GetSupportedBanksUseCase(ref.watch(bookingRepositoryProvider));
 });

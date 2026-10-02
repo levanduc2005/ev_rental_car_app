@@ -3,6 +3,7 @@ import 'package:rental_car/features/booking/domain/entities/booking_fee_entity.d
 import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
 import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
 import 'package:rental_car/features/booking/domain/entities/vehicle_booking_summary.dart';
+import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
 
 abstract interface class BookingRepository {
   /// Tính toán biểu phí thuê xe qua API /api/vehicles/booking
@@ -50,4 +51,7 @@ abstract interface class BookingRepository {
   Future<Result<PayOSPaymentInfoEntity>> createPayOSPaymentLink(
     int reservationId,
   );
+
+  /// Lấy danh sách các ứng dụng ngân hàng hỗ trợ VietQR động từ API
+  Future<Result<List<BankAppItem>>> getSupportedBanks();
 }

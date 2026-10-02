@@ -7,8 +7,8 @@ class PayOSPaymentInfoModel {
     required this.description,
     required this.accountNumber,
     required this.accountName,
-    required this.bankName,
     required this.qrCodeUrl,
+    this.bankName,
     this.bin,
     this.checkoutUrl,
     this.expiresAt,
@@ -20,7 +20,7 @@ class PayOSPaymentInfoModel {
   final String accountNumber;
   final String accountName;
   final String? bin;
-  final String bankName;
+  final String? bankName;
   final String qrCodeUrl;
   final String? checkoutUrl;
   final DateTime? expiresAt;
@@ -33,19 +33,17 @@ class PayOSPaymentInfoModel {
     final amount = (json['amount'] as num?)?.toDouble() ?? 0.0;
     final checkoutUrl =
         json['checkoutUrl'] as String? ?? json['vnpayUrl'] as String?;
-    final bin = json['bin']?.toString() ?? '970422';
+    final bin = json['bin']?.toString();
     final accountNumber = json['accountNumber']?.toString() ?? '';
     final accountName = json['accountName']?.toString() ?? '';
-    final bank =
-        json['bankName']?.toString() ??
-        PayOSPaymentInfoEntity.resolveBankName(bin);
+    final bank = json['bankName']?.toString();
     final description =
         json['description']?.toString() ??
         (code.startsWith('BBC') ? code : 'BBC$code');
     final rawQr = json['qrCode']?.toString();
     final qrCodeUrl = (rawQr != null && rawQr.startsWith('http'))
         ? rawQr
-        : (accountNumber.isNotEmpty
+        : (bin != null && accountNumber.isNotEmpty
               ? 'https://img.vietqr.io/image/$bin-$accountNumber-compact2.png?amount=${amount.toInt()}&addInfo=$description&accountName=${Uri.encodeComponent(accountName)}'
               : '');
 

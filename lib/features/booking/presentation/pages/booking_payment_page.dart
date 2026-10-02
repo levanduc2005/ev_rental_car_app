@@ -6,14 +6,20 @@ import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
+import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
+import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_providers.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
+import 'package:rental_car/features/booking/presentation/providers/supported_banks_provider.dart';
 import 'package:rental_car/features/booking/presentation/utils/booking_formatters.dart';
+import 'package:rental_car/features/booking/presentation/widgets/bank_app_selector_grid.dart';
 import 'package:rental_car/features/booking/presentation/widgets/booking_order_summary_card.dart';
 import 'package:rental_car/features/booking/presentation/widgets/vietqr_payment_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-/// Trang Thanh toán phí giữ chỗ VietQR MBBank (Chuẩn stitch_booking.html 100%)
+/// Trang Thanh toán phí giữ chỗ qua App-to-App Deeplink hoặc VietQR PayOS
+/// Hỗ trợ chọn nhanh App Ngân hàng (1A) & Accordion QR thu gọn (2A)
 class BookingPaymentPage extends ConsumerStatefulWidget {
   const BookingPaymentPage({super.key});
 
@@ -25,6 +31,7 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
   Timer? _countdownTimer;
   int _remainingSeconds = 15 * 60; // 15 phút đếm ngược
   bool _isCheckingStatus = false;
+  BankAppItem? _selectedBank;
 
   @override
   void initState() {
@@ -77,6 +84,97 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
     );
   }
 
+  /// Kích hoạt App-to-App Deeplink mở trực tiếp App Ngân hàng người dùng chọn
+  Future<void> _handleOpenBankApp(PayOSPaymentInfoEntity paymentInfo) async {
+    final allBanks = ref.read(supportedBanksProvider).value ?? [];
+    final targetBank =
+        _selectedBank ?? (allBanks.isNotEmpty ? allBanks.first : null);
+    if (targetBank == null) return;
+
+    // Tìm mã ngân hàng thụ hưởng động theo mã BIN nhận từ PayOS
+    final receivingBank =
+        allBanks.where((b) => b.bin == paymentInfo.bin).firstOrNull;
+    final beneficiaryBankCode = receivingBank?.code ?? (paymentInfo.bin ?? '');
+
+    final deeplink = targetBank.buildDeeplink(
+      beneficiaryAccountNumber: paymentInfo.accountNumber,
+      beneficiaryBankCode: beneficiaryBankCode,
+      amount: paymentInfo.depositFee,
+      description: paymentInfo.description,
+      beneficiaryAccountName: paymentInfo.accountName,
+    );
+
+    try {
+      final uri = Uri.parse(deeplink);
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        if (!mounted) return;
+        _showBankLaunchFailedDialog(paymentInfo, targetBank);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      _showBankLaunchFailedDialog(paymentInfo, targetBank);
+    }
+  }
+
+  /// Thông báo khi thiết bị chưa cài đặt ứng dụng ngân hàng đó
+  void _showBankLaunchFailedDialog(
+    PayOSPaymentInfoEntity paymentInfo,
+    BankAppItem targetBank,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.info_outline, color: Color(0xFF2563EB)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Mở app ${targetBank.shortName}',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Không thể khởi động ứng dụng ${targetBank.name} trên máy của bạn. Vui lòng đảm bảo đã cài đặt app ngân hàng, hoặc bạn có thể mở rộng mục "Quét mã QR / Chuyển khoản thủ công" bên dưới.',
+          style: const TextStyle(fontSize: 13, height: 1.4),
+        ),
+        actions: [
+          if (paymentInfo.checkoutUrl != null &&
+              paymentInfo.checkoutUrl!.startsWith('http'))
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                launchUrl(
+                  Uri.parse(paymentInfo.checkoutUrl!),
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: const Text('Mở trang PayOS Web'),
+            ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Đã hiểu'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleConfirmPayment() async {
     setState(() => _isCheckingStatus = true);
 
@@ -99,7 +197,18 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
     setState(() => _isCheckingStatus = false);
 
     result.when(
-      ok: (_) {
+      ok: (isConfirmed) {
+        if (!isConfirmed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Hệ thống chưa nhận được thanh toán từ ngân hàng. Vui lòng hoàn tất chuyển khoản trước khi bấm xác nhận.',
+              ),
+              backgroundColor: AppColors.error,
+            ),
+          );
+          return;
+        }
         // Tải lại danh sách đơn chuyến đi ở Tab 2
         ref.read(myReservationsControllerProvider.notifier).loadReservations();
         // Chuyển sang màn hình Thành công
@@ -124,6 +233,11 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
   Widget build(BuildContext context) {
     final bookingState = ref.watch(bookingFormControllerProvider);
     final authState = ref.watch(authControllerProvider);
+    final banksAsync = ref.watch(supportedBanksProvider);
+    final allBanks = banksAsync.value ?? [];
+    final currentSelectedBank =
+        _selectedBank ?? (allBanks.isNotEmpty ? allBanks.first : null);
+
     final user = authState.user;
     final vehicle = bookingState.vehicle;
     final reservation = bookingState.createdReservation;
@@ -178,19 +292,30 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
 
     final reservationCode =
         reservation?.reservationCode ?? paymentInfo.orderCode;
-    final depositFee = reservation?.depositFee ?? paymentInfo.depositFee;
+    final depositFee = paymentInfo.depositFee > 0
+        ? paymentInfo.depositFee
+        : (reservation?.depositFee ?? 0);
     final totalRent =
         reservation?.totalAmount ?? bookingState.estimatedTotalRent;
     final collateralFee =
-        reservation?.collateralFee ?? vehicle?.depositFee?.toInt() ?? 3000000;
+        reservation?.collateralFee ?? vehicle?.depositFee?.toInt() ?? 0;
 
     final renterName =
         (user != null && user.fullName != null && user.fullName!.isNotEmpty)
-        ? user.fullName!
-        : (user != null && user.email.isNotEmpty ? user.email : 'Khách hàng');
+            ? user.fullName!
+            : (user != null && user.email.isNotEmpty ? user.email : 'Khách hàng');
     final renterPhone = (user?.phone != null && user!.phone!.isNotEmpty)
         ? user.phone!
         : 'Chưa cập nhật';
+
+    final vehicleDisplayName = (vehicle?.name != null && vehicle!.name.isNotEmpty)
+        ? vehicle.name
+        : (reservation?.vehicleName != null && reservation!.vehicleName!.isNotEmpty
+            ? reservation.vehicleName!
+            : 'Phương tiện thuê');
+    final vehicleImageUrl = (vehicle?.imageUrl != null && vehicle!.imageUrl!.isNotEmpty)
+        ? vehicle.imageUrl
+        : reservation?.vehicleImageUrl;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -224,7 +349,7 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
           left: 16,
           right: 16,
           top: 16,
-          bottom: 100,
+          bottom: 110,
         ),
         child: Column(
           children: [
@@ -332,7 +457,7 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                         ),
                       ),
                       Text(
-                        vehicle?.name ?? 'KIA K3 2024',
+                        vehicleDisplayName,
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -368,20 +493,150 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // --- 2. Bank Transfer Card (Reusable VietQRPaymentCard) ---
+            // --- 2. Bank App Selector Grid (Phương án 1 & 1A) ---
+            BankAppSelectorGrid(
+              selectedBank: currentSelectedBank,
+              onBankSelected: (bank) {
+                setState(() => _selectedBank = bank);
+              },
+            ),
+            const SizedBox(height: 14),
+
+            // --- 3. Nút CTA mở trực tiếp App Ngân hàng (1-Chạm Deeplink) ---
+            if (currentSelectedBank != null) ...[
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _handleOpenBankApp(paymentInfo),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.network(
+                                currentSelectedBank.logoUrl,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                  Icons.account_balance,
+                                  color: Color(0xFF2563EB),
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Mở app ${currentSelectedBank.shortName} để thanh toán',
+                                  style: const TextStyle(
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Tự động điền ${BookingFormatters.formatCurrency(depositFee)} & nội dung',
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.open_in_new_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ] else ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        'Đang tải ứng dụng ngân hàng...',
+                        style: TextStyle(fontSize: 13, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 18),
+
+            // --- 4. Mục Accordion thu gọn: Quét QR hoặc Chuyển khoản thủ công (Phương án 2A) ---
             VietQRPaymentCard(
               paymentInfo: paymentInfo,
+              beneficiaryBankName: allBanks
+                  .where((b) => b.bin == paymentInfo.bin)
+                  .firstOrNull
+                  ?.name,
               onCopy: _copyToClipboard,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
 
-            // --- 3. Order Details Section (Reusable BookingOrderSummaryCard) ---
+            // --- 5. Order Details Section (Reusable BookingOrderSummaryCard) ---
             BookingOrderSummaryCard(
               reservationCode: reservationCode,
-              vehicleName: vehicle?.name ?? 'KIA K3 2024',
-              vehicleImageUrl: vehicle?.imageUrl,
+              vehicleName: vehicleDisplayName,
+              vehicleImageUrl: vehicleImageUrl,
               renterName: renterName,
               renterPhone: renterPhone,
               startDateTime: bookingState.startDateTime,
@@ -394,7 +649,7 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
         ),
       ),
 
-      // --- 4. Sticky Footer CTA Button ---
+      // --- 6. Sticky Footer CTA Button: Xác nhận thanh toán ---
       bottomSheet: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -446,14 +701,14 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Xác nhận đã thanh toán',
+                        'Tôi đã chuyển khoản thành công',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(Icons.arrow_forward, size: 18),
+                      Icon(Icons.check_circle_outline, size: 18),
                     ],
                   ),
           ),

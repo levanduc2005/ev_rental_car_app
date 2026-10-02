@@ -17,6 +17,7 @@ class MyReservationsState {
     this.selectedFilter = ReservationTabFilter.all,
     this.errorMessage,
     this.actionMessage,
+    this.actionErrorMessage,
   });
 
   final List<ReservationEntity> reservations;
@@ -25,6 +26,7 @@ class MyReservationsState {
   final ReservationTabFilter selectedFilter;
   final String? errorMessage;
   final String? actionMessage;
+  final String? actionErrorMessage;
 
   /// Danh sách các đơn còn hiệu lực / chuyến đi (không bao gồm đơn đã hủy / quá hạn)
   List<ReservationEntity> get activeTrips => reservations
@@ -77,8 +79,10 @@ class MyReservationsState {
     ReservationTabFilter? selectedFilter,
     String? errorMessage,
     String? actionMessage,
+    String? actionErrorMessage,
     bool clearError = false,
     bool clearActionMessage = false,
+    bool clearActionErrorMessage = false,
   }) {
     return MyReservationsState(
       reservations: reservations ?? this.reservations,
@@ -89,6 +93,9 @@ class MyReservationsState {
       actionMessage: clearActionMessage
           ? null
           : (actionMessage ?? this.actionMessage),
+      actionErrorMessage: clearActionErrorMessage
+          ? null
+          : (actionErrorMessage ?? this.actionErrorMessage),
     );
   }
 }

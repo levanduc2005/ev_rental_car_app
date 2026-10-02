@@ -2,6 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "E-Motion (Mobile with .env)",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=.env"
+      ]
+    },
+    {
       "name": "E-Motion (Dev)",
       "request": "launch",
       "type": "dart",

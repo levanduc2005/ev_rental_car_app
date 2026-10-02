@@ -7,6 +7,7 @@ class CreateReservationRequestModel {
     required this.stationId,
     required this.startTime,
     required this.endTime,
+    this.paymentMethod = 'PAYOS',
   });
 
   final String userEmail;
@@ -14,6 +15,7 @@ class CreateReservationRequestModel {
   final int stationId;
   final DateTime startTime;
   final DateTime endTime;
+  final String paymentMethod;
 
   Map<String, dynamic> toJson() {
     // Format dạng ISO LocalDateTime tương thích Spring Boot (ví dụ: 2026-09-27T14:00:00)
@@ -25,6 +27,7 @@ class CreateReservationRequestModel {
       'stationId': stationId,
       'startTime': formatter.format(startTime),
       'endTime': formatter.format(endTime),
+      'paymentMethod': paymentMethod,
     };
   }
 }

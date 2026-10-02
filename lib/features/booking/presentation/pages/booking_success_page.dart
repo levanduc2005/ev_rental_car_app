@@ -17,7 +17,14 @@ class BookingSuccessPage extends ConsumerWidget {
     final bookingState = ref.watch(bookingFormControllerProvider);
     final vehicle = bookingState.vehicle;
     final reservation = bookingState.createdReservation;
-    final reservationCode = reservation?.reservationCode ?? '1789616882506';
+    final reservationCode = reservation?.reservationCode ??
+        bookingState.payosPaymentInfo?.orderCode ??
+        '';
+    final vehicleDisplayName = (vehicle?.name != null && vehicle!.name.isNotEmpty)
+        ? vehicle.name
+        : (reservation?.vehicleName != null && reservation!.vehicleName!.isNotEmpty
+            ? reservation.vehicleName!
+            : 'Phương tiện thuê');
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -112,7 +119,7 @@ class BookingSuccessPage extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        vehicle?.name ?? 'KIA K3 2024',
+                        vehicleDisplayName,
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,

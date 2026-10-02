@@ -9,6 +9,7 @@ import 'package:rental_car/features/booking/domain/entities/reservation_entity.d
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_state.dart';
+import 'package:rental_car/features/booking/presentation/utils/booking_formatters.dart';
 import 'package:rental_car/features/booking/presentation/widgets/reservation_card.dart';
 
 /// Tab 2: Quản lý Đơn thuê xe e-Motion (Được chia làm 2 mục: Chuyến đi & Đã hủy)
@@ -20,7 +21,7 @@ class MyReservationsPage extends ConsumerWidget {
     final state = ref.watch(myReservationsControllerProvider);
     final controller = ref.read(myReservationsControllerProvider.notifier);
 
-    // Lắng nghe thông báo action (vd: hủy đơn thành công)
+    // Lắng nghe thông báo action (vd: hủy đơn thành công hoặc lỗi)
     ref.listen<MyReservationsState>(myReservationsControllerProvider, (
       previous,
       next,
@@ -31,6 +32,15 @@ class MyReservationsPage extends ConsumerWidget {
           SnackBar(
             content: Text(next.actionMessage!),
             backgroundColor: AppColors.success,
+          ),
+        );
+      }
+      if (next.actionErrorMessage != null &&
+          next.actionErrorMessage != previous?.actionErrorMessage) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.actionErrorMessage!),
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -305,19 +315,61 @@ class _ReservationListView extends ConsumerWidget {
     ReservationEntity reservation,
   ) async {
     final isPending = reservation.isPending;
+    final isEligibleForRefund = reservation.isEligibleForRefund;
+    final depositFormatted =
+        BookingFormatters.formatCurrency(reservation.depositFee);
+
+    String title;
+    String message;
+    String confirmLabel;
+
+    if (isPending) {
+      title = 'Hủy giữ chỗ tức thì?';
+      message =
+          'Bạn đang hủy đơn giữ chỗ #${reservation.reservationCode}. Thao tác này sẽ hủy đơn ngay lập tức và giải phóng xe để bạn có thể đặt xe khác.';
+      confirmLabel = 'Hủy giữ xe ngay';
+    } else if (isEligibleForRefund) {
+      title = 'Xác nhận hủy & Hoàn cọc';
+      message =
+          'Thời gian nhận xe còn từ 5 ngày trở lên. Bạn sẽ được HOÀN 100% TIỀN CỌC ($depositFormatted) về tài khoản thanh toán của bạn.\n\nBạn có chắc chắn muốn hủy đơn #${reservation.reservationCode} không?';
+      confirmLabel = 'Xác nhận hủy & Hoàn cọc';
+    } else {
+      title = 'Cảnh báo hủy đơn - MẤT TIỀN CỌC';
+      message =
+          'Thời gian nhận xe còn DƯỚI 5 NGÀY. Theo chính sách của hệ thống, bạn sẽ KHÔNG ĐƯỢC HOÀN LẠI số tiền cọc ($depositFormatted) nếu hủy đơn lúc này.\n\nBạn có chắc chắn muốn chấp nhận mất cọc để hủy đơn #${reservation.reservationCode} không?';
+      confirmLabel = 'Đồng ý hủy & Mất cọc';
+    }
+
     final confirmed = await showConfirmDialog(
       context,
-      title: isPending ? 'Hủy giữ chỗ tức thì?' : 'Xác nhận hủy đơn đặt xe?',
-      message: isPending
-          ? 'Bạn đang hủy đơn giữ chỗ #${reservation.reservationCode}. Thao tác này sẽ hủy đơn ngay lập tức và giải phóng xe để bạn có thể đặt xe khác.'
-          : 'Bạn đang hủy đơn đã xác nhận cọc #${reservation.reservationCode}. Đơn sẽ được xử lý hoàn trả cọc theo chính sách (hủy trước ngày nhận xe từ 5 ngày trở lên).',
-      confirmLabel: isPending ? 'Hủy giữ xe ngay' : 'Xác nhận hủy',
+      title: title,
+      message: message,
+      confirmLabel: confirmLabel,
       cancelLabel: 'Quay lại',
       isDestructive: true,
     );
 
     if (confirmed) {
-      controller.cancelReservation(reservation.reservationCode);
+      final success = await controller.cancelReservation(reservation.reservationCode);
+      if (success && context.mounted) {
+        if (!isPending && isEligibleForRefund) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Hủy đơn thành công! Đã hoàn $depositFormatted về tài khoản thanh toán.',
+              ),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        } else if (!isPending) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Đã hủy đơn đặt xe (Mất tiền cọc theo quy định < 5 ngày).'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
     }
   }
 

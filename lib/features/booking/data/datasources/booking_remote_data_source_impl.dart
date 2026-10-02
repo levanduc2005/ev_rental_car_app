@@ -8,6 +8,7 @@ import 'package:rental_car/features/booking/data/models/create_reservation_reque
 import 'package:rental_car/features/booking/data/models/payos_payment_info_model.dart';
 import 'package:rental_car/features/booking/data/models/reservation_model.dart';
 import 'package:rental_car/features/booking/data/models/vehicle_booking_summary_model.dart';
+import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
 
 class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
   const BookingRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
@@ -55,6 +56,7 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
       final response = await _dio.post<Map<String, dynamic>>(
         '/reservations',
         data: request.toJson(),
+        options: Options(headers: {'X-Client-Platform': 'mobile'}),
       );
 
       final data = response.data?['data'];
@@ -153,7 +155,12 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
         '/payment/payos/confirm/$reservationCode',
       );
       final status = response.data?['status'];
-      return status == 200 || status == 201;
+      if (status != 200 && status != 201) {
+        final message = response.data?['message']?.toString() ??
+            'Hệ thống chưa nhận được thanh toán từ ngân hàng.';
+        throw ServerException(message: message);
+      }
+      return true;
     });
   }
 
@@ -171,5 +178,24 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
         'Không thể lấy thông tin thanh toán PayOS từ hệ thống.',
       );
     });
+  }
+
+  @override
+  Future<List<BankAppItem>> getSupportedBanks() async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        'https://api.vietqr.io/v2/banks',
+      );
+      final data = response.data?['data'];
+      if (data is List) {
+        return data
+            .whereType<Map<String, dynamic>>()
+            .map(BankAppItem.fromVietQRJson)
+            .toList();
+      }
+    } catch (_) {
+      // Bắt lỗi mạng an toàn
+    }
+    return const [];
   }
 }

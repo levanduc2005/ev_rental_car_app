@@ -72,7 +72,8 @@ class MyReservationsController extends Notifier<MyReservationsState> {
       err: (failure) {
         state = state.copyWith(
           isCancelling: false,
-          errorMessage: failure.message,
+          clearError: true,
+          actionErrorMessage: failure.message,
         );
         return false;
       },

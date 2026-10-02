@@ -186,26 +186,50 @@ class ReservationCard extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Cọc giữ chỗ / Tổng:',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.textSecondary,
-                          ),
+                        Row(
+                          children: [
+                            const Text(
+                              'Cọc giữ chỗ: ',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              BookingFormatters.formatCurrency(
+                                reservation.depositFee,
+                              ),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2563EB),
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          isPending
-                              ? BookingFormatters.formatCurrency(
-                                  reservation.depositFee,
-                                )
-                              : BookingFormatters.formatCurrency(
-                                  reservation.totalAmount,
-                                ),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2563EB),
-                          ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            const Text(
+                              'Tổng dự kiến: ',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              reservation.totalAmount > 0
+                                  ? BookingFormatters.formatCurrency(
+                                      reservation.totalAmount,
+                                    )
+                                  : '--',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -249,33 +273,23 @@ class ReservationCard extends StatelessWidget {
                           ),
                         ],
 
-                        // CONFIRM: Cho phép hủy nếu > 5 ngày, hoặc xem chi tiết
+                        // CONFIRM: Luôn cho phép hủy (check quy định >=5 ngày hoặc <5 ngày)
                         if (isConfirmed) ...[
-                          if (reservation.canCancel)
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.error,
-                                side: const BorderSide(color: AppColors.error),
-                                visualDensity: VisualDensity.compact,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                              ),
-                              onPressed: onCancel,
-                              child: const Text(
-                                'Hủy đơn',
-                                style: TextStyle(fontSize: 11),
-                              ),
-                            )
-                          else
-                            const Text(
-                              'Không thể hủy (<5 ngày)',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: AppColors.textSecondary,
-                                fontStyle: FontStyle.italic,
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.error,
+                              side: const BorderSide(color: AppColors.error),
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
                               ),
                             ),
+                            onPressed: onCancel,
+                            child: const Text(
+                              'Hủy đơn',
+                              style: TextStyle(fontSize: 11),
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           OutlinedButton.icon(
                             style: OutlinedButton.styleFrom(
