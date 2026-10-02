@@ -82,10 +82,7 @@ class CancellationPolicyTable extends StatelessWidget {
                   1: FlexColumnWidth(),
                   2: FlexColumnWidth(),
                 },
-                children: [
-                  _buildHeaderRow(),
-                  ..._items.map(_buildDataRow),
-                ],
+                children: [_buildHeaderRow(), ..._items.map(_buildDataRow)],
               ),
               _buildFooterNotice(),
             ],
@@ -182,7 +179,10 @@ class _HeaderCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 10),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: 10,
+      ),
       child: Text(
         text,
         style: const TextStyle(
@@ -206,10 +206,7 @@ class _DataCell extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 11,
-          color: Color(0xFF475569),
-        ),
+        style: const TextStyle(fontSize: 11, color: Color(0xFF475569)),
       ),
     );
   }

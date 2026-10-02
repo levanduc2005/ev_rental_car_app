@@ -15,7 +15,7 @@ class RentalTimeBottomSheet extends StatefulWidget {
   final DateTime? initialEndTime;
   final int? initialHourPackage;
   final void Function(DateTime startTime, DateTime endTime, int? hourPackage)?
-      onApply;
+  onApply;
 
   static Future<Map<String, dynamic>?> show(
     BuildContext context, {
@@ -32,11 +32,9 @@ class RentalTimeBottomSheet extends StatefulWidget {
         initialEndTime: initialEndTime,
         initialHourPackage: initialHourPackage,
         onApply: (start, end, pkg) {
-          Navigator.of(context).pop({
-            'startTime': start,
-            'endTime': end,
-            'hourPackage': pkg,
-          });
+          Navigator.of(
+            context,
+          ).pop({'startTime': start, 'endTime': end, 'hourPackage': pkg});
         },
       ),
     );
@@ -66,7 +64,12 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
     final now = DateTime.now();
     // BE quy định: startTime phải sau thời điểm hiện tại ít nhất 3 giờ và theo giờ chẵn (:00)
     final minStartHour = now.hour + (now.minute > 0 ? 4 : 3);
-    final calculatedStart = DateTime(now.year, now.month, now.day, minStartHour);
+    final calculatedStart = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      minStartHour,
+    );
     final rawStart = widget.initialStartTime ?? calculatedStart;
     _startTime = rawStart.isBefore(now.add(const Duration(hours: 3)))
         ? calculatedStart
@@ -380,10 +383,12 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
                       label,
                       style: TextStyle(
                         fontSize: 12.5,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.w600,
-                        color:
-                            isSelected ? Colors.white : const Color(0xFF334155),
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.w600,
+                        color: isSelected
+                            ? Colors.white
+                            : const Color(0xFF334155),
                       ),
                     ),
                   ),
@@ -448,10 +453,7 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
                 ),
                 child: const Text(
                   'Áp dụng thời gian',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

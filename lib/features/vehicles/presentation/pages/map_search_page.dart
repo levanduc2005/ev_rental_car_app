@@ -91,7 +91,9 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
       initialHourPackage: current.hourPackage,
     );
     if (result != null) {
-      ref.read(vehicleFilterProvider.notifier).updateFilter(
+      ref
+          .read(vehicleFilterProvider.notifier)
+          .updateFilter(
             current.copyWith(
               startTime: result['startTime'] as DateTime?,
               endTime: result['endTime'] as DateTime?,
@@ -143,7 +145,9 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
             initialSearchText: currentFilter.search,
             onSearchChanged: (query) {
               final current = ref.read(vehicleFilterProvider);
-              ref.read(vehicleFilterProvider.notifier).updateFilter(
+              ref
+                  .read(vehicleFilterProvider.notifier)
+                  .updateFilter(
                     current.copyWith(
                       search: query,
                       clearSearch: query.trim().isEmpty,

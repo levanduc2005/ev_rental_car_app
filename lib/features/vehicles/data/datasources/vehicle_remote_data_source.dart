@@ -186,7 +186,8 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
       if (filter != null) {
         final targetCity = filter.city ?? filter.location;
         if (targetCity != null && targetCity.isNotEmpty) {
-          final isHcm = targetCity.toUpperCase().contains('HCM') ||
+          final isHcm =
+              targetCity.toUpperCase().contains('HCM') ||
               targetCity.toUpperCase().contains('HỒ CHÍ MINH') ||
               targetCity.toUpperCase().contains('TP_HCM');
           final expectedCity = isHcm ? 'Hồ Chí Minh' : 'Hà Nội';
@@ -198,18 +199,18 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
 
         if (filter.brand != 'Tất cả' && filter.brand.isNotEmpty) {
           fallbackList = fallbackList
-              .where(
-                (v) => v.brand.toUpperCase() == filter.brand.toUpperCase(),
-              )
+              .where((v) => v.brand.toUpperCase() == filter.brand.toUpperCase())
               .toList();
         }
 
         if (filter.seats != 'Tất cả') {
-          final sCount =
-              int.tryParse(filter.seats.replaceAll(RegExp(r'\D'), ''));
+          final sCount = int.tryParse(
+            filter.seats.replaceAll(RegExp(r'\D'), ''),
+          );
           if (sCount != null) {
-            fallbackList =
-                fallbackList.where((v) => v.seats == sCount).toList();
+            fallbackList = fallbackList
+                .where((v) => v.seats == sCount)
+                .toList();
           }
         }
 

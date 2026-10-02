@@ -148,11 +148,7 @@ class BrandSelectorSection extends StatelessWidget {
     ),
   };
 
-  static const List<String> _defaultBrandKeys = [
-    'VINFAST',
-    'TESLA',
-    'BYD',
-  ];
+  static const List<String> _defaultBrandKeys = ['VINFAST', 'TESLA', 'BYD'];
 
   static List<BrandItem> get _defaultBrands =>
       _defaultBrandKeys.map((k) => _knownBrands[k]!).toList();

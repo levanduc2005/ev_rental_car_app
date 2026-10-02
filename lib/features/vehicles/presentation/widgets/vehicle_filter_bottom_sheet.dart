@@ -165,12 +165,7 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
                 // 3. Hãng xe (Khớp thực tế các hãng xe có trong DB: VinFast, Tesla, BYD)
                 _buildSectionTitle('Hãng xe'),
                 _buildFilterChips(
-                  options: const [
-                    'Tất cả',
-                    'VinFast',
-                    'Tesla',
-                    'BYD',
-                  ],
+                  options: const ['Tất cả', 'VinFast', 'Tesla', 'BYD'],
                   selected: _brand,
                   onSelected: (val) => setState(() => _brand = val),
                 ),

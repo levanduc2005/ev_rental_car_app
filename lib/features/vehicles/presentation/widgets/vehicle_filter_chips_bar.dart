@@ -99,11 +99,13 @@ class _ChipItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activeBg = isSelected ? const Color(0xFF1976D2) : Colors.white;
-    final activeBorder =
-        isSelected ? const Color(0xFF1976D2) : const Color(0xFFE2E8F0);
+    final activeBorder = isSelected
+        ? const Color(0xFF1976D2)
+        : const Color(0xFFE2E8F0);
     final activeTextColor = isSelected ? Colors.white : const Color(0xFF1E293B);
-    final effectiveIconColor =
-        isSelected ? Colors.white : (iconColor ?? const Color(0xFF64748B));
+    final effectiveIconColor = isSelected
+        ? Colors.white
+        : (iconColor ?? const Color(0xFF64748B));
 
     return InkWell(
       onTap: onTap,

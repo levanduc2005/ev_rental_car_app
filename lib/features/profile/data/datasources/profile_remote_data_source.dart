@@ -32,11 +32,9 @@ abstract interface class ProfileRemoteDataSource {
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
-  ProfileRemoteDataSourceImpl({
-    required Dio dio,
-    Dio? cloudinaryDio,
-  })  : _dio = dio,
-        _cloudinaryDio = cloudinaryDio;
+  ProfileRemoteDataSourceImpl({required Dio dio, Dio? cloudinaryDio})
+    : _dio = dio,
+      _cloudinaryDio = cloudinaryDio;
 
   final Dio _dio;
   final Dio? _cloudinaryDio;
