@@ -42,6 +42,70 @@ abstract interface class VehicleRemoteDataSource {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Dữ liệu chi tiết bổ sung cho từng xe (chỉ dùng khi BE offline)
+// ---------------------------------------------------------------------------
+const _detailExtras =
+    <
+      int,
+      ({
+        double distanceKm,
+        double depositFee,
+        double holdFee,
+        String description,
+        String imageQuality,
+      })
+    >{
+      1: (
+        distanceKm: 1.8,
+        depositFee: 3000000.0,
+        holdFee: 500000.0,
+        description:
+            'Mẫu mini điện thông minh, nhỏ gọn linh hoạt trong đô thị với quãng đường di chuyển lên tới 215 km/lần sạc.',
+        imageQuality: '?q=80&w=800&auto=format&fit=crop',
+      ),
+      2: (
+        distanceKm: 2.5,
+        depositFee: 5000000.0,
+        holdFee: 500000.0,
+        description:
+            'Xe SUV điện hạng A tiện nghi, trang bị đầy đủ tính năng thông minh và an toàn vượt trội.',
+        imageQuality: '?q=80&w=800&auto=format&fit=crop',
+      ),
+      3: (
+        distanceKm: 3.8,
+        depositFee: 10000000.0,
+        holdFee: 500000.0,
+        description:
+            'SUV điện hạng D mạnh mẽ, công nghệ hỗ trợ lái nâng cao ADAS cấp độ 2, tầm vận hành trên 400km.',
+        imageQuality: '?q=80&w=800&auto=format&fit=crop',
+      ),
+      4: (
+        distanceKm: 5.2,
+        depositFee: 15000000.0,
+        holdFee: 500000.0,
+        description:
+            'SUV điện full-size hạng E cao cấp, ghế cơ trưởng thương gia, massage, màn hình giải trí đa phương tiện sang trọng.',
+        imageQuality: '?q=80&w=800&auto=format&fit=crop',
+      ),
+      5: (
+        distanceKm: 4.8,
+        depositFee: 12000000.0,
+        holdFee: 500000.0,
+        description:
+            'Sedan thuần điện hàng đầu thế giới với khả năng tăng tốc 0-100km/h trong 4.4 giây, Autopilot tích hợp sẵn.',
+        imageQuality: '?q=80&w=800&auto=format&fit=crop',
+      ),
+      7: (
+        distanceKm: 3.2,
+        depositFee: 7000000.0,
+        holdFee: 500000.0,
+        description:
+            'Mẫu SUV điện gia đình trẻ trung trang bị pin Blade an toàn độc quyền, nội thất thiết kế năng động.',
+        imageQuality: '?q=80&w=800&auto=format&fit=crop',
+      ),
+    };
+
 class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
   const VehicleRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
@@ -64,6 +128,9 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
     return '${dt.year}-${pad(dt.month)}-${pad(dt.day)}T${pad(dt.hour)}:${pad(dt.minute)}:${pad(dt.second)}';
   }
 
+  // ---------------------------------------------------------------------------
+  // Danh sách xe fallback dùng cho list view (tối giản, không có detail fields)
+  // ---------------------------------------------------------------------------
   static const List<VehicleModel> _staticFallbackVehicles = [
     VehicleModel(
       id: 1,
@@ -164,89 +231,106 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
         (filter.city != null && filter.city!.trim().isNotEmpty);
   }
 
+  // ---------------------------------------------------------------------------
+  // Helper: chuẩn hóa thời gian + xây payload cho /vehicles/filter/available
+  // Được tái sử dụng bởi cả getVehicles() và getVehiclesPaginated()
+  // ---------------------------------------------------------------------------
+  Map<String, dynamic> _buildAvailabilityPayload(
+    VehicleFilter filter, {
+    int page = 1,
+    int limit = 20,
+  }) {
+    final now = DateTime.now();
+    final safeStartHour = now.minute > 0 ? now.hour + 4 : now.hour + 3;
+    DateTime startTime =
+        filter.startTime ??
+        (safeStartHour <= 23
+            ? DateTime(now.year, now.month, now.day, safeStartHour)
+            : DateTime(now.year, now.month, now.day + 1, 8));
+
+    DateTime endTime;
+    if (filter.endTime != null &&
+        filter.endTime!.isAfter(
+          startTime.add(const Duration(hours: 3, minutes: 50)),
+        )) {
+      endTime = filter.endTime!;
+    } else if (filter.hourPackage != null && filter.hourPackage! > 0) {
+      endTime = startTime.add(Duration(hours: filter.hourPackage!));
+    } else {
+      endTime = startTime.add(const Duration(hours: 4));
+    }
+
+    // Truncate về giờ chẵn cho BE
+    startTime = DateTime(
+      startTime.year,
+      startTime.month,
+      startTime.day,
+      startTime.hour,
+    );
+    endTime = DateTime(endTime.year, endTime.month, endTime.day, endTime.hour);
+
+    int? seatCount;
+    if (filter.seats != 'Tất cả') {
+      seatCount = int.tryParse(filter.seats.replaceAll(RegExp(r'\D'), ''));
+    }
+
+    String beCity = 'Hồ Chí Minh';
+    if (filter.city != null) {
+      final c = filter.city!.trim().toUpperCase();
+      if (c.contains('HANOI') || c.contains('HÀ NỘI')) {
+        beCity = 'Hà Nội';
+      }
+    }
+
+    final Map<String, dynamic> payload = {
+      'city': beCity,
+      'startTime': _formatDateTimeForBackend(startTime),
+      'endTime': _formatDateTimeForBackend(endTime),
+      'page': page,
+      'limit': limit,
+      'search': filter.search?.trim() ?? '',
+    };
+
+    if (filter.stationId != null) payload['stationId'] = filter.stationId;
+    if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
+      payload['brands'] = [_mapBrandToBackend(filter.brand)];
+    }
+    if (filter.carType != 'Tất cả' && filter.carType.trim().isNotEmpty) {
+      payload['categories'] = [_mapCategoryToBackend(filter.carType)];
+    }
+    if (seatCount != null) payload['seats'] = seatCount;
+    if (filter.effectiveMinPrice != null) {
+      payload['minPrice'] = filter.effectiveMinPrice;
+    }
+    if (filter.effectiveMaxPrice != null) {
+      payload['maxPrice'] = filter.effectiveMaxPrice;
+    }
+
+    return payload;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helper: lọc brand phía client sau khi nhận response từ BE
+  // ---------------------------------------------------------------------------
+  List<VehicleModel> _applyBrandFilter(
+    List<VehicleModel> models,
+    VehicleFilter filter,
+  ) {
+    if (filter.brand == 'Tất cả' || filter.brand.trim().isEmpty) return models;
+    return models
+        .where(
+          (m) => m.brand.toUpperCase() == filter.brand.trim().toUpperCase(),
+        )
+        .toList();
+  }
+
   @override
   Future<List<VehicleModel>> getVehicles({VehicleFilter? filter}) {
     return guardApiCall(() async {
-      // 1. Nếu có tiêu chí lọc khung giờ / địa điểm cụ thể -> Gọi API POST /vehicles/filter/available
+      // 1. Nếu có tiêu chí lọc khung giờ / địa điểm cụ thể -> Gọi API POST
       if (filter != null && _hasAvailabilityConditions(filter)) {
         try {
-          final now = DateTime.now();
-          final safeStartHour = now.minute > 0 ? now.hour + 4 : now.hour + 3;
-          DateTime startTime =
-              filter.startTime ??
-              (safeStartHour <= 23
-                  ? DateTime(now.year, now.month, now.day, safeStartHour)
-                  : DateTime(now.year, now.month, now.day + 1, 8));
-
-          DateTime endTime;
-          if (filter.endTime != null &&
-              filter.endTime!.isAfter(
-                startTime.add(const Duration(hours: 3, minutes: 50)),
-              )) {
-            endTime = filter.endTime!;
-          } else if (filter.hourPackage != null && filter.hourPackage! > 0) {
-            endTime = startTime.add(Duration(hours: filter.hourPackage!));
-          } else {
-            endTime = startTime.add(const Duration(hours: 4));
-          }
-
-          startTime = DateTime(
-            startTime.year,
-            startTime.month,
-            startTime.day,
-            startTime.hour,
-          );
-          endTime = DateTime(
-            endTime.year,
-            endTime.month,
-            endTime.day,
-            endTime.hour,
-          );
-
-          int? seatCount;
-          if (filter.seats != 'Tất cả') {
-            seatCount = int.tryParse(
-              filter.seats.replaceAll(RegExp(r'\D'), ''),
-            );
-          }
-
-          String beCity = 'Hồ Chí Minh';
-          if (filter.city != null) {
-            final c = filter.city!.trim().toUpperCase();
-            if (c.contains('HANOI') || c.contains('HÀ NỘI')) {
-              beCity = 'Hà Nội';
-            } else {
-              beCity = 'Hồ Chí Minh';
-            }
-          }
-
-          final Map<String, dynamic> payload = {
-            'city': beCity,
-            'startTime': _formatDateTimeForBackend(startTime),
-            'endTime': _formatDateTimeForBackend(endTime),
-            'page': 1,
-            'limit': 20,
-            'search': filter.search?.trim() ?? '',
-          };
-
-          if (filter.stationId != null) {
-            payload['stationId'] = filter.stationId;
-          }
-          if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
-            payload['brands'] = [_mapBrandToBackend(filter.brand)];
-          }
-          if (filter.carType != 'Tất cả' && filter.carType.trim().isNotEmpty) {
-            payload['categories'] = [_mapCategoryToBackend(filter.carType)];
-          }
-          if (seatCount != null) {
-            payload['seats'] = seatCount;
-          }
-          if (filter.effectiveMinPrice != null) {
-            payload['minPrice'] = filter.effectiveMinPrice;
-          }
-          if (filter.effectiveMaxPrice != null) {
-            payload['maxPrice'] = filter.effectiveMaxPrice;
-          }
+          final payload = _buildAvailabilityPayload(filter);
 
           final response = await _dio.post<Map<String, dynamic>>(
             '/vehicles/filter/available',
@@ -263,18 +347,8 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
                   ),
                 )
                 .toList();
-            if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
-              models = models
-                  .where(
-                    (m) =>
-                        m.brand.toUpperCase() ==
-                        filter.brand.trim().toUpperCase(),
-                  )
-                  .toList();
-            }
-            if (models.isNotEmpty) {
-              return models;
-            }
+            models = _applyBrandFilter(models, filter);
+            if (models.isNotEmpty) return models;
           }
         } catch (_) {
           // Khi BE gặp lỗi hoặc offline -> tự động fallback
@@ -417,159 +491,27 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
     });
   }
 
+  /// Lấy chi tiết xe từ [_staticFallbackVehicles] và bổ sung các trường
+  /// detail-only qua [_detailExtras]. Không lặp lại dữ liệu xe.
   VehicleModel _getFallbackVehicleDetail(String id) {
     final intId = int.tryParse(id) ?? 1;
-    switch (intId) {
-      case 2:
-        return const VehicleModel(
-          id: 2,
-          name: 'VinFast VF 5 Plus',
-          brand: 'VINFAST',
-          stationName: 'Trạm Sạc & Thuê Xe Quận 1, TP. Hồ Chí Minh',
-          distanceKm: 2.5,
-          seats: 5,
-          batteryLevel: 88,
-          batteryCapacity: 37.23,
-          main:
-              'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop',
-          consumptionRate: 11.2,
-          description:
-              'Xe SUV điện hạng A tiện nghi, trang bị đầy đủ tính năng thông minh và an toàn vượt trội.',
-          images: [
-            'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop',
-          ],
-          depositFee: 5000000.0,
-          holdFee: 500000.0,
-          pricePer4Hours: 450000,
-          pricePer8Hours: 630000,
-          pricePer12Hours: 720000,
-          pricePerDay: 900000,
-        );
-      case 3:
-        return const VehicleModel(
-          id: 3,
-          name: 'VinFast VF 8 Plus',
-          brand: 'VINFAST',
-          stationName: 'Trạm Sạc & Thuê Xe Quận 1, TP. Hồ Chí Minh',
-          distanceKm: 3.8,
-          seats: 5,
-          batteryLevel: 72,
-          batteryCapacity: 87.7,
-          main:
-              'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=800&auto=format&fit=crop',
-          consumptionRate: 16.5,
-          description:
-              'SUV điện hạng D mạnh mẽ, công nghệ hỗ trợ lái nâng cao ADAS cấp độ 2, tầm vận hành trên 400km.',
-          images: [
-            'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=800&auto=format&fit=crop',
-          ],
-          depositFee: 10000000.0,
-          holdFee: 500000.0,
-          pricePer4Hours: 900000,
-          pricePer8Hours: 1260000,
-          pricePer12Hours: 1440000,
-          pricePerDay: 1800000,
-        );
-      case 4:
-        return const VehicleModel(
-          id: 4,
-          name: 'VinFast VF 9 Plus 6 Chỗ',
-          brand: 'VINFAST',
-          stationName: 'Trạm Sạc & Thuê Xe Cầu Giấy, Hà Nội',
-          distanceKm: 5.2,
-          seats: 7,
-          batteryLevel: 100,
-          batteryCapacity: 123.0,
-          main:
-              'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=800&auto=format&fit=crop',
-          consumptionRate: 20.0,
-          description:
-              'SUV điện full-size hạng E cao cấp, ghế cơ trưởng thương gia, massage, màn hình giải trí đa phương tiện sang trọng.',
-          images: [
-            'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=800&auto=format&fit=crop',
-          ],
-          depositFee: 15000000.0,
-          holdFee: 500000.0,
-          pricePer4Hours: 1400000,
-          pricePer8Hours: 1960000,
-          pricePer12Hours: 2240000,
-          pricePerDay: 2800000,
-        );
-      case 5:
-        return const VehicleModel(
-          id: 5,
-          name: 'Tesla Model 3 Long Range',
-          brand: 'TESLA',
-          stationName: 'Trạm Sạc & Thuê Xe Cầu Giấy, Hà Nội',
-          distanceKm: 4.8,
-          seats: 5,
-          batteryLevel: 90,
-          batteryCapacity: 82.0,
-          main:
-              'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=800&auto=format&fit=crop',
-          consumptionRate: 14.0,
-          description:
-              'Sedan thuần điện hàng đầu thế giới với khả năng tăng tốc 0-100km/h trong 4.4 giây, Autopilot tích hợp sẵn.',
-          images: [
-            'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=800&auto=format&fit=crop',
-          ],
-          depositFee: 12000000.0,
-          holdFee: 500000.0,
-          pricePer4Hours: 1200000,
-          pricePer8Hours: 1680000,
-          pricePer12Hours: 1920000,
-          pricePerDay: 2400000,
-        );
-      case 7:
-        return const VehicleModel(
-          id: 7,
-          name: 'BYD Atto 3 Extended',
-          brand: 'BYD',
-          stationName: 'Trạm Sạc & Thuê Xe Hoàn Kiếm, Hà Nội',
-          distanceKm: 3.2,
-          seats: 5,
-          batteryLevel: 85,
-          batteryCapacity: 60.48,
-          main:
-              'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=800&auto=format&fit=crop',
-          consumptionRate: 13.0,
-          description:
-              'Mẫu SUV điện gia đình trẻ trung trang bị pin Blade an toàn độc quyền, nội thất thiết kế năng động.',
-          images: [
-            'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=800&auto=format&fit=crop',
-          ],
-          depositFee: 7000000.0,
-          holdFee: 500000.0,
-          pricePer4Hours: 600000,
-          pricePer8Hours: 840000,
-          pricePer12Hours: 960000,
-          pricePerDay: 1200000,
-        );
-      default:
-        return const VehicleModel(
-          id: 1,
-          name: 'VinFast VF 3 Plus 2024',
-          brand: 'VINFAST',
-          stationName: 'Trạm Sạc & Thuê Xe Quận 1, TP. Hồ Chí Minh',
-          distanceKm: 1.8,
-          batteryLevel: 95,
-          batteryCapacity: 18.64,
-          main:
-              'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=800&auto=format&fit=crop',
-          consumptionRate: 8.5,
-          description:
-              'Mẫu mini điện thông minh, nhỏ gọn linh hoạt trong đô thị với quãng đường di chuyển lên tới 215 km/lần sạc.',
-          images: [
-            'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=800&auto=format&fit=crop',
-          ],
-          depositFee: 3000000.0,
-          holdFee: 500000.0,
-          pricePer4Hours: 300000,
-          pricePer8Hours: 420000,
-          pricePer12Hours: 480000,
-          pricePerDay: 600000,
-        );
-    }
+
+    final base = _staticFallbackVehicles.firstWhere(
+      (v) => v.id == intId,
+      orElse: () => _staticFallbackVehicles.first,
+    );
+
+    final extras = _detailExtras[base.id] ?? _detailExtras[1]!;
+    final imgUrl = '${base.main}${extras.imageQuality}';
+
+    return base.copyWith(
+      distanceKm: extras.distanceKm,
+      depositFee: extras.depositFee,
+      holdFee: extras.holdFee,
+      description: extras.description,
+      main: imgUrl,
+      images: [imgUrl],
+    );
   }
 
   @override
@@ -706,83 +648,11 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
     return guardApiCall(() async {
       if (filter != null && _hasAvailabilityConditions(filter)) {
         try {
-          final now = DateTime.now();
-          final safeStartHour = now.minute > 0 ? now.hour + 4 : now.hour + 3;
-          DateTime startTime =
-              filter.startTime ??
-              (safeStartHour <= 23
-                  ? DateTime(now.year, now.month, now.day, safeStartHour)
-                  : DateTime(now.year, now.month, now.day + 1, 8));
-
-          DateTime endTime;
-          if (filter.endTime != null &&
-              filter.endTime!.isAfter(
-                startTime.add(const Duration(hours: 3, minutes: 50)),
-              )) {
-            endTime = filter.endTime!;
-          } else if (filter.hourPackage != null && filter.hourPackage! > 0) {
-            endTime = startTime.add(Duration(hours: filter.hourPackage!));
-          } else {
-            endTime = startTime.add(const Duration(hours: 4));
-          }
-
-          startTime = DateTime(
-            startTime.year,
-            startTime.month,
-            startTime.day,
-            startTime.hour,
+          final payload = _buildAvailabilityPayload(
+            filter,
+            page: page,
+            limit: limit,
           );
-          endTime = DateTime(
-            endTime.year,
-            endTime.month,
-            endTime.day,
-            endTime.hour,
-          );
-
-          int? seatCount;
-          if (filter.seats != 'Tất cả') {
-            seatCount = int.tryParse(
-              filter.seats.replaceAll(RegExp(r'\D'), ''),
-            );
-          }
-
-          String beCity = 'Hồ Chí Minh';
-          if (filter.city != null) {
-            final c = filter.city!.trim().toUpperCase();
-            if (c.contains('HANOI') || c.contains('HÀ NỘI')) {
-              beCity = 'Hà Nội';
-            } else {
-              beCity = 'Hồ Chí Minh';
-            }
-          }
-
-          final Map<String, dynamic> payload = {
-            'city': beCity,
-            'startTime': _formatDateTimeForBackend(startTime),
-            'endTime': _formatDateTimeForBackend(endTime),
-            'page': page,
-            'limit': limit,
-            'search': filter.search?.trim() ?? '',
-          };
-
-          if (filter.stationId != null) {
-            payload['stationId'] = filter.stationId;
-          }
-          if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
-            payload['brands'] = [_mapBrandToBackend(filter.brand)];
-          }
-          if (filter.carType != 'Tất cả' && filter.carType.trim().isNotEmpty) {
-            payload['categories'] = [_mapCategoryToBackend(filter.carType)];
-          }
-          if (seatCount != null) {
-            payload['seats'] = seatCount;
-          }
-          if (filter.effectiveMinPrice != null) {
-            payload['minPrice'] = filter.effectiveMinPrice;
-          }
-          if (filter.effectiveMaxPrice != null) {
-            payload['maxPrice'] = filter.effectiveMaxPrice;
-          }
 
           final response = await _dio.post<Map<String, dynamic>>(
             '/vehicles/filter/available',
@@ -799,15 +669,7 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
                   ),
                 )
                 .toList();
-            if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
-              models = models
-                  .where(
-                    (m) =>
-                        m.brand.toUpperCase() ==
-                        filter.brand.trim().toUpperCase(),
-                  )
-                  .toList();
-            }
+            models = _applyBrandFilter(models, filter);
             if (models.isNotEmpty) {
               final totalPg = (data['totalPages'] as num?)?.toInt() ?? 1;
               return PaginatedVehicleModels(

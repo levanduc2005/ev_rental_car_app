@@ -11,123 +11,11 @@ import 'package:rental_car/features/home/presentation/widgets/insurance_banner.d
 import 'package:rental_car/features/home/presentation/widgets/rental_hero_search_card.dart';
 import 'package:rental_car/features/home/presentation/widgets/vehicle_showcase_section.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart';
+import 'package:rental_car/features/vehicles/presentation/fallback_vehicles.dart';
 import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
-
-  // Danh sách xe dự phòng: "Xe có thể bạn sẽ thích" (100% xe điện chuẩn đội xe E-Motion)
-  static const List<VehicleCardData> _fallbackRecommendedVehicles = [
-    VehicleCardData(
-      id: 1,
-      name: 'VinFast VF 3 Plus 2024',
-      imageUrl:
-          'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=800&auto=format&fit=crop',
-      rating: 4.9,
-      location: 'Quận 1, TP. Hồ Chí Minh',
-      seats: '4 chỗ',
-      transmission: 'Điện',
-      fuelType: 'Điện (95% Pin)',
-      price4h: '300K',
-      oldPrice4h: '350K',
-      price24h: '600K',
-      topBadgeText: '⚡ 100% Điện',
-      topBadgeColor: Color(0xFF1976D2),
-      bottomBadgeText: 'Tự nhận xe',
-    ),
-    VehicleCardData(
-      id: 2,
-      name: 'VinFast VF 5 Plus',
-      imageUrl:
-          'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop',
-      rating: 4.95,
-      location: 'Quận 1, TP. Hồ Chí Minh',
-      seats: '5 chỗ',
-      transmission: 'Điện',
-      fuelType: 'Điện (88% Pin)',
-      price4h: '450K',
-      oldPrice4h: '500K',
-      price24h: '900K',
-      topBadgeText: '⚡ 100% Điện',
-      topBadgeColor: Color(0xFF1976D2),
-      bottomBadgeText: 'Tự nhận xe',
-    ),
-    VehicleCardData(
-      id: 7,
-      name: 'BYD Atto 3 Extended',
-      imageUrl:
-          'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=800&auto=format&fit=crop',
-      rating: 4.85,
-      location: 'Hoàn Kiếm, Hà Nội',
-      seats: '5 chỗ',
-      transmission: 'Điện',
-      fuelType: 'Điện (85% Pin)',
-      price4h: '600K',
-      oldPrice4h: '700K',
-      price24h: '1.200K',
-      topBadgeText: '⚡ 100% Điện',
-      topBadgeColor: Color(0xFF1976D2),
-      bottomBadgeText: 'Tự nhận xe',
-    ),
-  ];
-
-  // Danh sách xe dự phòng: "Xế xịn • Xe sang" (100% xe điện cao cấp chuẩn đội xe E-Motion)
-  static const List<VehicleCardData> _fallbackLuxuryVehicles = [
-    VehicleCardData(
-      id: 3,
-      name: 'VinFast VF 8 Plus',
-      imageUrl:
-          'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=800&auto=format&fit=crop',
-      rating: 4.95,
-      location: 'Quận 1, TP. Hồ Chí Minh',
-      seats: '5 chỗ',
-      transmission: 'Điện',
-      fuelType: 'Điện (72% Pin)',
-      price4h: '900K',
-      oldPrice4h: '1.050K',
-      price24h: '1.800K',
-      topBadgeText: '👑 Xế xịn',
-      topBadgeColor: Color(0xFFE65100),
-      bottomBadgeText: 'Tự nhận xe',
-      isLuxury: true,
-    ),
-    VehicleCardData(
-      id: 4,
-      name: 'VinFast VF 9 Plus 6 Chỗ',
-      imageUrl:
-          'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=800&auto=format&fit=crop',
-      rating: 5.0,
-      location: 'Cầu Giấy, Hà Nội',
-      seats: '7 chỗ',
-      transmission: 'Điện',
-      fuelType: 'Điện (100% Pin)',
-      price4h: '1.400K',
-      oldPrice4h: '1.600K',
-      price24h: '2.800K',
-      topBadgeText: '👑 Xế xịn',
-      topBadgeColor: Color(0xFFE65100),
-      bottomBadgeText: 'Tự nhận xe',
-      isLuxury: true,
-    ),
-    VehicleCardData(
-      id: 5,
-      name: 'Tesla Model 3 Long Range',
-      imageUrl:
-          'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=800&auto=format&fit=crop',
-      rating: 5.0,
-      location: 'Cầu Giấy, Hà Nội',
-      seats: '5 chỗ',
-      transmission: 'Điện',
-      fuelType: 'Điện (90% Pin)',
-      price4h: '1.200K',
-      oldPrice4h: '1.350K',
-      price24h: '2.400K',
-      topBadgeText: '👑 Xế xịn',
-      topBadgeColor: Color(0xFFE65100),
-      bottomBadgeText: 'Tự nhận xe',
-      isLuxury: true,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -254,7 +142,7 @@ class HomePage extends ConsumerWidget {
                 const VehicleShowcaseSection(
                   title: 'Xe có thể bạn sẽ thích',
                   subtitle: 'Đáp ứng nhanh chóng • Nhận xe không tiếp xúc',
-                  vehicles: _fallbackRecommendedVehicles,
+                  vehicles: FallbackVehicles.recommended,
                 ),
               const SizedBox(height: AppSpacing.xl),
 
@@ -269,7 +157,7 @@ class HomePage extends ConsumerWidget {
                 const VehicleShowcaseSection(
                   title: 'Xế xịn • Xe sang',
                   subtitle: 'Đẳng cấp doanh nhân • Tiện nghi vượt trội',
-                  vehicles: _fallbackLuxuryVehicles,
+                  vehicles: FallbackVehicles.luxury,
                 ),
               const SizedBox(height: AppSpacing.xl),
 
