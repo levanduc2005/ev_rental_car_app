@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
+import 'package:rental_car/features/booking/domain/entities/bank_app_item.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_providers.dart';
 
 /// Provider lấy danh sách toàn bộ ứng dụng ngân hàng động từ VietQR Open API

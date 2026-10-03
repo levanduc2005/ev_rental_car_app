@@ -7,7 +7,7 @@ import 'package:rental_car/features/booking/domain/entities/payos_payment_info_e
 import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
 import 'package:rental_car/features/booking/domain/entities/vehicle_booking_summary.dart';
 import 'package:rental_car/features/booking/domain/repositories/booking_repository.dart';
-import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
+import 'package:rental_car/features/booking/domain/entities/bank_app_item.dart';
 
 class BookingRepositoryImpl implements BookingRepository {
   const BookingRepositoryImpl({

@@ -3,7 +3,7 @@ import 'package:rental_car/features/booking/data/models/create_reservation_reque
 import 'package:rental_car/features/booking/data/models/payos_payment_info_model.dart';
 import 'package:rental_car/features/booking/data/models/reservation_model.dart';
 import 'package:rental_car/features/booking/data/models/vehicle_booking_summary_model.dart';
-import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
+import 'package:rental_car/features/booking/domain/entities/bank_app_item.dart';
 
 abstract interface class BookingRemoteDataSource {
   /// Gọi POST /api/vehicles/booking để tính biểu phí thuê xe từ backend

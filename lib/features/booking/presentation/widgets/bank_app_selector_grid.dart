@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
-import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
+import 'package:rental_car/features/booking/domain/entities/bank_app_item.dart';
 import 'package:rental_car/features/booking/presentation/providers/supported_banks_provider.dart';
 import 'package:rental_car/features/booking/presentation/widgets/bank_app_list_bottom_sheet.dart';
 

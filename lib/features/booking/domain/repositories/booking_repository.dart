@@ -1,9 +1,9 @@
 import 'package:rental_car/core/utils/result.dart';
+import 'package:rental_car/features/booking/domain/entities/bank_app_item.dart';
 import 'package:rental_car/features/booking/domain/entities/booking_fee_entity.dart';
 import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
 import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
 import 'package:rental_car/features/booking/domain/entities/vehicle_booking_summary.dart';
-import 'package:rental_car/features/booking/presentation/models/bank_app_item.dart';
 
 abstract interface class BookingRepository {
   /// Tính toán biểu phí thuê xe qua API /api/vehicles/booking
