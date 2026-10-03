@@ -6,6 +6,7 @@ import 'package:rental_car/features/auth/presentation/providers/auth_controller.
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/widgets/rental_schedule_bottom_sheet.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
+import 'package:rental_car/features/vehicles/domain/entities/vehicle_schedule.dart';
 import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
 import 'package:rental_car/features/vehicles/presentation/widgets/vehicle_detail_carousel.dart';
 import 'package:rental_car/features/vehicles/presentation/widgets/vehicle_detail_sections.dart';
@@ -195,20 +196,80 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
       data: (detail) {
         final images = detail.imageUrls ?? [detail.imageUrl];
 
-        // Chi phí thực tế theo gói thời gian thuê niêm yết (chuẩn nghiệp vụ FE & BE)
-        final rentalFee = _getPackageRentalFee(detail, _selectedPackageId);
-        final collateralDepositVal = _parseVnd(
+        final intVehicleId = detail.id;
+
+        // 1. Lấy bảng phí chính thức từ BE (POST /vehicles/booking)
+        final bookingFeeAsync = ref.watch(
+          vehicleBookingFeeControllerProvider(
+            BookingFeeParams(
+              vehicleId: intVehicleId,
+              startTime: _startDateTime,
+              endTime: _endDateTime,
+            ),
+          ),
+        );
+        final serverBreakdown = bookingFeeAsync.when(
+          data: (d) => d,
+          loading: () => null,
+          error: (error, stack) => null,
+        );
+        final bool isServerCalculated =
+            serverBreakdown != null && serverBreakdown.fees.isNotEmpty;
+
+        // 2. Lấy lịch bận của xe từ BE (GET /vehicles/{id}/schedule)
+        final scheduleAsync = ref.watch(
+          vehicleScheduleControllerProvider(intVehicleId),
+        );
+        final List<VehicleScheduleSlot> scheduleSlots = scheduleAsync.when(
+          data: (slots) => slots,
+          loading: () => const <VehicleScheduleSlot>[],
+          error: (error, stack) => const <VehicleScheduleSlot>[],
+        );
+        final bool hasScheduleConflict = scheduleSlots.any(
+          (VehicleScheduleSlot slot) =>
+              _startDateTime.isBefore(slot.endTime) &&
+              _endDateTime.isAfter(slot.startTime),
+        );
+
+        // Chi phí fallback từ client nếu chưa có phản hồi từ BE
+        final fallbackRentalFee = _getPackageRentalFee(
+          detail,
+          _selectedPackageId,
+        );
+        final fallbackCollateralDeposit = _parseVnd(
           detail.collateralDeposit,
           3000000.0,
         );
-        final holdingDepositVal = _parseVnd(detail.holdingDeposit, 5000.0);
-        final totalRental = rentalFee + collateralDepositVal;
-        final remainingAtStation = totalRental > holdingDepositVal
-            ? (totalRental - holdingDepositVal)
-            : 0.0;
-        final depositAfterHold = collateralDepositVal > holdingDepositVal
-            ? (collateralDepositVal - holdingDepositVal)
-            : 0.0;
+        final fallbackHoldingDeposit = _parseVnd(detail.holdingDeposit, 5000.0);
+
+        final double rentalFee =
+            (isServerCalculated && serverBreakdown.bookingFee > 0)
+            ? serverBreakdown.bookingFee
+            : fallbackRentalFee;
+        final double collateralDepositVal =
+            (isServerCalculated && serverBreakdown.deposit > 0)
+            ? serverBreakdown.deposit
+            : fallbackCollateralDeposit;
+        final double holdingDepositVal =
+            (isServerCalculated && serverBreakdown.holdCar > 0)
+            ? serverBreakdown.holdCar
+            : fallbackHoldingDeposit;
+        final double totalRental =
+            (isServerCalculated && serverBreakdown.totalAmount > 0)
+            ? serverBreakdown.totalAmount
+            : (rentalFee + collateralDepositVal);
+        final double remainingAtStation =
+            (isServerCalculated && serverBreakdown.remainingAtStation > 0)
+            ? serverBreakdown.remainingAtStation
+            : (totalRental > holdingDepositVal
+                  ? (totalRental - holdingDepositVal)
+                  : 0.0);
+        final double depositAfterHold =
+            (isServerCalculated && serverBreakdown.depositAfterHold > 0)
+            ? serverBreakdown.depositAfterHold
+            : (collateralDepositVal > holdingDepositVal
+                  ? (collateralDepositVal - holdingDepositVal)
+                  : 0.0);
         final durationLabel = _getPackageDurationLabel(_selectedPackageId);
         final packageHours = _getPackageHours(_selectedPackageId);
         final pointPerHour = detail.viewingCount > 0 ? detail.viewingCount : 4;
@@ -357,6 +418,16 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                         ),
                         onChangeSchedule: _openSchedulePicker,
                       ),
+                      const SizedBox(height: 12),
+
+                      // 5b. LỊCH XE BẬN & CẢNH BÁO TRÙNG LỊCH (GET /vehicles/{id}/schedule)
+                      VehicleScheduleCard(
+                        scheduleSlots: scheduleSlots,
+                        selectedStart: _startDateTime,
+                        selectedEnd: _endDateTime,
+                        onChangeSchedule: _openSchedulePicker,
+                        isLoading: scheduleAsync.isLoading,
+                      ),
                       const SizedBox(height: 20),
 
                       // 6. VỊ TRÍ NHẬN & TRẢ XE (TẠI TRẠM e-Motion)
@@ -378,6 +449,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                         earnedPoints: earnedPoints,
                         pointPerHour: pointPerHour,
                         userPoints: userPoints,
+                        isServerCalculated: isServerCalculated,
                       ),
                       const SizedBox(height: 20),
 
@@ -529,7 +601,9 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                   // Nút Thuê xe bên phải -> Điều hướng sang Booking của Khang
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF1976D2),
+                      backgroundColor: hasScheduleConflict
+                          ? const Color(0xFFDC2626)
+                          : const Color(0xFF1976D2),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 14,
@@ -538,15 +612,28 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () => _onBookNow(detail, totalRental, rentalFee),
-                    icon: const Icon(
-                      Icons.bolt_rounded,
+                    onPressed: hasScheduleConflict
+                        ? () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Color(0xFFDC2626),
+                                content: Text(
+                                  'Xe đã có khách đặt trong khung giờ này. Vui lòng chọn giờ khác!',
+                                ),
+                              ),
+                            );
+                          }
+                        : () => _onBookNow(detail, totalRental, rentalFee),
+                    icon: Icon(
+                      hasScheduleConflict
+                          ? Icons.event_busy_rounded
+                          : Icons.bolt_rounded,
                       size: 20,
                       color: Colors.white,
                     ),
-                    label: const Text(
-                      'Thuê xe',
-                      style: TextStyle(
+                    label: Text(
+                      hasScheduleConflict ? 'Xe bận' : 'Thuê xe',
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,

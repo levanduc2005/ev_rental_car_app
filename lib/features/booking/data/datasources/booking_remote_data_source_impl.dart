@@ -156,7 +156,8 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
       );
       final status = response.data?['status'];
       if (status != 200 && status != 201) {
-        final message = response.data?['message']?.toString() ??
+        final message =
+            response.data?['message']?.toString() ??
             'Hệ thống chưa nhận được thanh toán từ ngân hàng.';
         throw ServerException(message: message);
       }

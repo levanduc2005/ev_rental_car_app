@@ -2,8 +2,11 @@ import 'package:rental_car/core/utils/result.dart';
 import 'package:rental_car/core/utils/safe_call.dart';
 import 'package:rental_car/features/vehicles/data/datasources/vehicle_remote_data_source.dart';
 import 'package:rental_car/features/vehicles/data/models/vehicle_model.dart';
+import 'package:rental_car/features/vehicles/domain/entities/booking_fee.dart';
+import 'package:rental_car/features/vehicles/domain/entities/paginated_vehicles.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart';
+import 'package:rental_car/features/vehicles/domain/entities/vehicle_schedule.dart';
 import 'package:rental_car/features/vehicles/domain/repositories/vehicle_repository.dart';
 
 class VehicleRepositoryImpl implements VehicleRepository {
@@ -45,5 +48,45 @@ class VehicleRepositoryImpl implements VehicleRepository {
   @override
   Future<Result<List<String>>> getVehicleCategories() {
     return safeCall(() => _remoteDataSource.getVehicleCategories());
+  }
+
+  @override
+  Future<Result<BookingFeeBreakdown>> getBookingFees({
+    required int vehicleId,
+    required DateTime startTime,
+    required DateTime endTime,
+  }) {
+    return safeCall(
+      () => _remoteDataSource.getBookingFees(
+        vehicleId: vehicleId,
+        startTime: startTime,
+        endTime: endTime,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<List<VehicleScheduleSlot>>> getVehicleSchedule(int vehicleId) {
+    return safeCall(() => _remoteDataSource.getVehicleSchedule(vehicleId));
+  }
+
+  @override
+  Future<Result<PaginatedVehicles>> getVehiclesPaginated({
+    VehicleFilter? filter,
+    int page = 1,
+    int limit = 20,
+  }) {
+    return safeCall(() async {
+      final result = await _remoteDataSource.getVehiclesPaginated(
+        filter: filter,
+        page: page,
+        limit: limit,
+      );
+      return PaginatedVehicles(
+        vehicles: result.models.map((m) => m.toEntity()).toList(),
+        currentPage: result.currentPage,
+        totalPages: result.totalPages,
+      );
+    });
   }
 }

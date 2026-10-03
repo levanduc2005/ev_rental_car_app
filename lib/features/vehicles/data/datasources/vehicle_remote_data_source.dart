@@ -1,13 +1,45 @@
 import 'package:dio/dio.dart';
 import 'package:rental_car/core/network/api_handler.dart';
 import 'package:rental_car/features/vehicles/data/models/vehicle_model.dart';
+import 'package:rental_car/features/vehicles/domain/entities/booking_fee.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart';
+import 'package:rental_car/features/vehicles/domain/entities/vehicle_schedule.dart';
+
+/// Kết quả phân trang từ data source (chưa map sang entity)
+class PaginatedVehicleModels {
+  const PaginatedVehicleModels({
+    required this.models,
+    required this.currentPage,
+    required this.totalPages,
+  });
+
+  final List<VehicleModel> models;
+  final int currentPage;
+  final int totalPages;
+}
 
 abstract interface class VehicleRemoteDataSource {
   Future<List<VehicleModel>> getVehicles({VehicleFilter? filter});
   Future<VehicleModel> getVehicleDetail(String id);
   Future<List<String>> getVehicleBrands();
   Future<List<String>> getVehicleCategories();
+
+  /// Lấy bảng phí booking từ BE (POST /vehicles/booking)
+  Future<BookingFeeBreakdown> getBookingFees({
+    required int vehicleId,
+    required DateTime startTime,
+    required DateTime endTime,
+  });
+
+  /// Lấy lịch bận của xe (GET /vehicles/{id}/schedule)
+  Future<List<VehicleScheduleSlot>> getVehicleSchedule(int vehicleId);
+
+  /// Lấy danh sách xe có phân trang (POST /vehicles/filter/available)
+  Future<PaginatedVehicleModels> getVehiclesPaginated({
+    VehicleFilter? filter,
+    int page = 1,
+    int limit = 20,
+  });
 }
 
 class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
@@ -390,6 +422,200 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
         return data.map((e) => e.toString()).toList();
       }
       return [];
+    });
+  }
+
+  @override
+  Future<BookingFeeBreakdown> getBookingFees({
+    required int vehicleId,
+    required DateTime startTime,
+    required DateTime endTime,
+  }) {
+    return guardApiCall(() async {
+      // Đảm bảo giờ chẵn cho BE
+      final st = DateTime(
+        startTime.year,
+        startTime.month,
+        startTime.day,
+        startTime.hour,
+      );
+      final et = DateTime(
+        endTime.year,
+        endTime.month,
+        endTime.day,
+        endTime.hour,
+      );
+
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/vehicles/booking',
+        data: {
+          'vehicleId': vehicleId,
+          'startTime': _formatDateTimeForBackend(st),
+          'endTime': _formatDateTimeForBackend(et),
+          'rental': false,
+        },
+      );
+
+      final data = response.data?['data'];
+      if (data is List && data.isNotEmpty) {
+        final fees = data.map((item) {
+          final map = item as Map<String, dynamic>;
+          return BookingFee(
+            description: map['description'] as String? ?? '',
+            feeType: map['feeType'] as String? ?? '',
+            value: (map['value'] as num?)?.toDouble() ?? 0.0,
+          );
+        }).toList();
+        return BookingFeeBreakdown.fromFees(fees);
+      }
+
+      return const BookingFeeBreakdown(fees: []);
+    });
+  }
+
+  @override
+  Future<List<VehicleScheduleSlot>> getVehicleSchedule(int vehicleId) {
+    return guardApiCall(() async {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/vehicles/$vehicleId/schedule',
+      );
+
+      final data = response.data?['data'];
+      if (data is List && data.isNotEmpty) {
+        return data
+            .map((item) {
+              final map = item as Map<String, dynamic>;
+              final start = DateTime.tryParse(
+                map['startTime']?.toString() ?? '',
+              );
+              final end = DateTime.tryParse(map['endTime']?.toString() ?? '');
+              if (start != null && end != null) {
+                return VehicleScheduleSlot(startTime: start, endTime: end);
+              }
+              return null;
+            })
+            .whereType<VehicleScheduleSlot>()
+            .toList();
+      }
+      return [];
+    });
+  }
+
+  @override
+  Future<PaginatedVehicleModels> getVehiclesPaginated({
+    VehicleFilter? filter,
+    int page = 1,
+    int limit = 20,
+  }) {
+    return guardApiCall(() async {
+      if (filter != null && _hasFilterConditions(filter)) {
+        final now = DateTime.now();
+        DateTime startTime =
+            filter.startTime ?? now.add(const Duration(hours: 4));
+        if (startTime.isBefore(now.add(const Duration(hours: 3)))) {
+          startTime = now.add(const Duration(hours: 4));
+        }
+
+        DateTime endTime;
+        if (filter.endTime != null &&
+            filter.endTime!.isAfter(
+              startTime.add(const Duration(hours: 3, minutes: 50)),
+            )) {
+          endTime = filter.endTime!;
+        } else if (filter.hourPackage != null && filter.hourPackage! > 0) {
+          endTime = startTime.add(Duration(hours: filter.hourPackage!));
+        } else {
+          endTime = startTime.add(const Duration(hours: 4));
+        }
+
+        startTime = DateTime(
+          startTime.year,
+          startTime.month,
+          startTime.day,
+          startTime.hour,
+        );
+        endTime = DateTime(
+          endTime.year,
+          endTime.month,
+          endTime.day,
+          endTime.hour,
+        );
+
+        int? seatCount;
+        if (filter.seats != 'Tất cả') {
+          seatCount = int.tryParse(filter.seats.replaceAll(RegExp(r'\D'), ''));
+        }
+
+        String beCity = 'Hà Nội';
+        if (filter.city != null) {
+          final c = filter.city!.trim().toUpperCase();
+          if (c.contains('HCM') ||
+              c.contains('HỒ CHÍ MINH') ||
+              c.contains('TP_HCM')) {
+            beCity = 'Hồ Chí Minh';
+          } else {
+            beCity = 'Hà Nội';
+          }
+        }
+
+        final Map<String, dynamic> payload = {
+          'city': beCity,
+          'startTime': _formatDateTimeForBackend(startTime),
+          'endTime': _formatDateTimeForBackend(endTime),
+          'page': page,
+          'limit': limit,
+          'search': filter.search?.trim() ?? '',
+        };
+
+        if (filter.stationId != null) {
+          payload['stationId'] = filter.stationId;
+        }
+        if (filter.brand != 'Tất cả') {
+          payload['brands'] = [_mapBrandToBackend(filter.brand)];
+        }
+        if (filter.carType != 'Tất cả') {
+          payload['categories'] = [_mapCategoryToBackend(filter.carType)];
+        }
+        if (seatCount != null) {
+          payload['seats'] = seatCount;
+        }
+        if (filter.effectiveMinPrice != null) {
+          payload['minPrice'] = filter.effectiveMinPrice;
+        }
+        if (filter.effectiveMaxPrice != null) {
+          payload['maxPrice'] = filter.effectiveMaxPrice;
+        }
+
+        final response = await _dio.post<Map<String, dynamic>>(
+          '/vehicles/filter/available',
+          data: payload,
+        );
+
+        final data = response.data?['data'];
+        if (data is Map<String, dynamic> && data['content'] is List) {
+          final list = data['content'] as List;
+          final models = list
+              .map(
+                (item) =>
+                    VehicleModel.fromBackendJson(item as Map<String, dynamic>),
+              )
+              .toList();
+          final totalPg = (data['totalPages'] as num?)?.toInt() ?? 1;
+          return PaginatedVehicleModels(
+            models: models,
+            currentPage: page,
+            totalPages: totalPg,
+          );
+        }
+      }
+
+      // Fallback: Lấy tất cả từ /vehicles/home
+      final vehicles = await getVehicles(filter: filter);
+      return PaginatedVehicleModels(
+        models: vehicles,
+        currentPage: 1,
+        totalPages: 1,
+      );
     });
   }
 }

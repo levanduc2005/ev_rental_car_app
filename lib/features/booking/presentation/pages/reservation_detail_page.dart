@@ -68,8 +68,7 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
   Future<void> _handleCancel(ReservationEntity res) async {
     final isPending = res.isPending;
     final isEligibleForRefund = res.isEligibleForRefund;
-    final depositFormatted =
-        BookingFormatters.formatCurrency(res.depositFee);
+    final depositFormatted = BookingFormatters.formatCurrency(res.depositFee);
 
     String title;
     String message;
@@ -119,7 +118,9 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
       } else if (!isPending) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Đã hủy đơn đặt xe (Mất tiền cọc theo quy định < 5 ngày).'),
+            content: Text(
+              'Đã hủy đơn đặt xe (Mất tiền cọc theo quy định < 5 ngày).',
+            ),
             backgroundColor: Colors.orange,
           ),
         );

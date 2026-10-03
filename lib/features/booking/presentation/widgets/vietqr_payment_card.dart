@@ -52,9 +52,7 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: _isExpanded
-                    ? const Color(0xFFF8FAFC)
-                    : Colors.white,
+                color: _isExpanded ? const Color(0xFFF8FAFC) : Colors.white,
                 borderRadius: _isExpanded
                     ? const BorderRadius.vertical(top: Radius.circular(16))
                     : BorderRadius.circular(16),
@@ -120,7 +118,9 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
                       ),
                       child: Icon(
                         Icons.keyboard_arrow_down,
-                        color: _isExpanded ? Colors.white : const Color(0xFF64748B),
+                        color: _isExpanded
+                            ? Colors.white
+                            : const Color(0xFF64748B),
                         size: 18,
                       ),
                     ),
@@ -228,7 +228,10 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
                     icon: const Icon(Icons.download, size: 15),
                     label: const Text(
                       'Lưu mã QR vào máy',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 14),

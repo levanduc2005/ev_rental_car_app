@@ -6,8 +6,5 @@ import 'package:rental_car/features/booking/presentation/providers/booking_provi
 final supportedBanksProvider = FutureProvider<List<BankAppItem>>((ref) async {
   final useCase = ref.watch(getSupportedBanksUseCaseProvider);
   final result = await useCase();
-  return result.when(
-    ok: (banks) => banks,
-    err: (_) => const <BankAppItem>[],
-  );
+  return result.when(ok: (banks) => banks, err: (_) => const <BankAppItem>[]);
 });

@@ -35,12 +35,34 @@ class MapSearchPage extends ConsumerStatefulWidget {
 }
 
 class _MapSearchPageState extends ConsumerState<MapSearchPage> {
+  ScrollController? _scrollController;
+
+  ScrollController get _effectiveScrollController =>
+      _scrollController ??= ScrollController()..addListener(_onScroll);
+
   @override
   void initState() {
     super.initState();
+    _effectiveScrollController;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initSearchFilter();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    final controller = _scrollController;
+    if (controller != null && controller.hasClients) {
+      if (controller.position.pixels >=
+          controller.position.maxScrollExtent - 200) {
+        ref.read(paginatedVehicleListControllerProvider.notifier).loadMore();
+      }
+    }
   }
 
   void _initSearchFilter() {
@@ -113,7 +135,7 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
   @override
   Widget build(BuildContext context) {
     final currentFilter = ref.watch(vehicleFilterProvider);
-    final vehicleListAsync = ref.watch(vehicleListControllerProvider);
+    final paginatedState = ref.watch(paginatedVehicleListControllerProvider);
 
     int activeFilterCount = 0;
     if (currentFilter.city != null &&
@@ -162,11 +184,69 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
 
           const Divider(height: 1, color: Color(0xFFE2E8F0)),
 
-          // 2. DANH SÁCH THẺ XE (Slide 08) kết nối trực tiếp API Backend qua Riverpod
+          // 2. DANH SÁCH THẺ XE có hỗ trợ phân trang & infinite scrolling
           Expanded(
-            child: vehicleListAsync.when(
-              data: (vehicles) {
-                if (vehicles.isEmpty) {
+            child: Builder(
+              builder: (context) {
+                if (paginatedState.isLoading &&
+                    paginatedState.vehicles.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (paginatedState.errorMessage != null &&
+                    paginatedState.vehicles.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.wifi_off_rounded,
+                            size: 48,
+                            color: Color(0xFFEF4444),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Không thể kết nối tới máy chủ E-Motion',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            paginatedState.errorMessage ?? '',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          FilledButton.icon(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF1976D2),
+                            ),
+                            onPressed: () {
+                              ref
+                                  .read(
+                                    paginatedVehicleListControllerProvider
+                                        .notifier,
+                                  )
+                                  .loadInitial(currentFilter);
+                            },
+                            icon: const Icon(Icons.refresh, size: 18),
+                            label: const Text('Thử lại'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                if (paginatedState.vehicles.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -196,66 +276,48 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
                     ),
                   );
                 }
-                return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: vehicles.length,
-                  itemBuilder: (context, index) {
-                    final vehicle = vehicles[index];
-                    return VehicleListCard(
-                      item: vehicle,
-                      targetHours: currentFilter.durationHours,
-                      targetUnit: currentFilter.durationUnitLabel,
-                      onTap: () => _onVehicleSelected(vehicle),
-                    );
+
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await ref
+                        .read(paginatedVehicleListControllerProvider.notifier)
+                        .loadInitial(currentFilter);
                   },
+                  child: ListView.builder(
+                    controller: _effectiveScrollController,
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 24),
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    itemCount:
+                        paginatedState.vehicles.length +
+                        (paginatedState.isLoadingMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == paginatedState.vehicles.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      final vehicle = paginatedState.vehicles[index];
+                      return VehicleListCard(
+                        item: vehicle,
+                        targetHours: currentFilter.durationHours,
+                        targetUnit: currentFilter.durationUnitLabel,
+                        onTap: () => _onVehicleSelected(vehicle),
+                      );
+                    },
+                  ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.wifi_off_rounded,
-                        size: 48,
-                        color: Color(0xFFEF4444),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Không thể kết nối tới máy chủ E-Motion',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Vui lòng đảm bảo backend đang chạy tại port 8080.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      FilledButton.icon(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF1976D2),
-                        ),
-                        onPressed: () {
-                          ref.invalidate(vehicleListControllerProvider);
-                        },
-                        icon: const Icon(Icons.refresh, size: 18),
-                        label: const Text('Thử lại'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ),
           ),
         ],

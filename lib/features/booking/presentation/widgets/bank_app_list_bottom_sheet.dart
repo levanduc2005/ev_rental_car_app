@@ -141,7 +141,11 @@ class _BankAppListBottomSheetState
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Tìm kiếm theo tên ngân hàng, mã...',
-                prefixIcon: const Icon(Icons.search, size: 20, color: Colors.grey),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  size: 20,
+                  color: Colors.grey,
+                ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear, size: 18),
@@ -166,87 +170,87 @@ class _BankAppListBottomSheetState
             child: isExternalLoading
                 ? const _SkeletonBankList()
                 : _filteredBanks.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'Không tìm thấy ngân hàng phù hợp',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: _filteredBanks.length,
-                        separatorBuilder: (context, index) => const Divider(
-                          height: 1,
-                          indent: 68,
-                          color: Color(0xFFF1F5F9),
-                        ),
-                        itemBuilder: (context, index) {
-                          final bank = _filteredBanks[index];
-                          final isSelected = widget.selectedBank != null &&
-                              bank.appId == widget.selectedBank!.appId;
+                ? const Center(
+                    child: Text(
+                      'Không tìm thấy ngân hàng phù hợp',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: _filteredBanks.length,
+                    separatorBuilder: (context, index) => const Divider(
+                      height: 1,
+                      indent: 68,
+                      color: Color(0xFFF1F5F9),
+                    ),
+                    itemBuilder: (context, index) {
+                      final bank = _filteredBanks[index];
+                      final isSelected =
+                          widget.selectedBank != null &&
+                          bank.appId == widget.selectedBank!.appId;
 
-                          return ListTile(
-                            leading: Container(
-                              width: 44,
-                              height: 44,
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? const Color(0xFF2563EB)
-                                      : const Color(0xFFE2E8F0),
-                                  width: isSelected ? 1.5 : 1.0,
-                                ),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(6),
-                                child: Image.network(
-                                  bank.logoUrl,
-                                  fit: BoxFit.contain,
-                                  errorBuilder:
-                                      (context, error, stackTrace) =>
-                                          const Icon(
+                      return ListTile(
+                        leading: Container(
+                          width: 44,
+                          height: 44,
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFF2563EB)
+                                  : const Color(0xFFE2E8F0),
+                              width: isSelected ? 1.5 : 1.0,
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.network(
+                              bank.logoUrl,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
                                     Icons.account_balance,
                                     color: Color(0xFF2563EB),
                                     size: 22,
                                   ),
-                                ),
-                              ),
                             ),
-                            title: Text(
-                              bank.shortName,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.w600,
-                                color: isSelected
-                                    ? const Color(0xFF2563EB)
-                                    : AppColors.textPrimary,
-                              ),
-                            ),
-                            subtitle: Text(
-                              bank.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            trailing: isSelected
-                                ? const Icon(
-                                    Icons.check_circle,
-                                    color: Color(0xFF2563EB),
-                                    size: 22,
-                                  )
-                                : null,
-                            onTap: () => widget.onBankSelected(bank),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                        title: Text(
+                          bank.shortName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w600,
+                            color: isSelected
+                                ? const Color(0xFF2563EB)
+                                : AppColors.textPrimary,
+                          ),
+                        ),
+                        subtitle: Text(
+                          bank.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? const Icon(
+                                Icons.check_circle,
+                                color: Color(0xFF2563EB),
+                                size: 22,
+                              )
+                            : null,
+                        onTap: () => widget.onBankSelected(bank),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -274,9 +278,10 @@ class _SkeletonBankListState extends State<_SkeletonBankList>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.35, end: 0.85).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.35,
+      end: 0.85,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -316,8 +321,9 @@ class _SkeletonBankListState extends State<_SkeletonBankList>
                           width: 120,
                           height: 14,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9)
-                                .withValues(alpha: opacity),
+                            color: const Color(
+                              0xFFF1F5F9,
+                            ).withValues(alpha: opacity),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -326,8 +332,9 @@ class _SkeletonBankListState extends State<_SkeletonBankList>
                           width: double.infinity,
                           height: 10,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9)
-                                .withValues(alpha: opacity),
+                            color: const Color(
+                              0xFFF1F5F9,
+                            ).withValues(alpha: opacity),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),

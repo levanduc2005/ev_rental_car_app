@@ -28,11 +28,7 @@ class BankAppSelectorGrid extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -124,8 +120,10 @@ class BankAppSelectorGrid extends ConsumerWidget {
 
               final popularBanks = allBanks.take(8).toList();
               final effectiveSelected =
-                  selectedBank ?? (popularBanks.isNotEmpty ? popularBanks.first : null);
-              final isSelectedInPopular = effectiveSelected == null ||
+                  selectedBank ??
+                  (popularBanks.isNotEmpty ? popularBanks.first : null);
+              final isSelectedInPopular =
+                  effectiveSelected == null ||
                   popularBanks.any((b) => b.appId == effectiveSelected.appId);
 
               return Column(
@@ -165,10 +163,10 @@ class BankAppSelectorGrid extends ConsumerWidget {
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) =>
                                   const Icon(
-                                Icons.account_balance,
-                                size: 16,
-                                color: Color(0xFF2563EB),
-                              ),
+                                    Icons.account_balance,
+                                    size: 16,
+                                    color: Color(0xFF2563EB),
+                                  ),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -213,15 +211,16 @@ class BankAppSelectorGrid extends ConsumerWidget {
                     itemCount: popularBanks.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 0.88,
-                    ),
+                          crossAxisCount: 4,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 0.88,
+                        ),
                     itemBuilder: (context, index) {
                       final bank = popularBanks[index];
                       final isSelected =
-                          effectiveSelected != null && bank.appId == effectiveSelected.appId;
+                          effectiveSelected != null &&
+                          bank.appId == effectiveSelected.appId;
 
                       return InkWell(
                         onTap: () => onBankSelected(bank),
@@ -243,8 +242,9 @@ class BankAppSelectorGrid extends ConsumerWidget {
                             boxShadow: isSelected
                                 ? [
                                     BoxShadow(
-                                      color: const Color(0xFF2563EB)
-                                          .withValues(alpha: 0.15),
+                                      color: const Color(
+                                        0xFF2563EB,
+                                      ).withValues(alpha: 0.15),
                                       blurRadius: 6,
                                       offset: const Offset(0, 2),
                                     ),
@@ -275,10 +275,10 @@ class BankAppSelectorGrid extends ConsumerWidget {
                                     errorBuilder:
                                         (context, error, stackTrace) =>
                                             const Icon(
-                                      Icons.account_balance,
-                                      size: 18,
-                                      color: Color(0xFF2563EB),
-                                    ),
+                                              Icons.account_balance,
+                                              size: 18,
+                                              color: Color(0xFF2563EB),
+                                            ),
                                   ),
                                 ),
                               ),
@@ -334,9 +334,10 @@ class _SkeletonBankGridState extends State<_SkeletonBankGrid>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.35, end: 0.85).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.35,
+      end: 0.85,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

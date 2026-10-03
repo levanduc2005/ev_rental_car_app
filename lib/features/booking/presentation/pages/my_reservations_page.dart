@@ -316,8 +316,9 @@ class _ReservationListView extends ConsumerWidget {
   ) async {
     final isPending = reservation.isPending;
     final isEligibleForRefund = reservation.isEligibleForRefund;
-    final depositFormatted =
-        BookingFormatters.formatCurrency(reservation.depositFee);
+    final depositFormatted = BookingFormatters.formatCurrency(
+      reservation.depositFee,
+    );
 
     String title;
     String message;
@@ -350,7 +351,9 @@ class _ReservationListView extends ConsumerWidget {
     );
 
     if (confirmed) {
-      final success = await controller.cancelReservation(reservation.reservationCode);
+      final success = await controller.cancelReservation(
+        reservation.reservationCode,
+      );
       if (success && context.mounted) {
         if (!isPending && isEligibleForRefund) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -364,7 +367,9 @@ class _ReservationListView extends ConsumerWidget {
         } else if (!isPending) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Đã hủy đơn đặt xe (Mất tiền cọc theo quy định < 5 ngày).'),
+              content: Text(
+                'Đã hủy đơn đặt xe (Mất tiền cọc theo quy định < 5 ngày).',
+              ),
               backgroundColor: Colors.orange,
             ),
           );

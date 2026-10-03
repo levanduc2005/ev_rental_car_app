@@ -14,6 +14,7 @@ class PricingBreakdownCard extends StatelessWidget {
     this.pointPerHour = 4,
     this.userPoints = 0,
     this.locationFeeText,
+    this.isServerCalculated = false,
     super.key,
   });
 
@@ -28,6 +29,7 @@ class PricingBreakdownCard extends StatelessWidget {
   final int pointPerHour;
   final int userPoints;
   final String? locationFeeText;
+  final bool isServerCalculated;
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +44,46 @@ class PricingBreakdownCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. CHI TIẾT THANH TOÁN (Giống PriceBreakdown.jsx trên Web FE)
-          const Text(
-            'CHI TIẾT THANH TOÁN',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF64748B),
-              letterSpacing: 0.5,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'CHI TIẾT THANH TOÁN',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF64748B),
+                  letterSpacing: 0.5,
+                ),
+              ),
+              if (isServerCalculated)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFECFDF5),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFA7F3D0)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.verified, size: 12, color: Color(0xFF059669)),
+                      SizedBox(width: 4),
+                      Text(
+                        'Giá từ Server',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF059669),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 12),
           _buildRow(rentalDurationLabel, rentalFeeText, hasInfoIcon: true),

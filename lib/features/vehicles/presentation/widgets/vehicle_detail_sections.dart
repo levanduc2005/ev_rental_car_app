@@ -8,5 +8,6 @@ export 'location_selector_card.dart';
 export 'pricing_breakdown_card.dart';
 export 'rental_time_card.dart';
 export 'smart_pickup_banner.dart';
+export 'vehicle_schedule_card.dart';
 export 'vehicle_specs_grid.dart';
 export 'vehicle_station_map_card.dart';

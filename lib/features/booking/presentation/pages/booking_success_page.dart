@@ -17,14 +17,17 @@ class BookingSuccessPage extends ConsumerWidget {
     final bookingState = ref.watch(bookingFormControllerProvider);
     final vehicle = bookingState.vehicle;
     final reservation = bookingState.createdReservation;
-    final reservationCode = reservation?.reservationCode ??
+    final reservationCode =
+        reservation?.reservationCode ??
         bookingState.payosPaymentInfo?.orderCode ??
         '';
-    final vehicleDisplayName = (vehicle?.name != null && vehicle!.name.isNotEmpty)
+    final vehicleDisplayName =
+        (vehicle?.name != null && vehicle!.name.isNotEmpty)
         ? vehicle.name
-        : (reservation?.vehicleName != null && reservation!.vehicleName!.isNotEmpty
-            ? reservation.vehicleName!
-            : 'Phương tiện thuê');
+        : (reservation?.vehicleName != null &&
+                  reservation!.vehicleName!.isNotEmpty
+              ? reservation.vehicleName!
+              : 'Phương tiện thuê');
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),

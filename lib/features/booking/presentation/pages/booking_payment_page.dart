@@ -92,8 +92,9 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
     if (targetBank == null) return;
 
     // Tìm mã ngân hàng thụ hưởng động theo mã BIN nhận từ PayOS
-    final receivingBank =
-        allBanks.where((b) => b.bin == paymentInfo.bin).firstOrNull;
+    final receivingBank = allBanks
+        .where((b) => b.bin == paymentInfo.bin)
+        .firstOrNull;
     final beneficiaryBankCode = receivingBank?.code ?? (paymentInfo.bin ?? '');
 
     final deeplink = targetBank.buildDeeplink(
@@ -137,7 +138,10 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
             Expanded(
               child: Text(
                 'Mở app ${targetBank.shortName}',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -302,18 +306,21 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
 
     final renterName =
         (user != null && user.fullName != null && user.fullName!.isNotEmpty)
-            ? user.fullName!
-            : (user != null && user.email.isNotEmpty ? user.email : 'Khách hàng');
+        ? user.fullName!
+        : (user != null && user.email.isNotEmpty ? user.email : 'Khách hàng');
     final renterPhone = (user?.phone != null && user!.phone!.isNotEmpty)
         ? user.phone!
         : 'Chưa cập nhật';
 
-    final vehicleDisplayName = (vehicle?.name != null && vehicle!.name.isNotEmpty)
+    final vehicleDisplayName =
+        (vehicle?.name != null && vehicle!.name.isNotEmpty)
         ? vehicle.name
-        : (reservation?.vehicleName != null && reservation!.vehicleName!.isNotEmpty
-            ? reservation.vehicleName!
-            : 'Phương tiện thuê');
-    final vehicleImageUrl = (vehicle?.imageUrl != null && vehicle!.imageUrl!.isNotEmpty)
+        : (reservation?.vehicleName != null &&
+                  reservation!.vehicleName!.isNotEmpty
+              ? reservation.vehicleName!
+              : 'Phương tiện thuê');
+    final vehicleImageUrl =
+        (vehicle?.imageUrl != null && vehicle!.imageUrl!.isNotEmpty)
         ? vehicle.imageUrl
         : reservation?.vehicleImageUrl;
 
@@ -550,10 +557,10 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Icon(
-                                  Icons.account_balance,
-                                  color: Color(0xFF2563EB),
-                                  size: 24,
-                                ),
+                                      Icons.account_balance,
+                                      color: Color(0xFF2563EB),
+                                      size: 24,
+                                    ),
                               ),
                             ),
                           ),

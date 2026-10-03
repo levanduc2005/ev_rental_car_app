@@ -35,12 +35,12 @@ class BankAppItem {
   /// Map động từ response VietQR API (https://api.vietqr.io/v2/banks)
   factory BankAppItem.fromVietQRJson(Map<String, dynamic> json) {
     final code = json['code']?.toString().trim() ?? '';
-    final shortName = json['shortName']?.toString() ??
-        json['short_name']?.toString() ??
-        code;
+    final shortName =
+        json['shortName']?.toString() ?? json['short_name']?.toString() ?? code;
     final name = json['name']?.toString() ?? shortName;
     final bin = json['bin']?.toString().trim();
-    final logo = json['logo']?.toString() ??
+    final logo =
+        json['logo']?.toString() ??
         'https://cdn.vietqr.io/img/${code.toUpperCase()}.png';
     final appId = code.toLowerCase();
 
@@ -67,7 +67,8 @@ class BankAppItem {
     final ba = '$beneficiaryAccountNumber@$receivingCode';
     final am = amount.toString();
     final tn = Uri.encodeComponent(description);
-    final bn = beneficiaryAccountName != null && beneficiaryAccountName.isNotEmpty
+    final bn =
+        beneficiaryAccountName != null && beneficiaryAccountName.isNotEmpty
         ? '&bn=${Uri.encodeComponent(beneficiaryAccountName)}'
         : '';
     return 'https://dl.vietqr.io/pay?app=$appId&ba=$ba&am=$am&tn=$tn$bn';
