@@ -105,29 +105,33 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
       setState(() {
         if (isStart) {
           _startDate = picked;
-          final startDt = DateTime(
-            _startDate.year,
-            _startDate.month,
-            _startDate.day,
-            _startTime.hour,
-          );
-          final currentEndDt = DateTime(
-            _endDate.year,
-            _endDate.month,
-            _endDate.day,
-            _endTime.hour,
-          );
-          if (currentEndDt.difference(startDt).inHours < 4) {
-            final newEndDt = startDt.add(const Duration(hours: 4));
-            _endDate = DateTime(newEndDt.year, newEndDt.month, newEndDt.day);
-            _endTime = TimeOfDay(hour: newEndDt.hour, minute: 0);
-          } else if (currentEndDt.difference(startDt).inDays > 30) {
-            _endDate = _startDate.add(const Duration(days: 30));
-          }
+          _adjustEndDateIfTooShort();
         } else {
           _endDate = picked;
         }
       });
+    }
+  }
+
+  void _adjustEndDateIfTooShort() {
+    final startDt = DateTime(
+      _startDate.year,
+      _startDate.month,
+      _startDate.day,
+      _startTime.hour,
+    );
+    final currentEndDt = DateTime(
+      _endDate.year,
+      _endDate.month,
+      _endDate.day,
+      _endTime.hour,
+    );
+    if (currentEndDt.difference(startDt).inHours < 4) {
+      final newEndDt = startDt.add(const Duration(hours: 4));
+      _endDate = DateTime(newEndDt.year, newEndDt.month, newEndDt.day);
+      _endTime = TimeOfDay(hour: newEndDt.hour, minute: 0);
+    } else if (currentEndDt.difference(startDt).inDays > 30) {
+      _endDate = _startDate.add(const Duration(days: 30));
     }
   }
 
@@ -189,33 +193,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                           setState(() {
                             if (isStart) {
                               _startTime = TimeOfDay(hour: tempHour, minute: 0);
-                              final startDt = DateTime(
-                                _startDate.year,
-                                _startDate.month,
-                                _startDate.day,
-                                tempHour,
-                              );
-                              final currentEndDt = DateTime(
-                                _endDate.year,
-                                _endDate.month,
-                                _endDate.day,
-                                _endTime.hour,
-                              );
-                              if (currentEndDt.difference(startDt).inHours <
-                                  4) {
-                                final newEndDt = startDt.add(
-                                  const Duration(hours: 4),
-                                );
-                                _endDate = DateTime(
-                                  newEndDt.year,
-                                  newEndDt.month,
-                                  newEndDt.day,
-                                );
-                                _endTime = TimeOfDay(
-                                  hour: newEndDt.hour,
-                                  minute: 0,
-                                );
-                              }
+                              _adjustEndDateIfTooShort();
                             } else {
                               _endTime = TimeOfDay(hour: tempHour, minute: 0);
                             }
@@ -428,6 +406,19 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                           stationsByCityProvider(currentTab),
                         );
 
+                        void onSelectStation(StationEntity? station) {
+                          setState(() {
+                            _selectedCityName = currentTab;
+                            _selectedCityCode = currentTab == 'Hà Nội'
+                                ? 'HANOI'
+                                : 'TP_HCM';
+                            _selectedStationId = station?.id;
+                            _selectedStationName =
+                                station?.name ?? 'Tất cả các trạm';
+                          });
+                          Navigator.pop(ctx);
+                        }
+
                         return stationsAsync.when(
                           loading: () => const Center(
                             child: Padding(
@@ -438,18 +429,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                           error: (_, _) => _buildStationListView(
                             currentTab: currentTab,
                             stations: fallbackStations[currentTab] ?? const [],
-                            onSelect: (station) {
-                              setState(() {
-                                _selectedCityName = currentTab;
-                                _selectedCityCode = currentTab == 'Hà Nội'
-                                    ? 'HANOI'
-                                    : 'TP_HCM';
-                                _selectedStationId = station?.id;
-                                _selectedStationName =
-                                    station?.name ?? 'Tất cả các trạm';
-                              });
-                              Navigator.pop(ctx);
-                            },
+                            onSelect: onSelectStation,
                           ),
                           data: (stations) {
                             final list = stations.isNotEmpty
@@ -458,18 +438,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                             return _buildStationListView(
                               currentTab: currentTab,
                               stations: list,
-                              onSelect: (station) {
-                                setState(() {
-                                  _selectedCityName = currentTab;
-                                  _selectedCityCode = currentTab == 'Hà Nội'
-                                      ? 'HANOI'
-                                      : 'TP_HCM';
-                                  _selectedStationId = station?.id;
-                                  _selectedStationName =
-                                      station?.name ?? 'Tất cả các trạm';
-                                });
-                                Navigator.pop(ctx);
-                              },
+                              onSelect: onSelectStation,
                             );
                           },
                         );
@@ -559,71 +528,22 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
 
     // 1. BE Rule: Thời gian bắt đầu phải sau hiện tại ít nhất 3 giờ
     if (startDateTime.isBefore(now.add(const Duration(hours: 3)))) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.info_outline, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Thời gian nhận xe phải sau thời điểm hiện tại ít nhất 3 giờ.',
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
+      _showWarningSnackBar(
+        'Thời gian nhận xe phải sau thời điểm hiện tại ít nhất 3 giờ.',
       );
       return;
     }
 
     // 2. BE Rule: Thời gian thuê tối thiểu 4 giờ
     if (endDateTime.difference(startDateTime).inHours < 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.info_outline, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Expanded(child: Text('Thời gian thuê tối thiểu là 4 giờ.')),
-            ],
-          ),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
+      _showWarningSnackBar('Thời gian thuê tối thiểu là 4 giờ.');
       return;
     }
 
     // 3. BE Rule: Tối đa 30 ngày (1 tháng)
     if (endDateTime.difference(startDateTime).inDays > 30) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.info_outline, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Chỉ được thuê tối đa 1 tháng (30 ngày) kể từ ngày nhận xe.',
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
+      _showWarningSnackBar(
+        'Chỉ được thuê tối đa 1 tháng (30 ngày) kể từ ngày nhận xe.',
       );
       return;
     }
@@ -639,6 +559,23 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
         'start': startDateTime.toIso8601String(),
         'end': endDateTime.toIso8601String(),
       },
+    );
+  }
+
+  void _showWarningSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.info_outline, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
     );
   }
 
@@ -817,174 +754,42 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                 const SizedBox(height: AppSpacing.md),
 
                 // Trường 2: Thời gian nhận xe (Ngày & Giờ)
-                const Text(
-                  'Thời gian nhận xe',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF334155),
-                  ),
-                ),
+                const _SearchFieldLabel('Thời gian nhận xe'),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _selectDate(isStart: true),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.calendar_today_outlined,
-                                size: 16,
-                                color: Color(0xFF334155),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _formatDate(_startDate),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    _DateTimePickerBox(
+                      icon: Icons.calendar_today_outlined,
+                      text: _formatDate(_startDate),
+                      onTap: () => _selectDate(isStart: true),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _selectTime(isStart: true),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.access_time_rounded,
-                                size: 17,
-                                color: Color(0xFF334155),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _formatTime(_startTime),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    _DateTimePickerBox(
+                      icon: Icons.access_time_rounded,
+                      iconSize: 17,
+                      text: _formatTime(_startTime),
+                      onTap: () => _selectTime(isStart: true),
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
 
                 // Trường 3: Thời gian trả xe (Ngày & Giờ)
-                const Text(
-                  'Thời gian trả xe',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF334155),
-                  ),
-                ),
+                const _SearchFieldLabel('Thời gian trả xe'),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _selectDate(isStart: false),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.calendar_today_outlined,
-                                size: 16,
-                                color: Color(0xFF334155),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _formatDate(_endDate),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    _DateTimePickerBox(
+                      icon: Icons.calendar_today_outlined,
+                      text: _formatDate(_endDate),
+                      onTap: () => _selectDate(isStart: false),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => _selectTime(isStart: false),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.access_time_rounded,
-                                size: 17,
-                                color: Color(0xFF334155),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _formatTime(_endTime),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    _DateTimePickerBox(
+                      icon: Icons.access_time_rounded,
+                      iconSize: 17,
+                      text: _formatTime(_endTime),
+                      onTap: () => _selectTime(isStart: false),
                     ),
                   ],
                 ),
@@ -1043,6 +848,70 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SearchFieldLabel extends StatelessWidget {
+  const _SearchFieldLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF334155),
+      ),
+    );
+  }
+}
+
+class _DateTimePickerBox extends StatelessWidget {
+  const _DateTimePickerBox({
+    required this.icon,
+    required this.text,
+    required this.onTap,
+    this.iconSize = 16,
+  });
+
+  final IconData icon;
+  final String text;
+  final VoidCallback onTap;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: iconSize, color: const Color(0xFF334155)),
+              const SizedBox(width: 8),
+              Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

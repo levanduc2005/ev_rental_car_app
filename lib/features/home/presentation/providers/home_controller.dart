@@ -18,8 +18,15 @@ class HomeController extends Notifier<HomeState> {
   }
 
   /// Tải dữ liệu ban đầu cho trang chủ (xe nổi bật + danh sách hãng xe)
-  Future<void> loadHomeData() async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+  Future<void> loadHomeData() => _fetchHomeData(isRefresh: false);
+
+  /// Kéo để làm mới dữ liệu trang chủ (Pull-to-refresh)
+  Future<void> refresh() => _fetchHomeData(isRefresh: true);
+
+  Future<void> _fetchHomeData({required bool isRefresh}) async {
+    state = isRefresh
+        ? state.copyWith(isRefreshing: true, errorMessage: null)
+        : state.copyWith(isLoading: true, errorMessage: null);
 
     final vehiclesResult = await _getHomeVehiclesUseCase();
     final brandsResult = await _getVehicleBrandsUseCase();
@@ -33,27 +40,6 @@ class HomeController extends Notifier<HomeState> {
 
     state = state.copyWith(
       isLoading: false,
-      vehicles: vehicles,
-      brands: brands,
-      errorMessage: error,
-    );
-  }
-
-  /// Kéo để làm mới dữ liệu trang chủ (Pull-to-refresh)
-  Future<void> refresh() async {
-    state = state.copyWith(isRefreshing: true, errorMessage: null);
-
-    final vehiclesResult = await _getHomeVehiclesUseCase();
-    final brandsResult = await _getVehicleBrandsUseCase();
-
-    final vehicles = vehiclesResult.when(
-      ok: (v) => v,
-      err: (_) => state.vehicles,
-    );
-    final brands = brandsResult.when(ok: (b) => b, err: (_) => state.brands);
-    final error = vehiclesResult.when(ok: (_) => null, err: (f) => f.message);
-
-    state = state.copyWith(
       isRefreshing: false,
       vehicles: vehicles,
       brands: brands,

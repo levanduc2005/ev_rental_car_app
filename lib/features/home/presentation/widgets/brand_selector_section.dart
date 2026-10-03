@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
+import 'package:rental_car/features/home/presentation/widgets/section_see_all_button.dart';
 
 class BrandItem {
   const BrandItem({
@@ -250,25 +251,8 @@ class BrandSelectorSection extends StatelessWidget {
                   ],
                 ],
               ),
-              InkWell(
+              SectionSeeAllButton(
                 onTap: () => context.goNamed(AppRoute.mapSearch.name),
-                child: const Row(
-                  children: [
-                    Text(
-                      'Xem tất cả',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF1976D2),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Icon(
-                      Icons.chevron_right_rounded,
-                      size: 16,
-                      color: Color(0xFF1976D2),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
