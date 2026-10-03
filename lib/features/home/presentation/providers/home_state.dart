@@ -19,6 +19,11 @@ abstract class HomeState with _$HomeState {
   /// Danh sách xe sang / xế xịn
   List<VehicleEntity> get luxuryVehicles {
     var list = vehicles.where((v) => v.isLuxury).toList();
+    if (list.isEmpty && vehicles.isNotEmpty && selectedBrand == null) {
+      final sorted = List<VehicleEntity>.from(vehicles)
+        ..sort((a, b) => b.pricePerDay.compareTo(a.pricePerDay));
+      list = sorted.take(3).toList();
+    }
     if (selectedBrand != null) {
       list = list
           .where((v) => v.brand.toUpperCase() == selectedBrand!.toUpperCase())

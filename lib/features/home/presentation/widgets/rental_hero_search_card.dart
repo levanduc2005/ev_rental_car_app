@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
-import 'package:rental_car/features/home/presentation/providers/home_providers.dart';
-import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
+import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart';
+import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
 
 class RentalHeroSearchCard extends ConsumerStatefulWidget {
   const RentalHeroSearchCard({super.key});
@@ -16,11 +16,9 @@ class RentalHeroSearchCard extends ConsumerStatefulWidget {
 }
 
 class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
-  // Địa điểm nhận xe (Mặc định Hồ Chí Minh như bản web)
+  // Địa điểm nhận xe (Mặc định Hồ Chí Minh)
   String _selectedCityName = 'Hồ Chí Minh';
   String _selectedCityCode = 'TP_HCM';
-  int? _selectedStationId;
-  String _selectedStationName = 'Tất cả các trạm';
 
   // Thời gian nhận - trả xe
   late DateTime _startDate;
@@ -62,12 +60,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
 
   String _formatTime(TimeOfDay t) => '${_pad(t.hour)}:${_pad(t.minute)}';
 
-  String get _selectedLocationDisplayText {
-    if (_selectedStationId == null) {
-      return _selectedCityName;
-    }
-    return '$_selectedCityName • $_selectedStationName';
-  }
+  String get _selectedLocationDisplayText => _selectedCityName;
 
   Future<void> _selectDate({required bool isStart}) async {
     final now = DateTime.now();
@@ -248,265 +241,138 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
 
   Future<void> _openLocationPicker() async {
     final theme = Theme.of(context);
-    var currentTab = _selectedCityName;
-
-    // Fallback stations nếu BE chưa seed data hoặc offline
-    final fallbackStations = {
-      'Hà Nội': const [
-        StationEntity(
-          id: 3,
-          name: 'Trạm Sạc & Thuê Xe Cầu Giấy',
-          address: 'Xuân Thủy, Cầu Giấy',
-        ),
-        StationEntity(
-          id: 4,
-          name: 'Trạm Sạc & Thuê Xe Hoàn Kiếm',
-          address: 'Tràng Tiền, Hoàn Kiếm',
-        ),
-      ],
-      'Hồ Chí Minh': const [
-        StationEntity(
-          id: 1,
-          name: 'Trạm Sạc & Thuê Xe Quận 1',
-          address: 'Lê Duẩn, Quận 1',
-        ),
-        StationEntity(
-          id: 2,
-          name: 'Trạm Sạc & Thuê Xe Khu Công Nghệ Cao',
-          address: 'TP. Thủ Đức',
-        ),
-      ],
-    };
 
     await showModalBottomSheet<void>(
       context: context,
-      isScrollControlled: true,
       backgroundColor: theme.colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppSpacing.md,
-                horizontal: AppSpacing.md,
-              ),
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.75,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: AppSpacing.md,
+              horizontal: AppSpacing.md,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const Text(
-                    'Chọn địa điểm nhận xe',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
-                    ),
+                ),
+                const Text(
+                  'Chọn địa điểm nhận xe',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F172A),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Danh sách trạm xe đồng bộ từ hệ thống E-Motion',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: currentTab == 'Hồ Chí Minh'
-                                ? const Color(0xFF2563EB).withValues(alpha: 0.1)
-                                : Colors.transparent,
-                            side: BorderSide(
-                              color: currentTab == 'Hồ Chí Minh'
-                                  ? const Color(0xFF2563EB)
-                                  : Colors.grey.shade300,
-                              width: currentTab == 'Hồ Chí Minh' ? 2 : 1,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () {
-                            setModalState(() {
-                              currentTab = 'Hồ Chí Minh';
-                            });
-                          },
-                          child: Text(
-                            'Hồ Chí Minh',
-                            style: TextStyle(
-                              color: currentTab == 'Hồ Chí Minh'
-                                  ? const Color(0xFF2563EB)
-                                  : Colors.grey.shade700,
-                              fontWeight: currentTab == 'Hồ Chí Minh'
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: currentTab == 'Hà Nội'
-                                ? const Color(0xFF2563EB).withValues(alpha: 0.1)
-                                : Colors.transparent,
-                            side: BorderSide(
-                              color: currentTab == 'Hà Nội'
-                                  ? const Color(0xFF2563EB)
-                                  : Colors.grey.shade300,
-                              width: currentTab == 'Hà Nội' ? 2 : 1,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () {
-                            setModalState(() {
-                              currentTab = 'Hà Nội';
-                            });
-                          },
-                          child: Text(
-                            'Hà Nội',
-                            style: TextStyle(
-                              color: currentTab == 'Hà Nội'
-                                  ? const Color(0xFF2563EB)
-                                  : Colors.grey.shade700,
-                              fontWeight: currentTab == 'Hà Nội'
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Expanded(
-                    child: Consumer(
-                      builder: (context, ref, _) {
-                        final stationsAsync = ref.watch(
-                          stationsByCityProvider(currentTab),
-                        );
-
-                        void onSelectStation(StationEntity? station) {
-                          setState(() {
-                            _selectedCityName = currentTab;
-                            _selectedCityCode = currentTab == 'Hà Nội'
-                                ? 'HANOI'
-                                : 'TP_HCM';
-                            _selectedStationId = station?.id;
-                            _selectedStationName =
-                                station?.name ?? 'Tất cả các trạm';
-                          });
-                          Navigator.pop(ctx);
-                        }
-
-                        return stationsAsync.when(
-                          loading: () => const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(AppSpacing.lg),
-                              child: CircularProgressIndicator.adaptive(),
-                            ),
-                          ),
-                          error: (_, _) => _buildStationListView(
-                            currentTab: currentTab,
-                            stations: fallbackStations[currentTab] ?? const [],
-                            onSelect: onSelectStation,
-                          ),
-                          data: (stations) {
-                            final list = stations.isNotEmpty
-                                ? stations
-                                : (fallbackStations[currentTab] ?? const []);
-                            return _buildStationListView(
-                              currentTab: currentTab,
-                              stations: list,
-                              onSelect: onSelectStation,
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+                ),
+                const SizedBox(height: AppSpacing.md),
+                _buildCityOption(
+                  ctx: ctx,
+                  cityName: 'Hồ Chí Minh',
+                  cityCode: 'TP_HCM',
+                  isSelected: _selectedCityName == 'Hồ Chí Minh',
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _buildCityOption(
+                  ctx: ctx,
+                  cityName: 'Hà Nội',
+                  cityCode: 'HANOI',
+                  isSelected: _selectedCityName == 'Hà Nội',
+                ),
+                const SizedBox(height: AppSpacing.md),
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget _buildStationListView({
-    required String currentTab,
-    required List<StationEntity> stations,
-    required void Function(StationEntity? station) onSelect,
+  Widget _buildCityOption({
+    required BuildContext ctx,
+    required String cityName,
+    required String cityCode,
+    required bool isSelected,
   }) {
-    final allItems = <StationEntity?>[null, ...stations];
-
-    return ListView.separated(
-      itemCount: allItems.length,
-      separatorBuilder: (_, _) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final station = allItems[index];
-        final isAll = station == null;
-        final isSelected =
-            _selectedCityName == currentTab &&
-            (isAll
-                ? _selectedStationId == null
-                : _selectedStationId == station.id);
-
-        final title = isAll ? 'Tất cả các trạm tại $currentTab' : station.name;
-        final subtitle = !isAll && station.address.isNotEmpty
-            ? station.address
-            : null;
-
-        return ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 4,
-            vertical: 2,
-          ),
-          leading: Icon(
-            isAll ? Icons.location_city_rounded : Icons.ev_station_rounded,
-            color: isSelected ? const Color(0xFF2563EB) : Colors.grey.shade600,
-          ),
-          title: Text(
-            title,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected ? const Color(0xFF2563EB) : null,
-            ),
-          ),
-          subtitle: subtitle != null
-              ? Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                )
-              : null,
-          trailing: isSelected
-              ? const Icon(Icons.check_circle_rounded, color: Color(0xFF2563EB))
-              : null,
-          onTap: () => onSelect(station),
-        );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedCityName = cityName;
+          _selectedCityCode = cityCode;
+        });
+        Navigator.pop(ctx);
       },
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: 14,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF2563EB).withValues(alpha: 0.06)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFFE2E8F0),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0xFF2563EB).withValues(alpha: 0.12)
+                    : const Color(0xFFF1F5F9),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.location_city_rounded,
+                size: 22,
+                color: isSelected
+                    ? const Color(0xFF2563EB)
+                    : const Color(0xFF64748B),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(
+                cityName,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  color: isSelected
+                      ? const Color(0xFF2563EB)
+                      : const Color(0xFF0F172A),
+                ),
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Color(0xFF2563EB),
+                size: 22,
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -548,14 +414,26 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
       return;
     }
 
+    // Cập nhật bộ lọc trước khi điều hướng để MapSearchPage nhận diện ngay Frame 0
+    ref
+        .read(vehicleFilterProvider.notifier)
+        .updateFilter(
+          const VehicleFilter().copyWith(
+            city: _selectedCityCode,
+            location: _selectedCityName,
+            startTime: startDateTime,
+            endTime: endDateTime,
+            brand: 'Tất cả',
+            clearSearch: true,
+          ),
+        );
+
     // Điều hướng sang màn hình tìm kiếm & bản đồ xe
     context.goNamed(
       AppRoute.mapSearch.name,
       queryParameters: {
         'city': _selectedCityCode,
-        if (_selectedStationId != null)
-          'stationId': _selectedStationId.toString(),
-        'location': _selectedLocationDisplayText,
+        'location': _selectedCityName,
         'start': startDateTime.toIso8601String(),
         'end': endDateTime.toIso8601String(),
       },

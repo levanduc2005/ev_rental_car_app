@@ -104,8 +104,16 @@ final vehicleListControllerProvider = FutureProvider<List<VehicleEntity>>((
   final result = await useCase(filter);
   return result.when(
     ok: (list) {
-      if (filter.sort.isEmpty || filter.sort == 'Tất cả') return list;
-      final sorted = List<VehicleEntity>.from(list);
+      var filtered = list;
+      if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
+        filtered = filtered
+            .where(
+              (v) => v.brand.toUpperCase() == filter.brand.trim().toUpperCase(),
+            )
+            .toList();
+      }
+      if (filter.sort.isEmpty || filter.sort == 'Tất cả') return filtered;
+      final sorted = List<VehicleEntity>.from(filtered);
       switch (filter.sort) {
         case 'Giá thấp đến cao':
           sorted.sort((a, b) => a.salePriceK.compareTo(b.salePriceK));
@@ -229,6 +237,8 @@ class PaginatedVehicleState {
 
 /// Notifier quản lý phân trang và infinite scroll danh sách xe
 class PaginatedVehicleNotifier extends Notifier<PaginatedVehicleState> {
+  int _currentRequestId = 0;
+
   @override
   PaginatedVehicleState build() {
     final filter = ref.watch(vehicleFilterProvider);
@@ -237,13 +247,24 @@ class PaginatedVehicleNotifier extends Notifier<PaginatedVehicleState> {
   }
 
   Future<void> loadInitial(VehicleFilter filter) async {
+    final requestId = ++_currentRequestId;
     state = state.copyWith(isLoading: true, clearError: true);
     final useCase = ref.read(getVehiclesPaginatedUseCaseProvider);
     final result = await useCase(filter: filter, limit: 10);
+    if (requestId != _currentRequestId) return;
     result.when(
       ok: (paginated) {
+        var vehicles = paginated.vehicles;
+        if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
+          vehicles = vehicles
+              .where(
+                (v) =>
+                    v.brand.toUpperCase() == filter.brand.trim().toUpperCase(),
+              )
+              .toList();
+        }
         state = PaginatedVehicleState(
-          vehicles: _applySort(paginated.vehicles, filter.sort),
+          vehicles: _applySort(vehicles, filter.sort),
           currentPage: paginated.currentPage,
           totalPages: paginated.totalPages,
         );
@@ -256,14 +277,25 @@ class PaginatedVehicleNotifier extends Notifier<PaginatedVehicleState> {
 
   Future<void> loadMore() async {
     if (state.isLoading || state.isLoadingMore || !state.hasMore) return;
+    final requestId = ++_currentRequestId;
     state = state.copyWith(isLoadingMore: true);
     final filter = ref.read(vehicleFilterProvider);
     final useCase = ref.read(getVehiclesPaginatedUseCaseProvider);
     final nextPage = state.currentPage + 1;
     final result = await useCase(filter: filter, page: nextPage, limit: 10);
+    if (requestId != _currentRequestId) return;
     result.when(
       ok: (paginated) {
-        final combined = [...state.vehicles, ...paginated.vehicles];
+        var newVehicles = paginated.vehicles;
+        if (filter.brand != 'Tất cả' && filter.brand.trim().isNotEmpty) {
+          newVehicles = newVehicles
+              .where(
+                (v) =>
+                    v.brand.toUpperCase() == filter.brand.trim().toUpperCase(),
+              )
+              .toList();
+        }
+        final combined = [...state.vehicles, ...newVehicles];
         state = state.copyWith(
           vehicles: _applySort(combined, filter.sort),
           currentPage: paginated.currentPage,

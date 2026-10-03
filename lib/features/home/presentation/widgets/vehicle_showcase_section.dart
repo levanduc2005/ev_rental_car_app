@@ -55,12 +55,12 @@ class VehicleCardData {
       price4h: entity.formattedPrice4h,
       oldPrice4h: '',
       price24h: entity.formattedPrice24h,
-      topBadgeText: entity.isElectric
-          ? '⚡ 100% Điện'
-          : (entity.isLuxury ? '👑 Xe sang' : null),
-      topBadgeColor: entity.isElectric
-          ? const Color(0xFF1976D2)
-          : (entity.isLuxury ? const Color(0xFFE65100) : null),
+      topBadgeText: entity.isLuxury
+          ? '👑 Xế xịn'
+          : (entity.isElectric ? '⚡ 100% Điện' : null),
+      topBadgeColor: entity.isLuxury
+          ? const Color(0xFFE65100)
+          : (entity.isElectric ? const Color(0xFF1976D2) : null),
       bottomBadgeText: 'Tự nhận xe',
       isLuxury: entity.isLuxury,
     );
@@ -136,7 +136,7 @@ class VehicleShowcaseSection extends StatelessWidget {
 
         // Danh sách thẻ xe cuộn ngang
         SizedBox(
-          height: 330,
+          height: 295,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             scrollDirection: Axis.horizontal,
@@ -364,98 +364,52 @@ class _RentalVehicleCard extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  // Giá tiền + Nút Đặt ngay / Chọn xe
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Cột giá
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Cột giá
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                vehicle.price4h,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF1976D2),
-                                ),
-                              ),
-                              const SizedBox(width: 2),
-                              const Text(
-                                '/4 giờ',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                vehicle.oldPrice4h,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey.shade400,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                            ],
-                          ),
                           Text(
-                            '${vehicle.price24h} / 24 giờ',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey.shade600,
+                            vehicle.price4h,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF1976D2),
                             ),
                           ),
+                          const SizedBox(width: 2),
+                          const Text(
+                            '/4 giờ',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          if (vehicle.oldPrice4h.isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            Text(
+                              vehicle.oldPrice4h,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade400,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
-
-                      // Nút bấm
-                      SizedBox(
-                        height: 32,
-                        child: vehicle.isLuxury
-                            ? FilledButton(
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1976D2),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () => _onSelect(context),
-                                child: const Text(
-                                  'Chọn xe',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              )
-                            : OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF1976D2),
-                                  side: const BorderSide(
-                                    color: Color(0xFF1976D2),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () => _onSelect(context),
-                                child: const Text(
-                                  'Đặt ngay',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${vehicle.price24h} / 24 giờ',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ),

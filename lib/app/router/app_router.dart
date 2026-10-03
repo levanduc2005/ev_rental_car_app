@@ -112,15 +112,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.mapSearch.path,
         name: AppRoute.mapSearch.name,
-        builder: (_, state) => MapSearchPage(
-          initialCity: state.uri.queryParameters['city'],
-          initialStationId: state.uri.queryParameters['stationId'],
-          initialLocation: state.uri.queryParameters['location'],
-          initialStart: state.uri.queryParameters['start'],
-          initialEnd: state.uri.queryParameters['end'],
-          initialType: state.uri.queryParameters['type'],
-          initialPackage: state.uri.queryParameters['package'],
-        ),
+        builder: (context, state) => const MapSearchPage(),
         routes: [
           GoRoute(
             path: ':id',

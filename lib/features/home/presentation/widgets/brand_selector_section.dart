@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
-import 'package:rental_car/features/home/presentation/widgets/section_see_all_button.dart';
 
 class BrandItem {
   const BrandItem({
@@ -196,139 +193,61 @@ class BrandSelectorSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final displayList = _displayBrands;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Tiêu đề + Xem tất cả / Bỏ chọn
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Text(
-                    'Chọn xe theo hãng',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  if (selectedBrand != null) ...[
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => onSelectBrand?.call(selectedBrand!),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1976D2).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              selectedBrand!,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color: Color(0xFF1976D2),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            const Icon(
-                              Icons.close_rounded,
-                              size: 12,
-                              color: Color(0xFF1976D2),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              SectionSeeAllButton(
-                onTap: () => context.goNamed(AppRoute.mapSearch.name),
-              ),
-            ],
+        // Tiêu đề
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          child: Text(
+            'Chọn xe theo hãng',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
 
         // Danh sách thương hiệu cuộn ngang
         SizedBox(
-          height: 102,
+          height: 92,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             scrollDirection: Axis.horizontal,
             itemCount: displayList.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 10),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final brand = displayList[index];
               final isSelected =
                   selectedBrand?.toUpperCase() == brand.name.toUpperCase();
 
               return Material(
-                color: isSelected
-                    ? brand.color.withValues(alpha: 0.12)
-                    : colorScheme.surface,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
                 child: InkWell(
                   onTap: () {
-                    if (onSelectBrand != null) {
-                      onSelectBrand!(brand.name);
-                    } else {
-                      context.goNamed(AppRoute.mapSearch.name);
-                    }
+                    onSelectBrand?.call(brand.name);
                   },
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
-                    width: 84,
+                    width: 76,
                     padding: const EdgeInsets.symmetric(
-                      vertical: 10,
+                      vertical: 6,
                       horizontal: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected
-                            ? brand.color
-                            : colorScheme.outlineVariant.withValues(
-                                alpha: 0.35,
-                              ),
-                        width: isSelected ? 1.8 : 1.0,
-                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Vòng tròn chứa logo hãng xe thực tế
+                        // Vòng tròn chứa logo hãng xe phẳng, không viền nổi
                         Container(
-                          width: 44,
-                          height: 44,
-                          padding: const EdgeInsets.all(7),
+                          width: 48,
+                          height: 48,
+                          padding: const EdgeInsets.all(9),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: isSelected
+                                ? brand.color.withValues(alpha: 0.12)
+                                : const Color(0xFFF1F5F9),
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected
-                                  ? brand.color
-                                  : colorScheme.outlineVariant.withValues(
-                                      alpha: 0.25,
-                                    ),
-                              width: isSelected ? 1.8 : 1.0,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.04),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
                           ),
                           child: Center(child: _BrandLogoImage(brand: brand)),
                         ),
@@ -338,9 +257,11 @@ class BrandSelectorSection extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: isSelected
-                                ? FontWeight.w900
+                                ? FontWeight.w800
                                 : FontWeight.w600,
-                            color: isSelected ? brand.color : null,
+                            color: isSelected
+                                ? brand.color
+                                : const Color(0xFF334155),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
