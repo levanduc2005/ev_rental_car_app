@@ -13,7 +13,9 @@ import 'package:rental_car/features/profile/presentation/providers/profile_provi
 import 'package:rental_car/features/profile/presentation/widgets/image_picker_bottom_sheet.dart';
 
 class KycUploadScreen extends ConsumerStatefulWidget {
-  const KycUploadScreen({super.key});
+  const KycUploadScreen({this.initialType, super.key});
+
+  final DocumentType? initialType;
 
   @override
   ConsumerState<KycUploadScreen> createState() => _KycUploadScreenState();
@@ -32,6 +34,33 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
   void initState() {
     super.initState();
     _numberController = TextEditingController();
+    _selectedType = widget.initialType ?? DocumentType.license;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initDocumentType();
+    });
+  }
+
+  void _initDocumentType() {
+    final user = ref.read(profileControllerProvider).user;
+    final hasLicense = user?.licenseDocument != null;
+    final hasCccd = user?.cccdDocument != null;
+
+    DocumentType chosenType = _selectedType;
+    if (widget.initialType != null) {
+      chosenType = widget.initialType!;
+    } else if (hasLicense && !hasCccd) {
+      chosenType = DocumentType.cccd;
+    } else if (hasCccd && !hasLicense) {
+      chosenType = DocumentType.license;
+    }
+
+    if (chosenType != _selectedType) {
+      setState(() {
+        _selectedType = chosenType;
+      });
+    }
+    ref.read(kycControllerProvider.notifier).prepareForType(chosenType);
   }
 
   @override
@@ -101,6 +130,85 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
 
     if (mounted) {
       if (success) {
+        // Cập nhật lại danh sách giấy tờ của user
+        await ref.read(profileControllerProvider.notifier).refreshProfile();
+        if (!mounted) return;
+
+        final updatedUser = ref.read(profileControllerProvider).user;
+        final hasLicenseNow = updatedUser?.licenseDocument != null;
+        final hasCccdNow = updatedUser?.cccdDocument != null;
+
+        // Nếu còn loại giấy tờ chưa tải lên, gợi ý người dùng tiếp tục tải lên loại còn lại ngay
+        if (!hasLicenseNow || !hasCccdNow) {
+          final remainingType = !hasLicenseNow
+              ? DocumentType.license
+              : DocumentType.cccd;
+          final remainingName = remainingType == DocumentType.license
+              ? 'Bằng lái xe (GPLX)'
+              : 'Căn cước công dân (CCCD)';
+          final uploadedName = _selectedType == DocumentType.license
+              ? 'Bằng lái xe (GPLX)'
+              : 'Căn cước công dân (CCCD)';
+
+          final wantUploadRemaining = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+              ),
+              title: const Row(
+                children: [
+                  Icon(Icons.check_circle_rounded, color: AppColors.success),
+                  SizedBox(width: AppSpacing.sm),
+                  Expanded(child: Text('Tải lên thành công!')),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Bạn đã tải lên $uploadedName thành công.'),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    'Bạn có muốn tiếp tục tải lên $remainingName ngay bây giờ để hoàn thiện đầy đủ hồ sơ?',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: const Text('Xem hồ sơ'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: Text('Tải lên $remainingName ngay'),
+                ),
+              ],
+            ),
+          );
+
+          if (!mounted) return;
+
+          if (wantUploadRemaining == true) {
+            setState(() {
+              _selectedType = remainingType;
+              _numberController.clear();
+              _selectedExpiryDate = null;
+            });
+            ref
+                .read(kycControllerProvider.notifier)
+                .prepareForType(remainingType);
+            context.showSnackBar('Hãy chụp ảnh $remainingName.');
+            return;
+          }
+        }
+
         context.showSnackBar('Nộp giấy tờ xác thực thành công!');
         context.pushReplacement(AppRoute.kycStatus.path);
       } else {
@@ -115,11 +223,19 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
   @override
   Widget build(BuildContext context) {
     final kycState = ref.watch(kycControllerProvider);
+    final user = ref.watch(profileControllerProvider).user;
+    final hasLicense = user?.licenseDocument != null;
+    final hasCccd = user?.cccdDocument != null;
+    final bothUploaded = hasLicense && hasCccd;
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Xác thực Giấy tờ (KYC)'),
+        title: Text(
+          _selectedType == DocumentType.license
+              ? 'Xác thực Bằng lái xe (GPLX)'
+              : 'Xác thực Căn cước công dân (CCCD)',
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -135,6 +251,41 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (bothUploaded) ...[
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(
+                        color: AppColors.success.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle_rounded,
+                          color: AppColors.success,
+                          size: 24,
+                        ),
+                        const Gap.h(AppSpacing.sm),
+                        const Expanded(
+                          child: Text(
+                            'Bạn đã hoàn tất nộp cả GPLX và CCCD. Để cập nhật lại giấy tờ nào, vui lòng vào màn hình chi tiết để gỡ và chụp mới.',
+                            style: AppTextStyles.caption,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              context.pushReplacement(AppRoute.kycStatus.path),
+                          child: const Text('Xem hồ sơ'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(AppSpacing.md),
+                ],
+
                 // 1. Khung chụp / chọn ảnh
                 _buildImageCaptureArea(kycState.selectedImagePath),
                 const Gap(AppSpacing.lg),
@@ -144,9 +295,25 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Thông tin giấy tờ',
-                        style: AppTextStyles.heading3,
+                      Row(
+                        children: [
+                          Icon(
+                            _selectedType == DocumentType.license
+                                ? Icons.directions_car_outlined
+                                : Icons.credit_card_outlined,
+                            color: AppColors.primary,
+                            size: 22,
+                          ),
+                          const Gap.h(AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              _selectedType == DocumentType.license
+                                  ? 'Thông tin Bằng lái xe (GPLX)'
+                                  : 'Thông tin Căn cước công dân (CCCD)',
+                              style: AppTextStyles.heading3,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       const Text(
@@ -154,34 +321,6 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
                         style: AppTextStyles.caption,
                       ),
                       const Divider(height: AppSpacing.lg),
-
-                      // Loại giấy tờ
-                      const Text(
-                        'Loại giấy tờ',
-                        style: AppTextStyles.inputLabel,
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      SegmentedButton<DocumentType>(
-                        segments: const [
-                          ButtonSegment(
-                            value: DocumentType.license,
-                            label: Text('GPLX (Bằng lái)'),
-                            icon: Icon(Icons.directions_car_outlined),
-                          ),
-                          ButtonSegment(
-                            value: DocumentType.cccd,
-                            label: Text('CCCD / CMND'),
-                            icon: Icon(Icons.credit_card_outlined),
-                          ),
-                        ],
-                        selected: {_selectedType},
-                        onSelectionChanged: (set) {
-                          setState(() {
-                            _selectedType = set.first;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.md),
 
                       // Số giấy tờ
                       AppTextField(
@@ -478,8 +617,10 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            const Text(
-              'Chạm để chụp hoặc tải ảnh giấy tờ',
+            Text(
+              _selectedType == DocumentType.license
+                  ? 'Chạm để chụp hoặc tải ảnh Bằng lái xe (GPLX)'
+                  : 'Chạm để chụp hoặc tải ảnh CCCD / CMND',
               style: AppTextStyles.title,
             ),
             const SizedBox(height: AppSpacing.xs),

@@ -142,14 +142,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.kycUpload.path,
         name: AppRoute.kycUpload.name,
-        builder: (_, _) => const KycUploadScreen(),
+        builder: (_, state) {
+          final initialType = state.extra as DocumentType?;
+          return KycUploadScreen(initialType: initialType);
+        },
       ),
       GoRoute(
         path: AppRoute.kycStatus.path,
         name: AppRoute.kycStatus.name,
         builder: (_, state) {
-          final doc = state.extra as KycDocumentEntity?;
-          return KycStatusScreen(document: doc);
+          if (state.extra is KycDocumentEntity) {
+            return KycStatusScreen(document: state.extra as KycDocumentEntity);
+          } else if (state.extra is DocumentType) {
+            return KycStatusScreen(initialType: state.extra as DocumentType);
+          }
+          return const KycStatusScreen();
         },
       ),
       GoRoute(

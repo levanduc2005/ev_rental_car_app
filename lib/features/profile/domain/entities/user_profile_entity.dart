@@ -37,4 +37,39 @@ abstract class UserProfileEntity with _$UserProfileEntity {
 
   /// Trạng thái bằng lái xe tổng quan
   KycStatus get licenseStatus => licenseDocument?.status ?? KycStatus.none;
+
+  /// Lấy tài liệu Căn cước công dân (CCCD) (nếu có)
+  KycDocumentEntity? get cccdDocument {
+    for (final doc in documents) {
+      if (doc.type == DocumentType.cccd) {
+        return doc;
+      }
+    }
+    return null;
+  }
+
+  /// Trạng thái CCCD tổng quan
+  KycStatus get cccdStatus => cccdDocument?.status ?? KycStatus.none;
+
+  /// Kiểm tra xem người dùng đã có CCCD được duyệt hay chưa
+  bool get hasVerifiedCccd => documents.any(
+    (doc) => doc.type == DocumentType.cccd && doc.status == KycStatus.approved,
+  );
+
+  /// Lấy tài liệu theo loại
+  KycDocumentEntity? documentOfType(DocumentType type) {
+    for (final doc in documents) {
+      if (doc.type == type) {
+        return doc;
+      }
+    }
+    return null;
+  }
+
+  /// Trạng thái theo loại giấy tờ
+  KycStatus statusOfType(DocumentType type) =>
+      documentOfType(type)?.status ?? KycStatus.none;
+
+  /// Kiểm tra xem người dùng đã cập nhật cả 2 loại giấy tờ chưa
+  bool get hasBothDocuments => licenseDocument != null && cccdDocument != null;
 }

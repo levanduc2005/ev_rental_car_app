@@ -50,6 +50,41 @@ void main() {
       expect(user.hasVerifiedLicense, isFalse);
       expect(user.licenseStatus, KycStatus.none);
       expect(user.licenseDocument, isNull);
+      expect(user.hasVerifiedCccd, isFalse);
+      expect(user.cccdStatus, KycStatus.none);
+      expect(user.cccdDocument, isNull);
+      expect(user.hasBothDocuments, isFalse);
+    });
+
+    test('cccdDocument and hasBothDocuments return true when both exist', () {
+      const license = KycDocumentEntity(
+        id: 1,
+        imgUrl: 'https://example.com/license.jpg',
+        type: DocumentType.license,
+        number: '079123456789',
+        status: KycStatus.approved,
+      );
+
+      const cccd = KycDocumentEntity(
+        id: 2,
+        imgUrl: 'https://example.com/cccd.jpg',
+        type: DocumentType.cccd,
+        number: '012345678901',
+        status: KycStatus.approved,
+      );
+
+      const user = UserProfileEntity(
+        email: 'user@example.com',
+        documents: [license, cccd],
+      );
+
+      expect(user.hasVerifiedLicense, isTrue);
+      expect(user.hasVerifiedCccd, isTrue);
+      expect(user.licenseDocument?.number, '079123456789');
+      expect(user.cccdDocument?.number, '012345678901');
+      expect(user.hasBothDocuments, isTrue);
+      expect(user.statusOfType(DocumentType.license), KycStatus.approved);
+      expect(user.statusOfType(DocumentType.cccd), KycStatus.approved);
     });
   });
 }

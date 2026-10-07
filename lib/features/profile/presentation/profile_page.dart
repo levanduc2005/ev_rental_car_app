@@ -30,11 +30,15 @@ class ProfilePage extends ConsumerWidget {
     await ref.read(authControllerProvider.notifier).logout();
   }
 
-  void _onKycItemTap(BuildContext context, KycDocumentEntity? document) {
+  void _openKycDetail(
+    BuildContext context, {
+    KycDocumentEntity? document,
+    DocumentType? type,
+  }) {
     if (document != null) {
       context.push(AppRoute.kycStatus.path, extra: document);
     } else {
-      context.push(AppRoute.kycUpload.path);
+      context.push(AppRoute.kycUpload.path, extra: type);
     }
   }
 
@@ -44,17 +48,30 @@ class ProfilePage extends ConsumerWidget {
     final profileState = ref.watch(profileControllerProvider);
     final user = profileState.user;
 
-    final doc =
-        user?.licenseDocument ??
-        (user?.documents.isNotEmpty == true ? user!.documents.first : null);
-    final hasDoc = doc != null;
-    final last4 = hasDoc && doc.number.length >= 4
-        ? doc.number.substring(doc.number.length - 4)
-        : (hasDoc ? doc.number : '');
-    final kycSubtitle = hasDoc
-        ? 'Đã xác minh (Số: •••• $last4)'
-        : 'Chưa cập nhật';
-    final kycStatus = hasDoc ? KycStatus.approved : KycStatus.none;
+    final licenseDoc = user?.licenseDocument;
+    final cccdDoc = user?.cccdDocument;
+
+    final hasLicense = licenseDoc != null;
+    final licenseLast4 = hasLicense && licenseDoc.number.length >= 4
+        ? licenseDoc.number.substring(licenseDoc.number.length - 4)
+        : (hasLicense ? licenseDoc.number : '');
+    final licenseSubtitle = hasLicense
+        ? 'Đã xác minh (Số: •••• $licenseLast4)'
+        : 'Chưa cập nhật (Bắt buộc để thuê xe)';
+    final licenseStatus = licenseDoc?.status ?? KycStatus.none;
+
+    final hasCccd = cccdDoc != null;
+    final cccdLast4 = hasCccd && cccdDoc.number.length >= 4
+        ? cccdDoc.number.substring(cccdDoc.number.length - 4)
+        : (hasCccd ? cccdDoc.number : '');
+    final cccdSubtitle = hasCccd
+        ? 'Đã xác minh (Số: •••• $cccdLast4)'
+        : 'Chưa cập nhật (Xác thực danh tính)';
+    final cccdStatus = cccdDoc?.status ?? KycStatus.none;
+
+    final overallStatus = (hasLicense && hasCccd)
+        ? KycStatus.approved
+        : (hasLicense || hasCccd ? KycStatus.approved : KycStatus.none);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -170,9 +187,9 @@ class ProfilePage extends ConsumerWidget {
 
                       // Huy hiệu trạng thái KYC
                       InkWell(
-                        onTap: () => _onKycItemTap(context, doc),
+                        onTap: () => context.push(AppRoute.kycStatus.path),
                         borderRadius: BorderRadius.circular(AppRadius.pill),
-                        child: KycStatusBadge(status: kycStatus),
+                        child: KycStatusBadge(status: overallStatus),
                       ),
                     ],
                   ),
@@ -188,11 +205,30 @@ class ProfilePage extends ConsumerWidget {
               child: Column(
                 children: [
                   ProfileMenuItem(
-                    icon: Icons.badge_outlined,
-                    title: 'Xác minh Bằng lái xe (GPLX) / CCCD',
-                    subtitle: kycSubtitle,
-                    trailing: KycStatusBadge(status: kycStatus, compact: true),
-                    onTap: () => _onKycItemTap(context, doc),
+                    icon: Icons.directions_car_outlined,
+                    title: 'Bằng lái xe (GPLX)',
+                    subtitle: licenseSubtitle,
+                    trailing: KycStatusBadge(
+                      status: licenseStatus,
+                      compact: true,
+                    ),
+                    onTap: () => _openKycDetail(
+                      context,
+                      document: licenseDoc,
+                      type: DocumentType.license,
+                    ),
+                  ),
+                  ProfileMenuItem(
+                    icon: Icons.credit_card_outlined,
+                    iconColor: const Color(0xFF0284C7),
+                    title: 'Căn cước công dân (CCCD)',
+                    subtitle: cccdSubtitle,
+                    trailing: KycStatusBadge(status: cccdStatus, compact: true),
+                    onTap: () => _openKycDetail(
+                      context,
+                      document: cccdDoc,
+                      type: DocumentType.cccd,
+                    ),
                   ),
                   ProfileMenuItem(
                     icon: Icons.person_outline_rounded,

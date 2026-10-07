@@ -242,7 +242,9 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     if (rawMessage.contains('LICENSE_NOT_VALID_FOR_VEHICLE')) {
       return 'Hạng bằng lái không đủ điều kiện thuê xe điện (chỉ chấp nhận B1, B2, BE, C, D, E).';
     }
-    if (rawMessage.contains('DOCUMENT_NUMBER_EXISTS')) {
+    if (rawMessage.contains('DOCUMENT_NUMBER_EXISTS') ||
+        rawMessage.contains('documents_doc_number_key') ||
+        rawMessage.contains('duplicate key value')) {
       return 'Số GPLX/CCCD này đã được đăng ký bởi một tài khoản khác.';
     }
     if (rawMessage.contains('USER_ALREADY_HAS_DOCUMENT_OF_TYPE')) {

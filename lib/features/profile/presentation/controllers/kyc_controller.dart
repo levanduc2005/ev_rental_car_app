@@ -40,6 +40,10 @@ class KycController extends Notifier<KycState> {
     state = const KycState();
   }
 
+  void prepareForType(DocumentType type) {
+    state = KycState(documentType: type);
+  }
+
   Future<bool> submitDocument({required String userEmail}) async {
     if (state.selectedImagePath == null) {
       state = state.copyWith(
