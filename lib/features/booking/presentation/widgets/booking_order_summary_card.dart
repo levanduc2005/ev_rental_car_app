@@ -29,9 +29,6 @@ class BookingOrderSummaryCard extends StatelessWidget {
   final int depositFee;
   final int collateralFee;
 
-  static const String _defaultCarImage =
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDiVxOjLTj5JjghKDMPBd4UdJ_tVbMRIeMLtOgIdtKfkOojv_PO48hcEhHu1lCas852tOakhx5EzvZJr18RncORxAd4wzE7iOCrGu_pPeT-2UMEUMKEpG3yg41U4Hlgx7U25hQTa-DQRn9VBaL14InoB6SsnBprAJMduwVP7G4v3VwNRuYGwPChVd6ICkoZKdZb8VD9ArMtDvKRmJ_hfeO9hL7cMcvEW-Tl6bD6UBZ3wkMr1XAQC9z4mSM3WB7MLeiiIcw';
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -61,17 +58,26 @@ class BookingOrderSummaryCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  vehicleImageUrl ?? _defaultCarImage,
-                  width: double.infinity,
-                  height: 160,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    height: 160,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.directions_car, size: 60),
-                  ),
-                ),
+                child: (vehicleImageUrl != null &&
+                        vehicleImageUrl!.startsWith('http'))
+                    ? Image.network(
+                        vehicleImageUrl!,
+                        width: double.infinity,
+                        height: 160,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Container(
+                          height: 160,
+                          width: double.infinity,
+                          color: Colors.grey.shade200,
+                          child: const Icon(Icons.directions_car, size: 60, color: Colors.grey),
+                        ),
+                      )
+                    : Container(
+                        height: 160,
+                        width: double.infinity,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.directions_car, size: 60, color: Colors.grey),
+                      ),
               ),
               Positioned(
                 bottom: 8,

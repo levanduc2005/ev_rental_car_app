@@ -6,6 +6,7 @@ import 'package:rental_car/features/booking/data/repositories/booking_repository
 import 'package:rental_car/features/booking/domain/repositories/booking_repository.dart';
 import 'package:rental_car/features/booking/domain/usecases/cancel_reservation_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/confirm_payos_payment_usecase.dart';
+import 'package:rental_car/features/booking/domain/usecases/get_my_reservations_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_reservation_detail_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_supported_banks_usecase.dart';
 
@@ -23,6 +24,11 @@ final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
 });
 
 // --- Domain Layer UseCase Providers ---
+final getMyReservationsUseCaseProvider =
+    Provider<GetMyReservationsUseCase>((ref) {
+      return GetMyReservationsUseCase(ref.watch(bookingRepositoryProvider));
+    });
+
 final getReservationDetailUseCaseProvider =
     Provider<GetReservationDetailUseCase>((ref) {
       return GetReservationDetailUseCase(ref.watch(bookingRepositoryProvider));

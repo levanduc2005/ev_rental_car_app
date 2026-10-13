@@ -22,7 +22,11 @@ enum AppRoute {
   editProfile('/profile/edit'),
   kycUpload('/profile/kyc-upload'),
   kycStatus('/profile/kyc-status'),
-  rentalHistory('/profile/rental-history');
+  rentalHistory('/profile/rental-history'),
+  rentalDetail('/rentals/:id'),
+  returnLocationVerification('/checkout/verify-location'),
+  returnVehicleLog('/checkout/vehicle-log'),
+  checkoutSummary('/checkout/summary');
 
   const AppRoute(this.path);
 

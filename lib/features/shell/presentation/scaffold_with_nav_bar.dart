@@ -30,17 +30,11 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             selectedIcon: const Icon(Icons.directions_car),
             label: l10n.tabRent,
           ),
-          //Đơn thuê
+          //Đơn hàng (Đơn đặt trước & Đơn thuê)
           NavigationDestination(
             icon: const Icon(Icons.receipt_long_outlined),
             selectedIcon: const Icon(Icons.receipt_long),
             label: l10n.tabMyTrip,
-          ),
-          //Điều khiển
-          NavigationDestination(
-            icon: const Icon(Icons.key_outlined),
-            selectedIcon: const Icon(Icons.key),
-            label: l10n.tabControl,
           ),
           //Thông báo
           NavigationDestination(
@@ -61,7 +55,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
 
   void _onDestinationSelected(int index, WidgetRef ref) {
     if (index == 1) {
-      // Khi chọn Tab Đơn thuê (My Trip), tự động làm mới danh sách chuyến đi
+      // Khi chọn Tab Đơn thuê (My Trip), tự động làm mới danh sách chuyến đi & đơn thuê
       ref.read(myReservationsControllerProvider.notifier).loadReservations();
     }
 
