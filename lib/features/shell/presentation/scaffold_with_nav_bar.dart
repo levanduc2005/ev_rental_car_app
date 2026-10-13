@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
 /// The app shell that hosts the bottom [NavigationBar].
@@ -7,20 +9,20 @@ import 'package:rental_car/l10n/l10n.dart';
 /// Driven by go_router's [StatefulNavigationShell]: each tab is a branch with
 /// its own navigation stack, so switching tabs preserves each tab's state and
 /// the back button behaves per-tab.
-class ScaffoldWithNavBar extends StatelessWidget {
+class ScaffoldWithNavBar extends ConsumerWidget {
   const ScaffoldWithNavBar({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
 
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _onDestinationSelected,
+        onDestinationSelected: (index) => _onDestinationSelected(index, ref),
         destinations: [
           //Thuê xe
           NavigationDestination(
@@ -57,7 +59,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
     );
   }
 
-  void _onDestinationSelected(int index) {
+  void _onDestinationSelected(int index, WidgetRef ref) {
+    if (index == 1) {
+      // Khi chọn Tab Đơn thuê (My Trip), tự động làm mới danh sách chuyến đi
+      ref.read(myReservationsControllerProvider.notifier).loadReservations();
+    }
+
     // `initialLocation: true` re-selecting the current tab pops it to its root.
     navigationShell.goBranch(
       index,

@@ -47,6 +47,18 @@ class PayOSPaymentInfoModel {
               ? 'https://img.vietqr.io/image/$bin-$accountNumber-compact2.png?amount=${amount.toInt()}&addInfo=$description&accountName=${Uri.encodeComponent(accountName)}'
               : '');
 
+    DateTime? parsedExpiresAt;
+    if (json['expiresAt'] != null) {
+      parsedExpiresAt = DateTime.tryParse(json['expiresAt'].toString());
+    } else if (json['expiredAt'] != null) {
+      final rawExp = json['expiredAt'];
+      if (rawExp is num) {
+        parsedExpiresAt = DateTime.fromMillisecondsSinceEpoch(rawExp.toInt() * 1000);
+      } else {
+        parsedExpiresAt = DateTime.tryParse(rawExp.toString());
+      }
+    }
+
     return PayOSPaymentInfoModel(
       orderCode: code,
       amount: amount,
@@ -57,7 +69,7 @@ class PayOSPaymentInfoModel {
       bankName: bank,
       qrCodeUrl: qrCodeUrl,
       checkoutUrl: checkoutUrl,
-      expiresAt: DateTime.now().add(const Duration(minutes: 15)),
+      expiresAt: parsedExpiresAt,
     );
   }
 

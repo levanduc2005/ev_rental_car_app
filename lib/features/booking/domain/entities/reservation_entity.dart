@@ -50,6 +50,21 @@ class ReservationEntity {
   bool get isFailed => status.toUpperCase() == 'FAILED';
   bool get isOverdue => status.toUpperCase() == 'OVERDUE';
 
+  /// Kiểm tra xem đơn PENDING đã quá 15 phút thanh toán cọc hay chưa
+  bool get isExpiredHold {
+    if (!isPending) return false;
+    if (createdAt == null) return false;
+    return DateTime.now().isAfter(createdAt!.add(const Duration(minutes: 15)));
+  }
+
+  /// Số giây giữ chỗ còn lại (nếu quá hạn trả về 0)
+  int get holdRemainingSeconds {
+    if (createdAt == null) return 15 * 60;
+    final deadline = createdAt!.add(const Duration(minutes: 15));
+    final diff = deadline.difference(DateTime.now()).inSeconds;
+    return diff > 0 ? diff : 0;
+  }
+
   /// Kiểm tra xem đơn có được phép hủy hay không:
   /// - Cho phép hủy bất cứ lúc nào đối với đơn PENDING (chưa cọc) và CONFIRM (đã cọc chờ nhận xe).
   bool get canCancel => isPending || isConfirmed;

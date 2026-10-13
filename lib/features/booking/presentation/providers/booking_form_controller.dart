@@ -5,6 +5,7 @@ import 'package:rental_car/features/booking/domain/entities/vehicle_booking_summ
 import 'package:rental_car/features/booking/domain/repositories/booking_repository.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_form_state.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_providers.dart';
+import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
 
 /// Controller quản lý luồng chọn thời gian, tính giá và đặt xe.
 class BookingFormController extends Notifier<BookingFormState> {
@@ -162,6 +163,9 @@ class BookingFormController extends Notifier<BookingFormState> {
           createdReservation: reservation,
           payosPaymentInfo: reservation.paymentInfo,
         );
+
+        // Cập nhật danh sách đơn thuê ở Tab 2 ngay lập tức
+        ref.read(myReservationsControllerProvider.notifier).loadReservations();
 
         // Nếu response chưa kèm paymentInfo, tự động gọi tạo link PayOS cho đơn
         if (reservation.paymentInfo == null && reservation.id > 0) {

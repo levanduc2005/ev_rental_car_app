@@ -9,6 +9,7 @@ import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/booking/domain/entities/bank_app_item.dart';
 import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
+import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_providers.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
@@ -30,18 +31,26 @@ class BookingPaymentPage extends ConsumerStatefulWidget {
 
 class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
   Timer? _countdownTimer;
-  int _remainingSeconds = 15 * 60; // 15 phút đếm ngược
+  int _remainingSeconds = 15 * 60; // Mặc định nếu chưa nạp được thời gian đơn
   bool _isCheckingStatus = false;
   BankAppItem? _selectedBank;
+
+  bool get _isExpired => _remainingSeconds <= 0;
 
   @override
   void initState() {
     super.initState();
+    final bookingState = ref.read(bookingFormControllerProvider);
+    _syncRemainingSeconds(
+      bookingState.createdReservation,
+      bookingState.payosPaymentInfo,
+    );
     _startTimer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final bookingState = ref.read(bookingFormControllerProvider);
-      final reservation = bookingState.createdReservation;
-      if (bookingState.payosPaymentInfo == null &&
+      final state = ref.read(bookingFormControllerProvider);
+      final reservation = state.createdReservation;
+      _syncRemainingSeconds(reservation, state.payosPaymentInfo);
+      if (state.payosPaymentInfo == null &&
           reservation != null &&
           reservation.id > 0) {
         ref
@@ -51,13 +60,37 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
     });
   }
 
+  void _syncRemainingSeconds(
+    ReservationEntity? reservation,
+    PayOSPaymentInfoEntity? payosInfo,
+  ) {
+    if (reservation != null && reservation.createdAt != null) {
+      final remaining = reservation.holdRemainingSeconds;
+      if (mounted) {
+        setState(() => _remainingSeconds = remaining);
+      } else {
+        _remainingSeconds = remaining;
+      }
+    } else if (payosInfo?.expiresAt != null) {
+      final diff = payosInfo!.expiresAt!.difference(DateTime.now()).inSeconds;
+      final remaining = diff > 0 ? diff : 0;
+      if (mounted) {
+        setState(() => _remainingSeconds = remaining);
+      } else {
+        _remainingSeconds = remaining;
+      }
+    }
+  }
+
   void _startTimer() {
+    _countdownTimer?.cancel();
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return;
       if (_remainingSeconds > 0) {
         setState(() => _remainingSeconds--);
       } else {
         timer.cancel();
+        setState(() {});
       }
     });
   }
@@ -69,6 +102,7 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
   }
 
   String get _formattedCountdown {
+    if (_isExpired) return '00:00 (Hết hạn)';
     final minutes = (_remainingSeconds ~/ 60).toString().padLeft(2, '0');
     final seconds = (_remainingSeconds % 60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
@@ -87,6 +121,18 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
 
   /// Kích hoạt App-to-App Deeplink mở trực tiếp App Ngân hàng người dùng chọn
   Future<void> _handleOpenBankApp(PayOSPaymentInfoEntity paymentInfo) async {
+    if (_isExpired) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Đơn giữ xe đã quá thời hạn 15 phút và đã bị hủy. Vui lòng quay lại đặt xe khác.',
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     final allBanks = ref.read(supportedBanksProvider).value ?? [];
     final targetBank =
         _selectedBank ?? (allBanks.isNotEmpty ? allBanks.first : null);
@@ -181,6 +227,18 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
   }
 
   Future<void> _handleConfirmPayment() async {
+    if (_isExpired) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Đơn giữ xe đã quá thời hạn 15 phút. Bạn không thể thanh toán cho đơn này nữa.',
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isCheckingStatus = true);
 
     final bookingState = ref.read(bookingFormControllerProvider);
@@ -390,17 +448,25 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
             const SizedBox(height: 12),
 
             // Countdown Timer
-            const Text(
-              'Thời gian giữ chỗ còn lại',
-              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+            Text(
+              _isExpired
+                  ? 'Trạng thái đơn giữ chỗ'
+                  : 'Thời gian giữ chỗ còn lại',
+              style: TextStyle(
+                fontSize: 11,
+                color: _isExpired ? AppColors.error : AppColors.textSecondary,
+                fontWeight: _isExpired ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: _isExpired ? const Color(0xFFFEF2F2) : Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(
+                  color: _isExpired ? const Color(0xFFEF4444) : AppColors.border,
+                ),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
@@ -411,15 +477,49 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
               ),
               child: Text(
                 _formattedCountdown,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                   fontFamily: 'monospace',
-                  color: AppColors.textPrimary,
+                  color: _isExpired
+                      ? const Color(0xFFDC2626)
+                      : AppColors.textPrimary,
                 ),
               ),
             ),
+            if (_isExpired) ...[
+              const SizedBox(height: 8),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF1F2),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFECDD3)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: Color(0xFFE11D48),
+                      size: 18,
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Đã quá thời hạn thanh toán 15 phút. Hệ thống đã tự động hủy đơn và giải phóng xe.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF9F1239),
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
 
             // Mã đặt xe
@@ -672,54 +772,81 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
           ],
         ),
         child: SafeArea(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2563EB),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
-              ),
-              elevation: 2,
-            ),
-            onPressed: _isCheckingStatus ? null : _handleConfirmPayment,
-            child: _isCheckingStatus
-                ? const Row(
+          child: _isExpired
+              ? ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFDC2626),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 2,
+                  ),
+                  onPressed: () => context.pop(),
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: 12),
+                      Icon(Icons.arrow_back, size: 18),
+                      SizedBox(width: 8),
                       Text(
-                        'Đang kiểm tra giao dịch PayOS...',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  )
-                : const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Tôi đã chuyển khoản thành công',
+                        'Đơn đã quá hạn 15p - Quay lại đặt xe khác',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.check_circle_outline, size: 18),
                     ],
                   ),
-          ),
+                )
+              : ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 2,
+                  ),
+                  onPressed: _isCheckingStatus ? null : _handleConfirmPayment,
+                  child: _isCheckingStatus
+                      ? const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              'Đang kiểm tra giao dịch PayOS...',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Tôi đã chuyển khoản thành công',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.check_circle_outline, size: 18),
+                          ],
+                        ),
+                ),
         ),
       ),
     );

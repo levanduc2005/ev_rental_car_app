@@ -228,45 +228,95 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
 
             // Contextual Actions for PENDING
             if (isPending) ...[
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
+              if (res.isExpiredHold) ...[
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF1F2),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFFECDD3)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: Color(0xFFE11D48),
+                        size: 24,
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Đơn giữ xe đã quá thời hạn thanh toán 15 phút và đã bị hủy tự động.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF9F1239),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                onPressed: () {
-                  ref
-                      .read(bookingFormControllerProvider.notifier)
-                      .setPaymentReservation(res);
-                  context.pushNamed(AppRoute.payment.name);
-                },
-                child: Text(
-                  'Tiếp tục thanh toán cọc ${BookingFormatters.formatCurrency(res.depositFee)}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => context.goNamed(AppRoute.mapSearch.name),
+                  child: const Text(
+                    'Tìm và đặt xe khác',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.error,
-                  side: const BorderSide(color: AppColors.error),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              ] else ...[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    ref
+                        .read(bookingFormControllerProvider.notifier)
+                        .setPaymentReservation(res);
+                    context.pushNamed(AppRoute.payment.name);
+                  },
+                  child: Text(
+                    'Tiếp tục thanh toán cọc ${BookingFormatters.formatCurrency(res.depositFee)}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                onPressed: () => _handleCancel(res),
-                child: const Text(
-                  'Hủy giữ chỗ tức thì (đổi xe khác)',
-                  style: TextStyle(fontSize: 14),
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.error,
+                    side: const BorderSide(color: AppColors.error),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => _handleCancel(res),
+                  child: const Text(
+                    'Hủy giữ chỗ tức thì (đổi xe khác)',
+                    style: TextStyle(fontSize: 14),
+                  ),
                 ),
-              ),
+              ],
             ],
 
             // Contextual Actions for CONFIRMED

@@ -13,11 +13,24 @@ import 'package:rental_car/features/booking/presentation/utils/booking_formatter
 import 'package:rental_car/features/booking/presentation/widgets/reservation_card.dart';
 
 /// Tab 2: Quản lý Đơn thuê xe e-Motion (Được chia làm 2 mục: Chuyến đi & Đã hủy)
-class MyReservationsPage extends ConsumerWidget {
+class MyReservationsPage extends ConsumerStatefulWidget {
   const MyReservationsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyReservationsPage> createState() => _MyReservationsPageState();
+}
+
+class _MyReservationsPageState extends ConsumerState<MyReservationsPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(myReservationsControllerProvider.notifier).loadReservations();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(myReservationsControllerProvider);
     final controller = ref.read(myReservationsControllerProvider.notifier);
 
@@ -206,12 +219,24 @@ class _ActiveTripsTab extends StatelessWidget {
 
         Expanded(
           child: trips.isEmpty
-              ? _EmptyView(
-                  title: 'Chưa có chuyến đi nào trong mục này',
-                  subtitle:
-                      'Hãy khám phá danh sách xe và đặt chuyến đi đầu tiên!',
-                  buttonText: 'Tìm xe ngay',
-                  onButtonPressed: () => context.goNamed(AppRoute.home.name),
+              ? RefreshIndicator(
+                  onRefresh: controller.loadReservations,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.5,
+                        child: _EmptyView(
+                          title: 'Chưa có chuyến đi nào trong mục này',
+                          subtitle:
+                              'Hãy khám phá danh sách xe và đặt chuyến đi đầu tiên!',
+                          buttonText: 'Tìm xe ngay',
+                          onButtonPressed: () =>
+                              context.goNamed(AppRoute.home.name),
+                        ),
+                      ),
+                    ],
+                  ),
                 )
               : _ReservationListView(
                   reservations: trips,
@@ -280,12 +305,25 @@ class _CancelledTripsTab extends StatelessWidget {
 
         Expanded(
           child: cancelledList.isEmpty
-              ? _EmptyView(
-                  title: 'Không có đơn đã hủy',
-                  subtitle: 'Bạn chưa có đơn đặt xe nào bị hủy hoặc quá hạn.',
-                  icon: Icons.check_circle_outline,
-                  buttonText: 'Xem danh sách xe',
-                  onButtonPressed: () => context.goNamed(AppRoute.home.name),
+              ? RefreshIndicator(
+                  onRefresh: controller.loadReservations,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.5,
+                        child: _EmptyView(
+                          title: 'Không có đơn đã hủy',
+                          subtitle:
+                              'Bạn chưa có đơn đặt xe nào bị hủy hoặc quá hạn.',
+                          icon: Icons.check_circle_outline,
+                          buttonText: 'Xem danh sách xe',
+                          onButtonPressed: () =>
+                              context.goNamed(AppRoute.home.name),
+                        ),
+                      ),
+                    ],
+                  ),
                 )
               : _ReservationListView(
                   reservations: cancelledList,

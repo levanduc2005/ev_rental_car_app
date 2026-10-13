@@ -6,6 +6,7 @@ import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
+import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
 import 'package:rental_car/features/booking/presentation/widgets/booking_payment_breakdown_card.dart';
 import 'package:rental_car/features/booking/presentation/widgets/booking_schedule_card.dart';
 import 'package:rental_car/features/booking/presentation/widgets/booking_vehicle_summary_card.dart';
@@ -71,6 +72,16 @@ class _BookingConfirmationPageState
       return;
     }
 
+    final bookingState = ref.read(bookingFormControllerProvider);
+    final existingReservation = bookingState.createdReservation;
+    if (existingReservation != null &&
+        existingReservation.isPending &&
+        !existingReservation.isExpiredHold) {
+      // Đơn này đã được tạo và còn hiệu lực 15p giữ xe -> Chuyển thẳng sang thanh toán
+      context.pushNamed(AppRoute.payment.name);
+      return;
+    }
+
     final controller = ref.read(bookingFormControllerProvider.notifier);
     final reservation = await controller.submitReservation(
       note: _noteController.text.trim().isNotEmpty
@@ -85,10 +96,28 @@ class _BookingConfirmationPageState
       context.pushNamed(AppRoute.payment.name);
     } else {
       final error = ref.read(bookingFormControllerProvider).errorMessage;
+      final isOngoingRentalError = error != null &&
+          (error.contains('chưa hoàn thành') ||
+              error.contains('đang có') ||
+              error.contains('USER_HAS_ONGOING_RENTAL'));
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error ?? 'Đặt xe thất bại. Vui lòng thử lại.'),
           backgroundColor: AppColors.error,
+          duration: const Duration(seconds: 5),
+          action: isOngoingRentalError
+              ? SnackBarAction(
+                  label: 'Xem đơn',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    ref
+                        .read(myReservationsControllerProvider.notifier)
+                        .loadReservations();
+                    context.goNamed(AppRoute.myTrip.name);
+                  },
+                )
+              : null,
         ),
       );
     }
