@@ -32,9 +32,13 @@ class HomePage extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune_rounded),
+            icon: const Icon(
+              Icons.qr_code_scanner_rounded,
+              color: Color(0xFF0284C7),
+            ),
+            tooltip: 'Quét QR thuê xe tại trạm',
             onPressed: () {
-              context.goNamed(AppRoute.mapSearch.name);
+              context.pushNamed(AppRoute.qrScan.name);
             },
           ),
           IconButton(

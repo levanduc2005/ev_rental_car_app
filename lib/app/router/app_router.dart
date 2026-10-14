@@ -11,9 +11,11 @@ import 'package:rental_car/features/auth/presentation/providers/auth_controller.
 import 'package:rental_car/features/booking/presentation/pages/booking_confirmation_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/booking_payment_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/booking_success_page.dart';
+import 'package:rental_car/features/booking/presentation/pages/instant_booking_confirmation_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/my_reservations_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/reservation_detail_page.dart';
 import 'package:rental_car/features/home/presentation/pages/home_page.dart';
+import 'package:rental_car/features/home/presentation/pages/qr_scanner_page.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
 import 'package:rental_car/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:rental_car/features/profile/presentation/pages/kyc_status_screen.dart';
@@ -89,6 +91,26 @@ final routerProvider = Provider<GoRouter>((ref) {
           final vehicleId =
               extraId ?? (queryId != null ? int.tryParse(queryId) : null);
           return BookingConfirmationPage(vehicleId: vehicleId);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.qrScan.path,
+        name: AppRoute.qrScan.name,
+        builder: (_, _) => const QrScannerPage(),
+      ),
+      GoRoute(
+        path: AppRoute.instantBooking.path,
+        name: AppRoute.instantBooking.name,
+        builder: (_, state) {
+          final queryId = state.uri.queryParameters['vehicleId'];
+          final extraId = state.extra is int
+              ? state.extra as int
+              : (state.extra is String
+                    ? int.tryParse(state.extra as String)
+                    : null);
+          final vehicleId =
+              extraId ?? (queryId != null ? int.tryParse(queryId) : null) ?? 1;
+          return InstantBookingConfirmationPage(vehicleId: vehicleId);
         },
       ),
       GoRoute(

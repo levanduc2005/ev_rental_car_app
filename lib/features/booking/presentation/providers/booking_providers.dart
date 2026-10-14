@@ -4,8 +4,11 @@ import 'package:rental_car/features/booking/data/datasources/booking_remote_data
 import 'package:rental_car/features/booking/data/datasources/booking_remote_data_source_impl.dart';
 import 'package:rental_car/features/booking/data/repositories/booking_repository_impl.dart';
 import 'package:rental_car/features/booking/domain/repositories/booking_repository.dart';
+import 'package:rental_car/features/booking/domain/usecases/calculate_booking_fees_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/cancel_reservation_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/confirm_payos_payment_usecase.dart';
+import 'package:rental_car/features/booking/domain/usecases/create_reservation_usecase.dart';
+import 'package:rental_car/features/booking/domain/usecases/get_booking_vehicle_summary_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_reservation_detail_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_supported_banks_usecase.dart';
 
@@ -23,6 +26,21 @@ final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
 });
 
 // --- Domain Layer UseCase Providers ---
+final getBookingVehicleSummaryUseCaseProvider =
+    Provider<GetBookingVehicleSummaryUseCase>((ref) {
+      return GetBookingVehicleSummaryUseCase(ref.watch(bookingRepositoryProvider));
+    });
+
+final calculateBookingFeesUseCaseProvider =
+    Provider<CalculateBookingFeesUseCase>((ref) {
+      return CalculateBookingFeesUseCase(ref.watch(bookingRepositoryProvider));
+    });
+
+final createReservationUseCaseProvider =
+    Provider<CreateReservationUseCase>((ref) {
+      return CreateReservationUseCase(ref.watch(bookingRepositoryProvider));
+    });
+
 final getReservationDetailUseCaseProvider =
     Provider<GetReservationDetailUseCase>((ref) {
       return GetReservationDetailUseCase(ref.watch(bookingRepositoryProvider));

@@ -41,6 +41,7 @@ class BookingRepositoryImpl implements BookingRepository {
     required int stationId,
     required DateTime startTime,
     required DateTime endTime,
+    bool isInstant = false,
   }) {
     return safeCall(() async {
       final requestModel = CreateReservationRequestModel(
@@ -49,6 +50,7 @@ class BookingRepositoryImpl implements BookingRepository {
         stationId: stationId,
         startTime: startTime,
         endTime: endTime,
+        isInstant: isInstant,
       );
       final model = await _remoteDataSource.createReservation(requestModel);
       return model.toEntity();

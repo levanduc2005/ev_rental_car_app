@@ -20,6 +20,7 @@ class VehicleBookingSummary {
     this.price8h = 0,
     this.price12h = 0,
     this.price24h = 0,
+    this.status,
   }) : _location = location,
        _seats = seats,
        _transmission = transmission,
@@ -37,6 +38,7 @@ class VehicleBookingSummary {
   final int? stationId;
   final String? stationName;
   final String? stationAddress;
+  final String? status;
   final String? _location;
   final int? _seats;
   final String? _transmission;
@@ -55,6 +57,18 @@ class VehicleBookingSummary {
   int get batteryCapacity => _batteryCapacity ?? 0;
   int get holdDepositFee =>
       (holdFee != null && holdFee! > 0) ? holdFee!.toInt() : 5000;
+  int get pricePer4Hours => price4h;
+  int get pricePer8Hours => price8h;
+  int get pricePer12Hours => price12h;
+  int get pricePerDay => price24h;
+  int? get batteryLevel => batteryPercentage;
+  bool get isAvailable {
+    if (status == null || status!.isEmpty) return true;
+    final normalized = status!.trim().toUpperCase();
+    return normalized == 'AVAILABLE' ||
+        normalized == 'SẴN SÀNG' ||
+        normalized == 'SAN SANG';
+  }
 
   VehicleBookingSummary copyWith({
     int? id,
@@ -77,6 +91,7 @@ class VehicleBookingSummary {
     int? price8h,
     int? price12h,
     int? price24h,
+    String? status,
   }) {
     return VehicleBookingSummary(
       id: id ?? this.id,
@@ -90,6 +105,7 @@ class VehicleBookingSummary {
       stationId: stationId ?? this.stationId,
       stationName: stationName ?? this.stationName,
       stationAddress: stationAddress ?? this.stationAddress,
+      status: status ?? this.status,
       location: location ?? _location,
       seats: seats ?? _seats,
       transmission: transmission ?? _transmission,
