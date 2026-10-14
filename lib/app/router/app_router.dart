@@ -14,12 +14,17 @@ import 'package:rental_car/features/booking/presentation/pages/booking_success_p
 import 'package:rental_car/features/booking/presentation/pages/instant_booking_confirmation_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/my_reservations_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/reservation_detail_page.dart';
+import 'package:rental_car/features/checkout/presentation/pages/checkout_summary_page.dart';
+import 'package:rental_car/features/checkout/presentation/pages/return_location_verification_page.dart';
+import 'package:rental_car/features/checkout/presentation/pages/return_vehicle_log_page.dart';
 import 'package:rental_car/features/home/presentation/pages/home_page.dart';
 import 'package:rental_car/features/home/presentation/pages/qr_scanner_page.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
+import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:rental_car/features/profile/presentation/pages/kyc_status_screen.dart';
 import 'package:rental_car/features/profile/presentation/pages/kyc_upload_screen.dart';
+import 'package:rental_car/features/profile/presentation/pages/rental_detail_page.dart';
 import 'package:rental_car/features/profile/presentation/pages/rental_history_screen.dart';
 import 'package:rental_car/features/profile/presentation/profile_page.dart';
 import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dart';
@@ -186,6 +191,56 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.rentalHistory.name,
         builder: (_, _) => const RentalHistoryScreen(),
       ),
+      GoRoute(
+        path: AppRoute.rentalDetail.path,
+        name: AppRoute.rentalDetail.name,
+        builder: (_, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '') ??
+              (state.extra is int ? state.extra as int : 1);
+          return RentalDetailPage(rentalId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.returnLocationVerification.path,
+        name: AppRoute.returnLocationVerification.name,
+        builder: (_, state) {
+          if (state.extra is RentalDetailEntity) {
+            final rental = state.extra as RentalDetailEntity;
+            return ReturnLocationVerificationPage(
+              rentalId: rental.id,
+              vehicleId: rental.vehicleId,
+              staffId: rental.staffId,
+              stationName: rental.stationName,
+              stationAddress: rental.stationAddress,
+              stationLat: rental.stationLatitude,
+              stationLng: rental.stationLongitude,
+            );
+          }
+          final rentalId = state.extra is int ? state.extra as int : null;
+          return ReturnLocationVerificationPage(rentalId: rentalId);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.returnVehicleLog.path,
+        name: AppRoute.returnVehicleLog.name,
+        builder: (_, state) {
+          final rentalId = state.extra is int ? state.extra as int : null;
+          return ReturnVehicleLogPage(rentalId: rentalId);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.checkoutSummary.path,
+        name: AppRoute.checkoutSummary.name,
+        builder: (_, state) {
+          final rentalId = state.extra is int ? state.extra as int : null;
+          return CheckoutSummaryPage(rentalId: rentalId);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.control.path,
+        name: AppRoute.control.name,
+        builder: (_, _) => const ActiveTripPage(),
+      ),
       // The tabbed app shell. Each branch keeps its own navigation stack.
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -201,7 +256,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 1: Tab 2 - Đơn thuê(My Trip)
+          // Branch 1: Tab 2 - Đơn hàng & Thuê xe (My Trip / Reservations & Rentals)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -211,17 +266,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 2: Tab 3 - Điều khiển xe (Control)
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoute.control.path,
-                name: AppRoute.control.name,
-                builder: (context, state) => const ActiveTripPage(),
-              ),
-            ],
-          ),
-          // Branch 3: Tab 4 - Thông báo (Notification)
+          // Branch 2: Tab 3 - Thông báo (Notification)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -236,7 +281,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 4: Tab 5 - Hỗ trợ (Support)
+          // Branch 3: Tab 4 - Hỗ trợ (Support)
           StatefulShellBranch(
             routes: [
               GoRoute(

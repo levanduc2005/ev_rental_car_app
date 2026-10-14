@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
 
@@ -76,7 +78,7 @@ class ActiveTripPage extends StatelessWidget {
             AppButton(
               label: 'Kết thúc chuyến đi & Trả xe',
               onPressed: () {
-                context.showSnackBar('Chuyển sang màn hình Thanh toán');
+                context.pushNamed(AppRoute.returnLocationVerification.name);
               },
             ),
           ],

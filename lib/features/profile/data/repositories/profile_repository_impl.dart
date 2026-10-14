@@ -4,6 +4,7 @@ import 'package:rental_car/features/profile/data/datasources/profile_remote_data
 import 'package:rental_car/features/profile/data/models/kyc_document_model.dart';
 import 'package:rental_car/features/profile/data/models/user_profile_model.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
+import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
 import 'package:rental_car/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:rental_car/features/profile/domain/repositories/profile_repository.dart';
@@ -99,6 +100,14 @@ class ProfileRepositoryImpl implements ProfileRepository {
         search: search,
       );
       return models.map((m) => m.toEntity()).toList();
+    });
+  }
+
+  @override
+  Future<Result<RentalDetailEntity>> getRentalDetail(int id) {
+    return safeCall(() async {
+      final model = await _remoteDataSource.getRentalDetail(id);
+      return model.toEntity();
     });
   }
 }

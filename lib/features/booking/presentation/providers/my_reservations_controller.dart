@@ -1,11 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
-import 'package:rental_car/features/booking/domain/repositories/booking_repository.dart';
+import 'package:rental_car/features/booking/domain/usecases/cancel_reservation_usecase.dart';
+import 'package:rental_car/features/booking/domain/usecases/get_my_reservations_usecase.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_providers.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_state.dart';
 
 class MyReservationsController extends Notifier<MyReservationsState> {
-  BookingRepository get _repository => ref.read(bookingRepositoryProvider);
+  GetMyReservationsUseCase get _getMyReservationsUseCase =>
+      ref.read(getMyReservationsUseCaseProvider);
+
+  CancelReservationUseCase get _cancelReservationUseCase =>
+      ref.read(cancelReservationUseCaseProvider);
 
   @override
   MyReservationsState build() {
@@ -36,11 +41,17 @@ class MyReservationsController extends Notifier<MyReservationsState> {
       return;
     }
 
-    final result = await _repository.getMyReservations(email: email);
+    final result = await _getMyReservationsUseCase(email: email);
 
     result.when(
       ok: (list) {
-        state = state.copyWith(reservations: list, isLoading: false);
+        final sorted = [...list]..sort((a, b) {
+          if (b.createdAt != null && a.createdAt != null) {
+            return b.createdAt!.compareTo(a.createdAt!);
+          }
+          return b.id.compareTo(a.id);
+        });
+        state = state.copyWith(reservations: sorted, isLoading: false);
       },
       err: (failure) {
         state = state.copyWith(isLoading: false, errorMessage: failure.message);
@@ -57,7 +68,7 @@ class MyReservationsController extends Notifier<MyReservationsState> {
   Future<bool> cancelReservation(String reservationCode) async {
     state = state.copyWith(isCancelling: true, clearError: true);
 
-    final result = await _repository.cancelReservation(code: reservationCode);
+    final result = await _cancelReservationUseCase(code: reservationCode);
 
     return result.when(
       ok: (success) {

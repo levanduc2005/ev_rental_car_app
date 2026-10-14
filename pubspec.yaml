@@ -50,6 +50,7 @@ dependencies:
   google_sign_in: 6.2.2
   url_launcher: ^6.3.2
   mobile_scanner: ^6.0.2
+  geolocator: ^14.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

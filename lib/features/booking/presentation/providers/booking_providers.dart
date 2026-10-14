@@ -9,6 +9,7 @@ import 'package:rental_car/features/booking/domain/usecases/cancel_reservation_u
 import 'package:rental_car/features/booking/domain/usecases/confirm_payos_payment_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/create_reservation_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_booking_vehicle_summary_usecase.dart';
+import 'package:rental_car/features/booking/domain/usecases/get_my_reservations_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_reservation_detail_usecase.dart';
 import 'package:rental_car/features/booking/domain/usecases/get_supported_banks_usecase.dart';
 
@@ -39,6 +40,11 @@ final calculateBookingFeesUseCaseProvider =
 final createReservationUseCaseProvider =
     Provider<CreateReservationUseCase>((ref) {
       return CreateReservationUseCase(ref.watch(bookingRepositoryProvider));
+    });
+
+final getMyReservationsUseCaseProvider =
+    Provider<GetMyReservationsUseCase>((ref) {
+      return GetMyReservationsUseCase(ref.watch(bookingRepositoryProvider));
     });
 
 final getReservationDetailUseCaseProvider =
