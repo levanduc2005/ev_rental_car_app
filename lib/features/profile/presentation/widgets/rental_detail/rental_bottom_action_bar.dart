@@ -43,63 +43,32 @@ class RentalBottomActionBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. Giai đoạn ONGOING / OVERDUE -> Cứu hộ SOS, Điều khiển xe & Nút trả xe
+            // 1. Giai đoạn ONGOING / OVERDUE -> Cứu hộ SOS & Nút trả xe
             if (isOngoing || isOverdue) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFDC2626),
-                        side: const BorderSide(color: Color(0xFFDC2626), width: 1.5),
-                        backgroundColor: const Color(0xFFFEF2F2),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {
-                        context.pushNamed(
-                          AppRoute.emergencyReport.name,
-                          extra: rental.id,
-                        );
-                      },
-                      icon: const Icon(Icons.emergency_rounded, size: 20),
-                      label: const Text(
-                        'Cứu hộ SOS',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFDC2626),
+                  side: const BorderSide(color: Color(0xFFDC2626), width: 1.5),
+                  backgroundColor: const Color(0xFFFEF2F2),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF2563EB),
-                        side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
-                        backgroundColor: const Color(0xFFEFF6FF),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {
-                        context.pushNamed(AppRoute.control.name);
-                      },
-                      icon: const Icon(Icons.key_rounded, size: 20),
-                      label: const Text(
-                        'Điều khiển xe',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                ),
+                onPressed: () {
+                  context.pushNamed(
+                    AppRoute.emergencyReport.name,
+                    extra: rental.id,
+                  );
+                },
+                icon: const Icon(Icons.emergency_rounded, size: 20),
+                label: const Text(
+                  'Báo cáo cứu hộ khẩn cấp (SOS)',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                ),
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(
