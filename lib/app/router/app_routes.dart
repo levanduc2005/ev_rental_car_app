@@ -28,7 +28,8 @@ enum AppRoute {
   rentalDetail('/rentals/:id'),
   returnLocationVerification('/checkout/verify-location'),
   returnVehicleLog('/checkout/vehicle-log'),
-  checkoutSummary('/checkout/summary');
+  checkoutSummary('/checkout/summary'),
+  emergencyReport('/emergency-report');
 
   const AppRoute(this.path);
 

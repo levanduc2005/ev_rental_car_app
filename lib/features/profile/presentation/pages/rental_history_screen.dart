@@ -10,6 +10,9 @@ import 'package:rental_car/core/widgets/widgets.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
 import 'package:rental_car/features/profile/presentation/controllers/rental_history_state.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
+import 'package:rental_car/features/rating/presentation/providers/rating_providers.dart';
+import 'package:rental_car/features/rating/presentation/widgets/rating_dialog.dart';
+import 'package:rental_car/features/rating/presentation/widgets/rating_stars_bar.dart';
 
 class RentalHistoryScreen extends ConsumerWidget {
   const RentalHistoryScreen({super.key});
@@ -156,20 +159,27 @@ class RentalHistoryScreen extends ConsumerWidget {
       itemCount: state.items.length,
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
       itemBuilder: (context, index) {
-        return _buildRentalCard(context, state.items[index]);
+        return _buildRentalCard(context, ref, state.items[index]);
       },
     );
   }
 
-  Widget _buildRentalCard(BuildContext context, RentalItemEntity item) {
+  Widget _buildRentalCard(
+    BuildContext context,
+    WidgetRef ref,
+    RentalItemEntity item,
+  ) {
     final dateFormat = DateFormat('HH:mm - dd/MM/yyyy');
     final formattedDate = item.createdAt != null
         ? dateFormat.format(item.createdAt!)
         : 'Chưa cập nhật';
+    final isCompleted = item.status.toUpperCase() == 'COMPLETED';
+    final ratingState = ref.watch(ratingControllerProvider);
+    final rating = ratingState.getRatingForRental(item.id);
 
     return AppCard(
       child: InkWell(
-        onTap: () => _showRentalDetailSheet(context, item),
+        onTap: () => _showRentalDetailSheet(context, ref, item),
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,6 +310,124 @@ class RentalHistoryScreen extends ConsumerWidget {
                 ),
               ),
             ],
+
+            // Rating section for COMPLETED trips
+            if (isCompleted) ...[
+              const Gap(AppSpacing.sm),
+              if (rating != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF3C7),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: Border.all(color: const Color(0xFFFDE68A)),
+                  ),
+                  child: Row(
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(5, (index) {
+                          final isFilled = index < rating.score;
+                          return Icon(
+                            isFilled
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            size: 15,
+                            color: isFilled
+                                ? const Color(0xFFD97706)
+                                : AppColors.border,
+                          );
+                        }),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${rating.score}/5 sao',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFB45309),
+                        ),
+                      ),
+                      if (rating.comment.isNotEmpty) ...[
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            '• "${rating.comment}"',
+                            style: AppTextStyles.caption.copyWith(
+                              color: const Color(0xFF92400E),
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFD97706),
+                      side: const BorderSide(color: Color(0xFFF59E0B)),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                    ),
+                    icon: const Icon(Icons.star_rate_rounded, size: 18),
+                    label: const Text(
+                      'Đánh giá chuyến đi',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    onPressed: () {
+                      RatingDialog.show(
+                        context,
+                        rentalId: item.id,
+                        vehicleName: item.vehicleName,
+                      );
+                    },
+                  ),
+                ),
+            ],
+
+            // Emergency SOS for ONGOING trips
+            if (item.status.toUpperCase() == 'ONGOING') ...[
+              const Gap(AppSpacing.sm),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFDC2626),
+                    side: const BorderSide(color: Color(0xFFEF4444)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.sos_rounded,
+                    size: 20,
+                    color: Color(0xFFDC2626),
+                  ),
+                  label: const Text(
+                    'Báo cáo sự cố khẩn cấp (SOS)',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                  ),
+                  onPressed: () {
+                    context.push(AppRoute.emergencyReport.path, extra: item.id);
+                  },
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -379,11 +507,19 @@ class RentalHistoryScreen extends ConsumerWidget {
     );
   }
 
-  void _showRentalDetailSheet(BuildContext context, RentalItemEntity item) {
+  void _showRentalDetailSheet(
+    BuildContext context,
+    WidgetRef ref,
+    RentalItemEntity item,
+  ) {
     final dateFormat = DateFormat('HH:mm - dd/MM/yyyy');
     final formattedDate = item.createdAt != null
         ? dateFormat.format(item.createdAt!)
         : 'Chưa cập nhật';
+    final isCompleted = item.status.toUpperCase() == 'COMPLETED';
+    final rating = ref
+        .read(ratingControllerProvider)
+        .getRatingForRental(item.id);
 
     showModalBottomSheet<void>(
       context: context,
@@ -441,6 +577,99 @@ class RentalHistoryScreen extends ConsumerWidget {
                       Navigator.pop(ctx);
                       context.showSnackBar(
                         'Đang chuyển tới cổng thanh toán...',
+                      );
+                    },
+                  ),
+                ],
+                if (isCompleted) ...[
+                  const Divider(height: AppSpacing.lg),
+                  if (rating != null) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Đánh giá chuyến đi',
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            RatingStarsBar(
+                              rating: rating.score,
+                              starSize: 18,
+                              showLabel: false,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${rating.score}/5 sao',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFD97706),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (rating.comment.isNotEmpty) ...[
+                      const Gap(AppSpacing.xs),
+                      Container(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF3C7).withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                          border: Border.all(color: const Color(0xFFFDE68A)),
+                        ),
+                        child: Text(
+                          '"${rating.comment}"',
+                          style: AppTextStyles.body.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: const Color(0xFF92400E),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ] else ...[
+                    AppButton(
+                      label: 'Đánh giá chuyến đi ngay',
+                      icon: Icons.star_rate_rounded,
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        RatingDialog.show(
+                          context,
+                          rentalId: item.id,
+                          vehicleName: item.vehicleName,
+                        );
+                      },
+                    ),
+                  ],
+                ],
+                if (item.status.toUpperCase() == 'ONGOING') ...[
+                  const Gap(AppSpacing.md),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFDC2626),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                    ),
+                    icon: const Icon(Icons.sos_rounded, size: 20),
+                    label: const Text(
+                      'Báo cáo sự cố khẩn cấp (SOS)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      context.push(
+                        AppRoute.emergencyReport.path,
+                        extra: item.id,
                       );
                     },
                   ),

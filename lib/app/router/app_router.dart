@@ -17,6 +17,7 @@ import 'package:rental_car/features/booking/presentation/pages/reservation_detai
 import 'package:rental_car/features/checkout/presentation/pages/checkout_summary_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/return_location_verification_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/return_vehicle_log_page.dart';
+import 'package:rental_car/features/emergency/presentation/pages/emergency_report_page.dart';
 import 'package:rental_car/features/home/presentation/pages/home_page.dart';
 import 'package:rental_car/features/home/presentation/pages/qr_scanner_page.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
@@ -240,6 +241,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.control.path,
         name: AppRoute.control.name,
         builder: (_, _) => const ActiveTripPage(),
+      ),
+      GoRoute(
+        path: AppRoute.emergencyReport.path,
+        name: AppRoute.emergencyReport.name,
+        builder: (_, state) {
+          final rentalId = state.extra as int?;
+          return EmergencyReportPage(rentalId: rentalId);
+        },
       ),
       // The tabbed app shell. Each branch keeps its own navigation stack.
       StatefulShellRoute.indexedStack(

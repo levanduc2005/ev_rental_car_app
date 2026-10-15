@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
+import 'package:rental_car/features/emergency/presentation/widgets/sos_emergency_button.dart';
 
 /// Flow 3: Active Trip dashboard page (Real-time timer & Remote Lock/Unlock).
 class ActiveTripPage extends StatelessWidget {
@@ -11,7 +12,22 @@ class ActiveTripPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chuyến đi đang hoạt động')),
+      appBar: AppBar(
+        title: const Text('Chuyến đi đang hoạt động'),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.sos_rounded,
+              color: Color(0xFFDC2626),
+              size: 28,
+            ),
+            tooltip: 'Cứu hộ khẩn cấp (SOS)',
+            onPressed: () {
+              context.push(AppRoute.emergencyReport.path);
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
@@ -72,11 +88,16 @@ class ActiveTripPage extends StatelessWidget {
                 ),
               ],
             ),
-            const Gap(AppSpacing.xl),
+            const Gap(AppSpacing.lg),
+
+            // Emergency SOS Button
+            const SosEmergencyButton(),
+            const Gap(AppSpacing.md),
 
             // End Trip Button
             AppButton(
               label: 'Kết thúc chuyến đi & Trả xe',
+              variant: AppButtonVariant.secondary,
               onPressed: () {
                 context.pushNamed(AppRoute.returnLocationVerification.name);
               },

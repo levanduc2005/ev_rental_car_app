@@ -40,16 +40,16 @@ coverage: ## Run tests with coverage → coverage/lcov.info
 verify: format-check analyze test ## Format check + analyze + test (CI gate)
 
 run: ## Run the app with the dev flavor config
-	flutter run --dart-define-from-file=config/dev.json
+	flutter run --dart-define-from-file=config/dev.json --no-enable-impeller
 
 reverse: ## Forward phone port 8080 to computer port 8080 via adb
 	cmd /c reverse-port.bat
 
 run-staging: ## Run the app with the staging flavor config
-	flutter run --dart-define-from-file=config/staging.json
+	flutter run --dart-define-from-file=config/staging.json --no-enable-impeller
 
 run-prod: ## Run the app with the prod flavor config
-	flutter run --dart-define-from-file=config/prod.json
+	flutter run --dart-define-from-file=config/prod.json --no-enable-impeller
 
 clean: ## Remove build artifacts and re-fetch deps
 	flutter clean && flutter pub get
