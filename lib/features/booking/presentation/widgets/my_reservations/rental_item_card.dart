@@ -157,6 +157,35 @@ class RentalItemCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (isOngoing) ...[
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFDC2626),
+                        side: const BorderSide(color: Color(0xFFDC2626)),
+                        backgroundColor: const Color(0xFFFEF2F2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        context.pushNamed(
+                          AppRoute.emergencyReport.name,
+                          extra: item.id,
+                        );
+                      },
+                      icon: const Icon(Icons.emergency_rounded, size: 16),
+                      label: const Text(
+                        'Cứu hộ SOS',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),

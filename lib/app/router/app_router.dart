@@ -238,11 +238,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: AppRoute.control.path,
-        name: AppRoute.control.name,
-        builder: (_, _) => const ActiveTripPage(),
-      ),
-      GoRoute(
         path: AppRoute.emergencyReport.path,
         name: AppRoute.emergencyReport.name,
         builder: (_, state) {
@@ -275,7 +270,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 2: Tab 3 - Thông báo (Notification)
+          // Branch 2: Tab 3 - Điều khiển xe (Control)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.control.path,
+                name: AppRoute.control.name,
+                builder: (_, _) => const ActiveTripPage(),
+              ),
+            ],
+          ),
+          // Branch 3: Tab 4 - Thông báo (Notification)
           StatefulShellBranch(
             routes: [
               GoRoute(

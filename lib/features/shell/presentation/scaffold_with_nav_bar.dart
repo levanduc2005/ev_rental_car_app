@@ -36,6 +36,12 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             selectedIcon: const Icon(Icons.receipt_long),
             label: l10n.tabMyTrip,
           ),
+          //Điều khiển
+          NavigationDestination(
+            icon: const Icon(Icons.key_outlined),
+            selectedIcon: const Icon(Icons.key),
+            label: l10n.tabControl,
+          ),
           //Thông báo
           NavigationDestination(
             icon: const Icon(Icons.notifications_outlined),
