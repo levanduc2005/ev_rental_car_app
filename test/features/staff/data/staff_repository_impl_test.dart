@@ -58,39 +58,42 @@ void main() {
       );
     });
 
-    test('convertReservationToRental returns mapped entity on success', () async {
-      final rentalModel = RentalDetailModel(
-        id: 200,
-        status: 'PENDING',
-        vehicleName: 'VF e34',
-        rentFee: 1000000,
-        rentalDepositAmount: 300000,
-        createdAt: DateTime(2026, 10, 15),
-        seatCapacity: 5,
-        batteryCapacity: 42,
-      );
+    test(
+      'convertReservationToRental returns mapped entity on success',
+      () async {
+        final rentalModel = RentalDetailModel(
+          id: 200,
+          status: 'PENDING',
+          vehicleName: 'VF e34',
+          rentFee: 1000000,
+          rentalDepositAmount: 300000,
+          createdAt: DateTime(2026, 10, 15),
+          seatCapacity: 5,
+          batteryCapacity: 42,
+        );
 
-      when(
-        () => mockRemoteDataSource.convertReservationToRental(
+        when(
+          () => mockRemoteDataSource.convertReservationToRental(
+            reservationCode: 'RES-001',
+            staffId: 10,
+          ),
+        ).thenAnswer((_) async => rentalModel);
+
+        final result = await repository.convertReservationToRental(
           reservationCode: 'RES-001',
           staffId: 10,
-        ),
-      ).thenAnswer((_) async => rentalModel);
+        );
 
-      final result = await repository.convertReservationToRental(
-        reservationCode: 'RES-001',
-        staffId: 10,
-      );
-
-      expect(result.isOk, true);
-      result.when(
-        ok: (entity) {
-          expect(entity.id, 200);
-          expect(entity.vehicleName, 'VF e34');
-        },
-        err: (_) => fail('Expected ok'),
-      );
-    });
+        expect(result.isOk, true);
+        result.when(
+          ok: (entity) {
+            expect(entity.id, 200);
+            expect(entity.vehicleName, 'VF e34');
+          },
+          err: (_) => fail('Expected ok'),
+        );
+      },
+    );
 
     test('generateContract maps ServerException to ServerFailure', () async {
       when(

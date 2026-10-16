@@ -166,10 +166,7 @@ class StaffDashboardController extends Notifier<StaffDashboardState> {
 
     result.when(
       ok: (items) {
-        state = state.copyWith(
-          isSearching: false,
-          searchResults: items,
-        );
+        state = state.copyWith(isSearching: false, searchResults: items);
       },
       err: (failure) {
         state = state.copyWith(

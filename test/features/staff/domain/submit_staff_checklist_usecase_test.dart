@@ -33,23 +33,26 @@ void main() {
       );
     });
 
-    test('returns DataFailure when currentBattery is invalid (<=0 or >100)', () async {
-      final result1 = await useCase(
-        rentalId: 10,
-        staffEmail: 'staff@example.com',
-        currentBattery: 0,
-        img: 'https://cloudinary.com/img1.jpg',
-      );
-      final result2 = await useCase(
-        rentalId: 10,
-        staffEmail: 'staff@example.com',
-        currentBattery: 101,
-        img: 'https://cloudinary.com/img1.jpg',
-      );
+    test(
+      'returns DataFailure when currentBattery is invalid (<=0 or >100)',
+      () async {
+        final result1 = await useCase(
+          rentalId: 10,
+          staffEmail: 'staff@example.com',
+          currentBattery: 0,
+          img: 'https://cloudinary.com/img1.jpg',
+        );
+        final result2 = await useCase(
+          rentalId: 10,
+          staffEmail: 'staff@example.com',
+          currentBattery: 101,
+          img: 'https://cloudinary.com/img1.jpg',
+        );
 
-      expect(result1.isErr, true);
-      expect(result2.isErr, true);
-    });
+        expect(result1.isErr, true);
+        expect(result2.isErr, true);
+      },
+    );
 
     test('returns DataFailure when img is empty', () async {
       final result = await useCase(
@@ -80,7 +83,8 @@ void main() {
           rentalId: 10,
           staffEmail: 'staff@example.com',
           currentBattery: 90,
-          img: 'https://cloudinary.com/img1.jpg|https://cloudinary.com/img2.jpg',
+          img:
+              'https://cloudinary.com/img1.jpg|https://cloudinary.com/img2.jpg',
         ),
       ).thenAnswer((_) async => Result.ok(checklist));
 

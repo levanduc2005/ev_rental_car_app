@@ -94,8 +94,9 @@ class ActiveTripPage extends ConsumerWidget {
                             decoration: BoxDecoration(
                               color: const Color(0xFFECFDF5),
                               borderRadius: BorderRadius.circular(20),
-                              border:
-                                  Border.all(color: const Color(0xFFA7F3D0)),
+                              border: Border.all(
+                                color: const Color(0xFFA7F3D0),
+                              ),
                             ),
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
@@ -171,7 +172,10 @@ class ActiveTripPage extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          icon: const Icon(Icons.description_outlined, size: 18),
+                          icon: const Icon(
+                            Icons.description_outlined,
+                            size: 18,
+                          ),
                           label: const Text(
                             'Xem chi tiết hợp đồng & Trả xe',
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -179,7 +183,9 @@ class ActiveTripPage extends ConsumerWidget {
                           onPressed: () {
                             context.pushNamed(
                               AppRoute.rentalDetail.name,
-                              pathParameters: {'id': activeRental!.id.toString()},
+                              pathParameters: {
+                                'id': activeRental!.id.toString(),
+                              },
                             );
                           },
                         ),

@@ -59,10 +59,7 @@ void main() {
         ),
       ).thenAnswer((_) async => const Result.ok(rental));
 
-      final result = await useCase(
-        reservationCode: 'RES-123',
-        staffId: 10,
-      );
+      final result = await useCase(reservationCode: 'RES-123', staffId: 10);
 
       expect(result.isOk, true);
       result.when(

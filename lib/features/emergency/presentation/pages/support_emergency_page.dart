@@ -21,7 +21,9 @@ class SupportEmergencyPage extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Không thể kích hoạt cuộc gọi đến tổng đài 1900 1234'),
+            content: Text(
+              'Không thể kích hoạt cuộc gọi đến tổng đài 1900 1234',
+            ),
           ),
         );
       }
@@ -135,7 +137,11 @@ class SupportEmergencyPage extends ConsumerWidget {
                 children: [
                   const Row(
                     children: [
-                      Icon(Icons.headset_mic_rounded, color: Color(0xFF2563EB), size: 24),
+                      Icon(
+                        Icons.headset_mic_rounded,
+                        color: Color(0xFF2563EB),
+                        size: 24,
+                      ),
                       SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +185,10 @@ class SupportEmergencyPage extends ConsumerWidget {
                       icon: const Icon(Icons.phone_rounded, size: 18),
                       label: const Text(
                         'Gọi tổng đài tư vấn',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                       onPressed: () => _callCustomerService(context),
                     ),
@@ -210,19 +219,30 @@ class SupportEmergencyPage extends ConsumerWidget {
               child: Column(
                 children: [
                   Theme(
-                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                    data: Theme.of(
+                      context,
+                    ).copyWith(dividerColor: Colors.transparent),
                     child: const ExpansionTile(
-                      leading: Icon(Icons.battery_alert_rounded, color: Color(0xFFD97706)),
+                      leading: Icon(
+                        Icons.battery_alert_rounded,
+                        color: Color(0xFFD97706),
+                      ),
                       title: Text(
                         'Cần làm gì khi xe báo pin yếu dưới 20%?',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       children: [
                         Padding(
                           padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                           child: Text(
                             'Bạn hãy mở bản đồ tìm trạm sạc gần nhất trên app để sạc xe. Nếu xe bị hết pin giữa đường, hãy bấm nút "Báo cáo sự cố khẩn cấp (SOS)" để đội kỹ thuật mang thiết bị sạc lưu động hoặc xe cứu hộ đến hỗ trợ.',
-                            style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF475569),
+                            ),
                           ),
                         ),
                       ],
@@ -230,19 +250,30 @@ class SupportEmergencyPage extends ConsumerWidget {
                   ),
                   const Divider(height: 1),
                   Theme(
-                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                    data: Theme.of(
+                      context,
+                    ).copyWith(dividerColor: Colors.transparent),
                     child: const ExpansionTile(
-                      leading: Icon(Icons.car_crash_rounded, color: Color(0xFFDC2626)),
+                      leading: Icon(
+                        Icons.car_crash_rounded,
+                        color: Color(0xFFDC2626),
+                      ),
                       title: Text(
                         'Quy trình khi xe gặp tai nạn hoặc sự cố kỹ thuật?',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       children: [
                         Padding(
                           padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                           child: Text(
                             '1. Đảm bảo an toàn cho mọi người trên xe.\n2. Giữ nguyên hiện trường.\n3. Bấm nút BÁO CÁO SOS trên app để chụp ảnh gửi bằng chứng và định vị GPS.\n4. Gọi ngay Hotline cứu hộ 24/7 để được chuyên viên hướng dẫn xử lý.',
-                            style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF475569),
+                            ),
                           ),
                         ),
                       ],
@@ -250,19 +281,30 @@ class SupportEmergencyPage extends ConsumerWidget {
                   ),
                   const Divider(height: 1),
                   Theme(
-                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                    data: Theme.of(
+                      context,
+                    ).copyWith(dividerColor: Colors.transparent),
                     child: const ExpansionTile(
-                      leading: Icon(Icons.payments_rounded, color: Color(0xFF16A34A)),
+                      leading: Icon(
+                        Icons.payments_rounded,
+                        color: Color(0xFF16A34A),
+                      ),
                       title: Text(
                         'Thời gian hoàn cọc sau khi trả xe là bao lâu?',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       children: [
                         Padding(
                           padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                           child: Text(
                             'Sau khi nhân viên tại trạm kiểm tra và nghiệm thu xe, số tiền cọc (sau khi trừ các phụ phí phát sinh nếu có) sẽ được hoàn trả tự động vào tài khoản ngân hàng của bạn trong vòng 3 - 5 ngày làm việc.',
-                            style: TextStyle(fontSize: 13, color: Color(0xFF475569)),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF475569),
+                            ),
                           ),
                         ),
                       ],
