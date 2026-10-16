@@ -174,7 +174,7 @@ class _DocuSealSignPageState extends ConsumerState<DocuSealSignPage> {
                   onPressed: () {
                     Navigator.of(ctx).pop();
                     // Điều hướng sang màn hình Active Trip
-                    context.goNamed(AppRoute.control.name);
+                    context.goNamed(AppRoute.activeTrip.name);
                   },
                   icon: const Icon(Icons.drive_eta_rounded, size: 20),
                   label: const Text(
