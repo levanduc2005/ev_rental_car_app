@@ -4,16 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/features/active_trip/presentation/active_trip_page.dart';
+import 'package:rental_car/features/auth/domain/entities/user_entity.dart';
 import 'package:rental_car/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/otp_page.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
+import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
 import 'package:rental_car/features/booking/presentation/pages/booking_confirmation_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/booking_payment_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/booking_success_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/instant_booking_confirmation_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/my_reservations_page.dart';
 import 'package:rental_car/features/booking/presentation/pages/reservation_detail_page.dart';
+import 'package:rental_car/features/checkin/presentation/pages/check_in_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/checkout_summary_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/return_location_verification_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/return_vehicle_log_page.dart';
@@ -29,6 +32,8 @@ import 'package:rental_car/features/profile/presentation/pages/rental_detail_pag
 import 'package:rental_car/features/profile/presentation/pages/rental_history_screen.dart';
 import 'package:rental_car/features/profile/presentation/profile_page.dart';
 import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dart';
+import 'package:rental_car/features/staff/presentation/pages/staff_dashboard_page.dart';
+import 'package:rental_car/features/staff/presentation/pages/staff_handover_page.dart';
 import 'package:rental_car/features/vehicles/presentation/pages/map_search_page.dart';
 import 'package:rental_car/features/vehicles/presentation/pages/vehicle_detail_page.dart';
 import 'package:rental_car/l10n/l10n.dart';
@@ -45,27 +50,60 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authState = ref.read(authControllerProvider);
       final loggedIn = authState.isAuthenticated;
-      final onAuthPage =
-          state.matchedLocation == AppRoute.login.path ||
-          state.matchedLocation == AppRoute.otp.path ||
-          state.matchedLocation == AppRoute.completeProfile.path;
+      final location = state.matchedLocation;
 
+      final onAuthPage =
+          location == AppRoute.login.path ||
+          location == AppRoute.otp.path ||
+          location == AppRoute.completeProfile.path;
+
+      // 1. Chưa đăng nhập: Điều hướng về màn hình đăng nhập
       if (!loggedIn) {
-        if (state.matchedLocation == AppRoute.otp.path &&
-            authState.emailForOtp == null) {
+        if (location == AppRoute.otp.path && authState.emailForOtp == null) {
           return AppRoute.login.path;
         }
         return onAuthPage ? null : AppRoute.login.path;
       }
 
-      // Đã đăng nhập: Nếu user chưa có tên và chưa từng bấm Bỏ qua thì vào trang điền tên
+      // 2. Đã đăng nhập: Kiểm tra vai trò Staff / Admin
+      final user = authState.user;
+      final isStaffOrAdmin = user != null && user.isStaff;
+
+      if (isStaffOrAdmin) {
+        // Staff/Admin TUYỆT ĐỐI KHÔNG BAO GIỜ được vào trang của User/Khách
+        // Chỉ được phép ở các route dành riêng cho Staff:
+        final isStaffRoute =
+            location == AppRoute.staffDashboard.path ||
+            location == AppRoute.staffHandover.path ||
+            location.startsWith('/rentals/');
+
+        if (!isStaffRoute) {
+          return AppRoute.staffDashboard.path;
+        }
+        return null;
+      }
+
+      // 3. Người dùng bình thường (Khách hàng):
+      // Nếu chưa có tên và chưa từng bấm Bỏ qua thì vào trang điền tên
       if (authState.requiresProfileSetup) {
-        return state.matchedLocation == AppRoute.completeProfile.path
+        return location == AppRoute.completeProfile.path
             ? null
             : AppRoute.completeProfile.path;
       }
 
-      if (onAuthPage) return AppRoute.home.path;
+      // Khách hàng không được vào các route nội bộ của Staff
+      final isStaffRoute =
+          location == AppRoute.staffDashboard.path ||
+          location == AppRoute.staffHandover.path;
+      if (isStaffRoute) {
+        return AppRoute.home.path;
+      }
+
+      // Nếu khách đang ở trang Auth thì chuyển về Home
+      if (onAuthPage) {
+        return AppRoute.home.path;
+      }
+
       return null;
     },
     routes: [
@@ -196,7 +234,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoute.rentalDetail.path,
         name: AppRoute.rentalDetail.name,
         builder: (_, state) {
-          final id = int.tryParse(state.pathParameters['id'] ?? '') ??
+          final id =
+              int.tryParse(state.pathParameters['id'] ?? '') ??
               (state.extra is int ? state.extra as int : 1);
           return RentalDetailPage(rentalId: id);
         },
@@ -243,6 +282,45 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) {
           final rentalId = state.extra as int?;
           return EmergencyReportPage(rentalId: rentalId);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.checkIn.path,
+        name: AppRoute.checkIn.name,
+        builder: (_, state) {
+          final idStr = state.pathParameters['id'];
+          final id =
+              int.tryParse(idStr ?? '') ??
+              (state.extra is RentalDetailEntity
+                  ? (state.extra as RentalDetailEntity).id
+                  : (state.extra is int ? state.extra as int : 0));
+          final initialRental = state.extra is RentalDetailEntity
+              ? state.extra as RentalDetailEntity
+              : null;
+          return CheckInPage(rentalId: id, initialRental: initialRental);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.activeTrip.path,
+        name: AppRoute.activeTrip.name,
+        builder: (_, _) => const ActiveTripPage(),
+      ),
+      GoRoute(
+        path: AppRoute.staffDashboard.path,
+        name: AppRoute.staffDashboard.name,
+        builder: (_, _) => const StaffDashboardPage(),
+      ),
+      GoRoute(
+        path: AppRoute.staffHandover.path,
+        name: AppRoute.staffHandover.name,
+        builder: (_, state) {
+          final res = state.extra is ReservationEntity
+              ? state.extra as ReservationEntity
+              : null;
+          final rental = state.extra is RentalDetailEntity
+              ? state.extra as RentalDetailEntity
+              : null;
+          return StaffHandoverPage(reservation: res, rental: rental);
         },
       ),
       // The tabbed app shell. Each branch keeps its own navigation stack.

@@ -1,4 +1,5 @@
 import 'package:rental_car/core/error/exceptions.dart';
+import 'package:rental_car/core/utils/jwt_decoder.dart';
 import 'package:rental_car/core/utils/result.dart';
 import 'package:rental_car/core/utils/safe_call.dart';
 import 'package:rental_car/features/auth/data/datasources/auth_local_data_source.dart';
@@ -44,9 +45,25 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final accessToken = await _localDataSource.getAccessToken();
       if (accessToken != null && accessToken.isNotEmpty) {
-        final user = await _remoteDataSource.getCurrentUser();
-        await _localDataSource.saveUser(user);
-        return user.toEntity();
+        final tokenRole = JwtDecoder.extractRole(accessToken);
+        try {
+          final user = await _remoteDataSource.getCurrentUser();
+          final enrichedUser = user.copyWith(
+            role: (user.role != null && user.role!.isNotEmpty)
+                ? user.role
+                : tokenRole,
+          );
+          await _localDataSource.saveUser(enrichedUser);
+          return enrichedUser.toEntity();
+        } catch (_) {
+          // Fallback nếu remote getCurrentUser gặp lỗi mạng
+          final tokenEmail = JwtDecoder.extractEmail(accessToken);
+          if (tokenEmail != null && !JwtDecoder.isExpired(accessToken)) {
+            final fallbackUser = UserModel(email: tokenEmail, role: tokenRole);
+            await _localDataSource.saveUser(fallbackUser);
+            return fallbackUser.toEntity();
+          }
+        }
       }
 
       return null;
@@ -104,9 +121,24 @@ class AuthRepositoryImpl implements AuthRepository {
         refreshToken: tokens.refreshToken,
       );
 
-      final userModel = await _remoteDataSource.getCurrentUser();
-      await _localDataSource.saveUser(userModel);
+      final tokenRole = JwtDecoder.extractRole(tokens.accessToken);
 
+      UserModel userModel;
+      try {
+        final remoteUser = await _remoteDataSource.getCurrentUser();
+        userModel = remoteUser.copyWith(
+          role: (remoteUser.role != null && remoteUser.role!.isNotEmpty)
+              ? remoteUser.role
+              : tokenRole,
+        );
+      } catch (_) {
+        userModel = UserModel(
+          email: JwtDecoder.extractEmail(tokens.accessToken) ?? email,
+          role: tokenRole,
+        );
+      }
+
+      await _localDataSource.saveUser(userModel);
       return userModel.toEntity();
     });
   }
@@ -143,9 +175,24 @@ class AuthRepositoryImpl implements AuthRepository {
         refreshToken: tokens.refreshToken,
       );
 
-      final userModel = await _remoteDataSource.getCurrentUser();
-      await _localDataSource.saveUser(userModel);
+      final tokenRole = JwtDecoder.extractRole(tokens.accessToken);
 
+      UserModel userModel;
+      try {
+        final remoteUser = await _remoteDataSource.getCurrentUser();
+        userModel = remoteUser.copyWith(
+          role: (remoteUser.role != null && remoteUser.role!.isNotEmpty)
+              ? remoteUser.role
+              : tokenRole,
+        );
+      } catch (_) {
+        userModel = UserModel(
+          email: JwtDecoder.extractEmail(tokens.accessToken) ?? '',
+          role: tokenRole,
+        );
+      }
+
+      await _localDataSource.saveUser(userModel);
       return userModel.toEntity();
     });
   }

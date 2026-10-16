@@ -14,7 +14,8 @@ class ReturnVehicleLogPage extends ConsumerStatefulWidget {
   final int? rentalId;
 
   @override
-  ConsumerState<ReturnVehicleLogPage> createState() => _ReturnVehicleLogPageState();
+  ConsumerState<ReturnVehicleLogPage> createState() =>
+      _ReturnVehicleLogPageState();
 }
 
 class _ReturnVehicleLogPageState extends ConsumerState<ReturnVehicleLogPage> {
@@ -22,22 +23,29 @@ class _ReturnVehicleLogPageState extends ConsumerState<ReturnVehicleLogPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final currentRentalId = widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
+      final currentRentalId =
+          widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
       if (currentRentalId != null && currentRentalId > 0) {
-        ref.read(checkoutControllerProvider.notifier).loadRentalOverview(currentRentalId);
+        ref
+            .read(checkoutControllerProvider.notifier)
+            .loadRentalOverview(currentRentalId);
       }
     });
   }
 
   Future<void> _handleRefresh() async {
-    final currentRentalId = widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
+    final currentRentalId =
+        widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
     if (currentRentalId != null && currentRentalId > 0) {
-      await ref.read(checkoutControllerProvider.notifier).loadRentalOverview(currentRentalId);
+      await ref
+          .read(checkoutControllerProvider.notifier)
+          .loadRentalOverview(currentRentalId);
     }
   }
 
   void _navigateToSettlement() {
-    final targetRentalId = widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
+    final targetRentalId =
+        widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
     if (Navigator.of(context).canPop()) {
       Navigator.of(context).pop();
     } else {

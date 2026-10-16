@@ -6,6 +6,8 @@ class RentalChecklistEntity {
     this.fee = 0.0,
     this.img = '',
     this.createdAt,
+    this.rentalId,
+    this.staffEmail,
   });
 
   final int id;
@@ -14,6 +16,8 @@ class RentalChecklistEntity {
   final double fee;
   final String img;
   final DateTime? createdAt;
+  final int? rentalId;
+  final String? staffEmail;
 
   bool get isCheckIn => type == 'CHECK_IN';
   bool get isCheckOut => type == 'CHECK_OUT';

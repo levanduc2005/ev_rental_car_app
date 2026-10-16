@@ -57,7 +57,6 @@ class CheckoutState {
   bool get isLocationValid =>
       distanceInMeters != null && distanceInMeters! <= 100.0;
 
-
   // Thông tin xe & Nhân viên
   final int? vehicleId;
   final int? staffId;

@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SettlementBalanceBox extends StatelessWidget {
-  const SettlementBalanceBox({
-    super.key,
-    required this.balance,
-  });
+  const SettlementBalanceBox({super.key, required this.balance});
 
   final double balance;
 

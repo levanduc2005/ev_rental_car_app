@@ -58,7 +58,8 @@ class BookingOrderSummaryCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: (vehicleImageUrl != null &&
+                child:
+                    (vehicleImageUrl != null &&
                         vehicleImageUrl!.startsWith('http'))
                     ? Image.network(
                         vehicleImageUrl!,
@@ -69,14 +70,22 @@ class BookingOrderSummaryCard extends StatelessWidget {
                           height: 160,
                           width: double.infinity,
                           color: Colors.grey.shade200,
-                          child: const Icon(Icons.directions_car, size: 60, color: Colors.grey),
+                          child: const Icon(
+                            Icons.directions_car,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
                         ),
                       )
                     : Container(
                         height: 160,
                         width: double.infinity,
                         color: Colors.grey.shade200,
-                        child: const Icon(Icons.directions_car, size: 60, color: Colors.grey),
+                        child: const Icon(
+                          Icons.directions_car,
+                          size: 60,
+                          color: Colors.grey,
+                        ),
                       ),
               ),
               Positioned(

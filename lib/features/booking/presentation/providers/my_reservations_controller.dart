@@ -45,12 +45,13 @@ class MyReservationsController extends Notifier<MyReservationsState> {
 
     result.when(
       ok: (list) {
-        final sorted = [...list]..sort((a, b) {
-          if (b.createdAt != null && a.createdAt != null) {
-            return b.createdAt!.compareTo(a.createdAt!);
-          }
-          return b.id.compareTo(a.id);
-        });
+        final sorted = [...list]
+          ..sort((a, b) {
+            if (b.createdAt != null && a.createdAt != null) {
+              return b.createdAt!.compareTo(a.createdAt!);
+            }
+            return b.id.compareTo(a.id);
+          });
         state = state.copyWith(reservations: sorted, isLoading: false);
       },
       err: (failure) {

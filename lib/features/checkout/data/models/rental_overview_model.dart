@@ -28,9 +28,9 @@ class RentalOverviewModel extends RentalOverviewEntity {
     final damagesRaw = json['vehicleDamages'];
     final damages = damagesRaw is List
         ? damagesRaw
-            .whereType<Map<String, dynamic>>()
-            .map(VehicleDamageItemModel.fromJson)
-            .toList()
+              .whereType<Map<String, dynamic>>()
+              .map(VehicleDamageItemModel.fromJson)
+              .toList()
         : <VehicleDamageItemModel>[];
 
     final vl = rental?['vehicleLog'] as Map<String, dynamic>?;

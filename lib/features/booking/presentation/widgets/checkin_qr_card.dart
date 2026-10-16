@@ -17,16 +17,10 @@ class CheckinQrCard extends StatelessWidget {
   final String? stationName;
   final String? stationAddress;
 
-  String get _cleanCode {
-    if (reservationCode.startsWith('BBC') ||
-        reservationCode.startsWith('bbc')) {
-      return reservationCode.toUpperCase();
-    }
-    return 'BBC$reservationCode';
-  }
+  String get _cleanCode => reservationCode.trim();
 
   String get _qrImageUrl =>
-      'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=CHECKIN_EMOTION_$_cleanCode';
+      'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=$_cleanCode';
 
   void _copyCode(BuildContext context) {
     Clipboard.setData(ClipboardData(text: _cleanCode));

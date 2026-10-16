@@ -15,13 +15,19 @@ class RentalBottomActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isConfirm = rental.isConfirm || rental.isDeposited;
     final isOngoing = rental.isOngoing;
     final isOverdue = rental.isOverdue || rental.isOverdueTime;
     final isChecking = rental.isChecking;
     final isPendingFee = rental.isPendingFee;
     final isCompleted = rental.isCompleted;
 
-    if (!isOngoing && !isOverdue && !isChecking && !isPendingFee && !isCompleted) {
+    if (!isConfirm &&
+        !isOngoing &&
+        !isOverdue &&
+        !isChecking &&
+        !isPendingFee &&
+        !isCompleted) {
       return const SizedBox.shrink();
     }
 
@@ -43,6 +49,42 @@ class RentalBottomActionBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // 0. Giai đoạn CONFIRM / DEPOSITED -> Hướng dẫn gặp nhân viên trạm
+            if (isConfirm) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFBFDBFE)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.storefront_rounded,
+                      color: Color(0xFF2563EB),
+                      size: 22,
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Vui lòng gặp nhân viên tại trạm để nhận xe và làm thủ tục kiểm tra bàn giao.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF1D4ED8),
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             // 1. Giai đoạn ONGOING / OVERDUE -> Cứu hộ SOS, Điều khiển xe & Nút trả xe
             if (isOngoing || isOverdue) ...[
               Row(
@@ -51,7 +93,10 @@ class RentalBottomActionBar extends StatelessWidget {
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFFDC2626),
-                        side: const BorderSide(color: Color(0xFFDC2626), width: 1.5),
+                        side: const BorderSide(
+                          color: Color(0xFFDC2626),
+                          width: 1.5,
+                        ),
                         backgroundColor: const Color(0xFFFEF2F2),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -79,7 +124,10 @@ class RentalBottomActionBar extends StatelessWidget {
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF2563EB),
-                        side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                        side: const BorderSide(
+                          color: Color(0xFF2563EB),
+                          width: 1.5,
+                        ),
                         backgroundColor: const Color(0xFFEFF6FF),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -145,7 +193,10 @@ class RentalBottomActionBar extends StatelessWidget {
                     const Expanded(
                       child: Text(
                         'Đã nộp biên bản trả xe. Nhân viên trạm đang kiểm tra và lập bảng kê quyết toán...',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF92400E)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF92400E),
+                        ),
                       ),
                     ),
                     TextButton(
@@ -165,7 +216,8 @@ class RentalBottomActionBar extends StatelessWidget {
 
             // 3. Giai đoạn PENDING_FEE -> Thanh toán phụ phí phát sinh
             if (isPendingFee) ...[
-              if (rental.vehicleDamages.isNotEmpty || rental.vehicleDamageCost > 0) ...[
+              if (rental.vehicleDamages.isNotEmpty ||
+                  rental.vehicleDamageCost > 0) ...[
                 Row(
                   children: [
                     Expanded(
@@ -242,10 +294,7 @@ class RentalBottomActionBar extends StatelessWidget {
                   icon: const Icon(Icons.receipt_long_rounded, size: 18),
                   label: const Text(
                     'Bảng quyết toán cọc',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -253,7 +302,8 @@ class RentalBottomActionBar extends StatelessWidget {
 
             // 4. Giai đoạn COMPLETED -> Xem bảng kê quyết toán & Tiền hoàn cọc
             if (isCompleted) ...[
-              if (rental.vehicleDamages.isNotEmpty || rental.vehicleDamageCost > 0) ...[
+              if (rental.vehicleDamages.isNotEmpty ||
+                  rental.vehicleDamageCost > 0) ...[
                 Row(
                   children: [
                     Expanded(

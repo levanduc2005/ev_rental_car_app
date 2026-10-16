@@ -118,7 +118,9 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
       if (data is Map<String, dynamic>) {
         return VehicleLogModel.fromJson(data);
       }
-      throw Exception('Không nhận được thông tin biên bản nhật ký xe từ máy chủ');
+      throw Exception(
+        'Không nhận được thông tin biên bản nhật ký xe từ máy chủ',
+      );
     });
   }
 

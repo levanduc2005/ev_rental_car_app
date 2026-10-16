@@ -270,10 +270,7 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
                   onPressed: () => context.goNamed(AppRoute.mapSearch.name),
                   child: const Text(
                     'Tìm và đặt xe khác',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
               ] else ...[
@@ -354,21 +351,34 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
               ),
             ],
 
-            // Contextual Actions for COMPLETED
+            // Contextual Actions for COMPLETED: Đơn đã hoàn tất
             if (isCompleted)
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECFDF5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFA7F3D0)),
                 ),
-                onPressed: () => context.goNamed(AppRoute.home.name),
-                child: const Text(
-                  'Thuê lại chuyến xe này',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline,
+                      color: Color(0xFF059669),
+                      size: 20,
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Đơn đặt xe đã hoàn thành. Quý khách có thể theo dõi hợp đồng và trả xe tại mục Đơn thuê.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF065F46),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 

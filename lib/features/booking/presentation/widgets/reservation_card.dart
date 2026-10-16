@@ -23,7 +23,6 @@ class ReservationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPending = reservation.isPending;
     final isConfirmed = reservation.isConfirmed;
-    final isCompleted = reservation.isCompleted;
     final isInactive =
         reservation.isCancelled ||
         reservation.isFailed ||
@@ -96,7 +95,8 @@ class ReservationCard extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: (reservation.vehicle?.imageUrl != null &&
+                      child:
+                          (reservation.vehicle?.imageUrl != null &&
                               reservation.vehicle!.imageUrl!.startsWith('http'))
                           ? Image.network(
                               reservation.vehicle!.imageUrl!,
@@ -373,7 +373,10 @@ class ReservationCard extends StatelessWidget {
                                 extra: reservation.id,
                               );
                             },
-                            icon: const Icon(Icons.assignment_return_outlined, size: 14),
+                            icon: const Icon(
+                              Icons.assignment_return_outlined,
+                              size: 14,
+                            ),
                             label: const Text(
                               'Trả xe',
                               style: TextStyle(
@@ -383,25 +386,6 @@ class ReservationCard extends StatelessWidget {
                             ),
                           ),
                         ],
-
-                        // COMPLETED: Cho phép thuê lại
-                        if (isCompleted)
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2563EB),
-                              foregroundColor: Colors.white,
-                              visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                            ),
-                            onPressed: () =>
-                                context.goNamed(AppRoute.home.name),
-                            child: const Text(
-                              'Thuê lại xe',
-                              style: TextStyle(fontSize: 11),
-                            ),
-                          ),
 
                         // CANCELLED / FAILED / OVERDUE: Thuê xe khác
                         if (isInactive)

@@ -29,7 +29,10 @@ enum AppRoute {
   returnLocationVerification('/checkout/verify-location'),
   returnVehicleLog('/checkout/vehicle-log'),
   checkoutSummary('/checkout/summary'),
-  emergencyReport('/emergency-report');
+  checkIn('/checkin/:id'),
+  emergencyReport('/emergency-report'),
+  staffDashboard('/staff/dashboard'),
+  staffHandover('/staff/handover');
 
   const AppRoute(this.path);
 

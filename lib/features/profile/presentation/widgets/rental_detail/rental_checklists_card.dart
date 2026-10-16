@@ -42,7 +42,11 @@ class RentalChecklistsCard extends StatelessWidget {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.login_rounded, size: 16, color: Color(0xFF2563EB)),
+                    Icon(
+                      Icons.login_rounded,
+                      size: 16,
+                      color: Color(0xFF2563EB),
+                    ),
                     SizedBox(width: 6),
                     Text(
                       '1. Lúc nhận xe (Check-in)',
@@ -65,7 +69,11 @@ class RentalChecklistsCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            _buildPhotoGrid(context, checkInChecklist!.imageUrls, 'Lúc nhận xe'),
+            _buildPhotoGrid(
+              context,
+              checkInChecklist!.imageUrls,
+              'Lúc nhận xe',
+            ),
           ] else
             const Text(
               'Chưa có biên bản nhận xe.',
@@ -80,7 +88,11 @@ class RentalChecklistsCard extends StatelessWidget {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.logout_rounded, size: 16, color: Color(0xFFD97706)),
+                    Icon(
+                      Icons.logout_rounded,
+                      size: 16,
+                      color: Color(0xFFD97706),
+                    ),
                     SizedBox(width: 6),
                     Text(
                       '2. Lúc trả xe (Check-out)',
@@ -103,7 +115,11 @@ class RentalChecklistsCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            _buildPhotoGrid(context, checkOutChecklist!.imageUrls, 'Lúc trả xe'),
+            _buildPhotoGrid(
+              context,
+              checkOutChecklist!.imageUrls,
+              'Lúc trả xe',
+            ),
           ],
         ],
       ),

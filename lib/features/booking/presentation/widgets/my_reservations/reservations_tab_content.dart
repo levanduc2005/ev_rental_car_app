@@ -159,9 +159,7 @@ class ReservationsTabContent extends StatelessWidget {
         const Divider(height: 1),
 
         // Danh sách đơn đặt trước
-        Expanded(
-          child: _buildBody(context, trips),
-        ),
+        Expanded(child: _buildBody(context, trips)),
       ],
     );
   }
@@ -194,8 +192,9 @@ class ReservationsTabContent extends StatelessWidget {
                 subtitle: isCancelledFilter
                     ? 'Bạn chưa có đơn đặt trước nào bị hủy hoặc quá hạn.'
                     : 'Hãy khám phá danh sách xe và đặt chuyến đi đầu tiên!',
-                buttonText:
-                    isCancelledFilter ? 'Khám phá xe ngay' : 'Tìm xe ngay',
+                buttonText: isCancelledFilter
+                    ? 'Khám phá xe ngay'
+                    : 'Tìm xe ngay',
                 icon: isCancelledFilter
                     ? Icons.check_circle_outline
                     : Icons.no_crash_outlined,

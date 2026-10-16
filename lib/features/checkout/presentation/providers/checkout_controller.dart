@@ -46,10 +46,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     );
 
     // Tải bảng kê tài chính và biên bản nhận xe từ UseCases
-    await Future.wait([
-      loadRentalOverview(rentalId),
-      loadChecklists(rentalId),
-    ]);
+    await Future.wait([loadRentalOverview(rentalId), loadChecklists(rentalId)]);
 
     // Sau khi nạp thông tin trạm thực tế từ backend, thực hiện xác thực tọa độ GPS
     await verifyLocation();
@@ -161,9 +158,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     result.when(
       ok: (checklists) {
         final checkIn = checklists.where((c) => c.isCheckIn).firstOrNull;
-        state = state.copyWith(
-          checkInChecklist: checkIn,
-        );
+        state = state.copyWith(checkInChecklist: checkIn);
       },
       err: (failure) {
         state = state.copyWith(errorMessage: failure.message);
@@ -196,14 +191,12 @@ class CheckoutController extends Notifier<CheckoutState> {
           damageItems: overview.vehicleDamages,
           damagePhotos: overview.vehicleDamageImages,
           isVehicleDamaged:
-              overview.vehicleDamageFee > 0 || overview.vehicleDamages.isNotEmpty,
+              overview.vehicleDamageFee > 0 ||
+              overview.vehicleDamages.isNotEmpty,
         );
       },
       err: (failure) {
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: failure.message,
-        );
+        state = state.copyWith(isLoading: false, errorMessage: failure.message);
       },
     );
   }
@@ -242,6 +235,4 @@ class CheckoutController extends Notifier<CheckoutState> {
 }
 
 final checkoutControllerProvider =
-    NotifierProvider<CheckoutController, CheckoutState>(
-      CheckoutController.new,
-    );
+    NotifierProvider<CheckoutController, CheckoutState>(CheckoutController.new);

@@ -107,8 +107,8 @@ class RentalFinancialCard extends StatelessWidget {
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         color: rental.isCompleted
-                          ? const Color(0xFF16A34A)
-                          : const Color(0xFF2563EB),
+                            ? const Color(0xFF16A34A)
+                            : const Color(0xFF2563EB),
                       ),
                     ),
                   ),

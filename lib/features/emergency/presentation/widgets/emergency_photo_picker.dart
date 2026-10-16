@@ -212,9 +212,7 @@ class EmergencyPhotoPicker extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(
-                  color: AppColors.border,
-                ),
+                border: Border.all(color: AppColors.border),
               ),
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,

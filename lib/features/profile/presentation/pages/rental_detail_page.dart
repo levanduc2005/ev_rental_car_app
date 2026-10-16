@@ -104,10 +104,7 @@ class _RentalDetailPageState extends ConsumerState<RentalDetailPage> {
       ),
       body: _buildBody(),
       bottomNavigationBar: _rental != null
-          ? RentalBottomActionBar(
-              rental: _rental!,
-              onRefresh: _fetchDetail,
-            )
+          ? RentalBottomActionBar(rental: _rental!, onRefresh: _fetchDetail)
           : null,
     );
   }
@@ -177,7 +174,8 @@ class _RentalDetailPageState extends ConsumerState<RentalDetailPage> {
             const SizedBox(height: 14),
 
             // 4. Thẻ Hợp đồng điện tử (nếu có)
-            if (rental.contractUrl != null && rental.contractUrl!.isNotEmpty) ...[
+            if (rental.contractUrl != null &&
+                rental.contractUrl!.isNotEmpty) ...[
               RentalContractCard(
                 contractUrl: rental.contractUrl!,
                 onOpenContract: () => _openContractUrl(rental.contractUrl),
@@ -193,7 +191,8 @@ class _RentalDetailPageState extends ConsumerState<RentalDetailPage> {
             const SizedBox(height: 14),
 
             // 6. Thẻ Biên bản hư hại phụ tùng (VehicleLog nếu có)
-            if (rental.vehicleDamages.isNotEmpty || rental.vehicleDamageCost > 0) ...[
+            if (rental.vehicleDamages.isNotEmpty ||
+                rental.vehicleDamageCost > 0) ...[
               RentalDamageLogCard(
                 damages: rental.vehicleDamages,
                 damageCost: rental.vehicleDamageCost,

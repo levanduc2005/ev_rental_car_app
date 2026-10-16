@@ -29,7 +29,9 @@ final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
 // --- Domain Layer UseCase Providers ---
 final getBookingVehicleSummaryUseCaseProvider =
     Provider<GetBookingVehicleSummaryUseCase>((ref) {
-      return GetBookingVehicleSummaryUseCase(ref.watch(bookingRepositoryProvider));
+      return GetBookingVehicleSummaryUseCase(
+        ref.watch(bookingRepositoryProvider),
+      );
     });
 
 final calculateBookingFeesUseCaseProvider =
@@ -37,15 +39,17 @@ final calculateBookingFeesUseCaseProvider =
       return CalculateBookingFeesUseCase(ref.watch(bookingRepositoryProvider));
     });
 
-final createReservationUseCaseProvider =
-    Provider<CreateReservationUseCase>((ref) {
-      return CreateReservationUseCase(ref.watch(bookingRepositoryProvider));
-    });
+final createReservationUseCaseProvider = Provider<CreateReservationUseCase>((
+  ref,
+) {
+  return CreateReservationUseCase(ref.watch(bookingRepositoryProvider));
+});
 
-final getMyReservationsUseCaseProvider =
-    Provider<GetMyReservationsUseCase>((ref) {
-      return GetMyReservationsUseCase(ref.watch(bookingRepositoryProvider));
-    });
+final getMyReservationsUseCaseProvider = Provider<GetMyReservationsUseCase>((
+  ref,
+) {
+  return GetMyReservationsUseCase(ref.watch(bookingRepositoryProvider));
+});
 
 final getReservationDetailUseCaseProvider =
     Provider<GetReservationDetailUseCase>((ref) {

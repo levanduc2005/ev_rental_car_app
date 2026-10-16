@@ -40,6 +40,7 @@ class RentalDetailEntity {
     this.staffName,
     this.staffPhone,
     this.paymentUrl,
+    this.canCheckIn = false,
   });
 
   final int id;
@@ -79,14 +80,25 @@ class RentalDetailEntity {
   final String? staffName;
   final String? staffPhone;
   final String? paymentUrl;
+  final bool canCheckIn;
 
   bool get isOngoing => status.toUpperCase() == 'ONGOING';
   bool get isConfirm => status.toUpperCase() == 'CONFIRM';
+  bool get isDeposited => status.toUpperCase() == 'DEPOSITED';
   bool get isPendingFee => status.toUpperCase() == 'PENDING_FEE';
   bool get isChecking => status.toUpperCase() == 'CHECKING';
   bool get isOverdue => status.toUpperCase() == 'OVERDUE';
   bool get isCompleted => status.toUpperCase() == 'COMPLETED';
   bool get isCancelled => status.toUpperCase() == 'CANCELLED';
+
+  bool get canStartCheckIn {
+    if (canCheckIn) return true;
+    final isReadyStatus = isConfirm || isDeposited;
+    if (!isReadyStatus) return false;
+    if (startTime == null) return true;
+    final now = DateTime.now();
+    return now.isAfter(startTime!.subtract(const Duration(minutes: 30)));
+  }
 
   double get totalDeposit => rentalDepositAmount + reservationDepositAmount;
 

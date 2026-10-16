@@ -42,7 +42,10 @@ class BookingVehicleSummaryCard extends StatelessWidget {
                       width: 90,
                       height: 65,
                       color: Colors.grey.shade200,
-                      child: const Icon(Icons.directions_car, color: Colors.grey),
+                      child: const Icon(
+                        Icons.directions_car,
+                        color: Colors.grey,
+                      ),
                     ),
                   )
                 : Container(

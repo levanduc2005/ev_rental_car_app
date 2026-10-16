@@ -16,7 +16,8 @@ class CheckoutSummaryPage extends ConsumerStatefulWidget {
   final int? rentalId;
 
   @override
-  ConsumerState<CheckoutSummaryPage> createState() => _CheckoutSummaryPageState();
+  ConsumerState<CheckoutSummaryPage> createState() =>
+      _CheckoutSummaryPageState();
 }
 
 class _CheckoutSummaryPageState extends ConsumerState<CheckoutSummaryPage> {
@@ -24,7 +25,8 @@ class _CheckoutSummaryPageState extends ConsumerState<CheckoutSummaryPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final id = widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
+      final id =
+          widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
       if (id != null && id > 0) {
         ref.read(checkoutControllerProvider.notifier).loadRentalOverview(id);
       }
@@ -32,7 +34,8 @@ class _CheckoutSummaryPageState extends ConsumerState<CheckoutSummaryPage> {
   }
 
   void _showCompletionDialog() {
-    final targetRentalId = widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
+    final targetRentalId =
+        widget.rentalId ?? ref.read(checkoutControllerProvider).rentalId;
     CheckoutCompletionDialog.show(context, rentalId: targetRentalId);
   }
 
@@ -59,7 +62,8 @@ class _CheckoutSummaryPageState extends ConsumerState<CheckoutSummaryPage> {
     }
 
     final totalDeposits = overview?.totalDeposits ?? 0.0;
-    final checkOutFee = overview?.checkListFee ?? (state.checkOutChecklist?.fee ?? 0.0);
+    final checkOutFee =
+        overview?.checkListFee ?? (state.checkOutChecklist?.fee ?? 0.0);
     final vehicleDamageFee = overview?.vehicleDamageFee ?? 0.0;
     final totalCharges = checkOutFee + vehicleDamageFee;
     final balance = totalDeposits - totalCharges;
@@ -135,7 +139,8 @@ class _CheckoutSummaryPageState extends ConsumerState<CheckoutSummaryPage> {
                         } else {
                           _showCompletionDialog();
                         }
-                      } else if (context.mounted && state.errorMessage != null) {
+                      } else if (context.mounted &&
+                          state.errorMessage != null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(state.errorMessage!),

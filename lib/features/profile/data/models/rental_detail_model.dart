@@ -41,6 +41,7 @@ class RentalDetailModel {
     this.staffName,
     this.staffPhone,
     this.paymentUrl,
+    this.canCheckIn = false,
   });
 
   final int id;
@@ -80,6 +81,7 @@ class RentalDetailModel {
   final String? staffName;
   final String? staffPhone;
   final String? paymentUrl;
+  final bool canCheckIn;
 
   factory RentalDetailModel.fromJson(Map<String, dynamic> json) {
     // 1. Thông tin xe & trạm
@@ -153,7 +155,8 @@ class RentalDetailModel {
           if (item is Map<String, dynamic>) {
             damages.add(
               VehicleDamageItemEntity(
-                description: item['description'] as String? ?? 'Hư hại phụ tùng',
+                description:
+                    item['description'] as String? ?? 'Hư hại phụ tùng',
                 cost: (item['cost'] as num?)?.toDouble() ?? 0.0,
               ),
             );
@@ -223,6 +226,7 @@ class RentalDetailModel {
       staffName: staffName,
       staffPhone: staffPhone,
       paymentUrl: json['paymentUrl'] as String?,
+      canCheckIn: json['canCheckIn'] as bool? ?? false,
     );
   }
 
@@ -265,6 +269,7 @@ class RentalDetailModel {
       staffName: staffName,
       staffPhone: staffPhone,
       paymentUrl: paymentUrl,
+      canCheckIn: canCheckIn,
     );
   }
 }

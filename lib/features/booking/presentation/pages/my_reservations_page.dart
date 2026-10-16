@@ -86,10 +86,7 @@ class _MyReservationsPageState extends ConsumerState<MyReservationsPage> {
             unselectedLabelColor: AppColors.textSecondary,
             indicatorColor: Color(0xFF2563EB),
             indicatorWeight: 3,
-            labelStyle: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
+            labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             unselectedLabelStyle: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,

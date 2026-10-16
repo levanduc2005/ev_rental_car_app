@@ -6,15 +6,15 @@ import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
 
 class RentalItemCard extends StatelessWidget {
-  const RentalItemCard({
-    super.key,
-    required this.item,
-  });
+  const RentalItemCard({super.key, required this.item});
 
   final RentalItemEntity item;
 
   @override
   Widget build(BuildContext context) {
+    final isConfirmed =
+        item.status.toUpperCase() == 'CONFIRM' ||
+        item.status.toUpperCase() == 'DEPOSITED';
     final isOngoing = item.status.toUpperCase() == 'ONGOING';
     final isCompleted = item.status.toUpperCase() == 'COMPLETED';
     final isPendingFee = item.status.toUpperCase() == 'PENDING_FEE';
@@ -85,7 +85,8 @@ class RentalItemCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: (item.vehicleImage != null &&
+                    child:
+                        (item.vehicleImage != null &&
                             item.vehicleImage!.startsWith('http'))
                         ? Image.network(
                             item.vehicleImage!,
@@ -156,6 +157,35 @@ class RentalItemCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  if (isConfirmed) ...[
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF2563EB),
+                        side: const BorderSide(color: Color(0xFF2563EB)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        context.pushNamed(
+                          AppRoute.rentalDetail.name,
+                          pathParameters: {'id': item.id.toString()},
+                        );
+                      },
+                      icon: const Icon(Icons.receipt_long_rounded, size: 16),
+                      label: const Text(
+                        'Xem chi tiết',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                   if (isOngoing) ...[
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(

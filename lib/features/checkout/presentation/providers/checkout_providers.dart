@@ -8,8 +8,9 @@ import 'package:rental_car/features/checkout/domain/usecases/get_checklists_by_r
 import 'package:rental_car/features/checkout/domain/usecases/get_rental_overview_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/process_checkout_payment_usecase.dart';
 
-final checkoutRemoteDataSourceProvider =
-    Provider<CheckoutRemoteDataSource>((ref) {
+final checkoutRemoteDataSourceProvider = Provider<CheckoutRemoteDataSource>((
+  ref,
+) {
   return CheckoutRemoteDataSourceImpl(dio: ref.watch(dioProvider));
 });
 
@@ -19,17 +20,22 @@ final checkoutRepositoryProvider = Provider<CheckoutRepository>((ref) {
   );
 });
 
-final getRentalOverviewUseCaseProvider =
-    Provider<GetRentalOverviewUseCase>((ref) {
+final getRentalOverviewUseCaseProvider = Provider<GetRentalOverviewUseCase>((
+  ref,
+) {
   return GetRentalOverviewUseCase(ref.watch(checkoutRepositoryProvider));
 });
 
 final processCheckoutPaymentUseCaseProvider =
     Provider<ProcessCheckoutPaymentUseCase>((ref) {
-  return ProcessCheckoutPaymentUseCase(ref.watch(checkoutRepositoryProvider));
-});
+      return ProcessCheckoutPaymentUseCase(
+        ref.watch(checkoutRepositoryProvider),
+      );
+    });
 
 final getChecklistsByRentalIdUseCaseProvider =
     Provider<GetChecklistsByRentalIdUseCase>((ref) {
-  return GetChecklistsByRentalIdUseCase(ref.watch(checkoutRepositoryProvider));
-});
+      return GetChecklistsByRentalIdUseCase(
+        ref.watch(checkoutRepositoryProvider),
+      );
+    });

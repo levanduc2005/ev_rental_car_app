@@ -5,17 +5,15 @@ import 'package:rental_car/features/checkout/domain/entities/rental_overview_ent
 import 'package:rental_car/features/profile/presentation/widgets/rental_detail/image_preview_dialog.dart';
 
 class VehicleLogDamagesCard extends StatelessWidget {
-  const VehicleLogDamagesCard({
-    super.key,
-    required this.overview,
-  });
+  const VehicleLogDamagesCard({super.key, required this.overview});
 
   final RentalOverviewEntity? overview;
 
   @override
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
-    final hasDamage = overview != null &&
+    final hasDamage =
+        overview != null &&
         (overview!.vehicleDamageFee > 0 || overview!.vehicleDamages.isNotEmpty);
 
     if (!hasDamage) {
@@ -89,7 +87,10 @@ class VehicleLogDamagesCard extends StatelessWidget {
                       ),
                       Text(
                         'Nhân viên kỹ thuật trạm đã kiểm tra và lập biên bản',
-                        style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -200,7 +201,10 @@ class VehicleLogDamagesCard extends StatelessWidget {
                           width: 80,
                           height: 80,
                           color: Colors.grey.shade200,
-                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ),

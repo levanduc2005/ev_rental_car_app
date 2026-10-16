@@ -465,7 +465,9 @@ class _BookingPaymentPageState extends ConsumerState<BookingPaymentPage> {
                 color: _isExpired ? const Color(0xFFFEF2F2) : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _isExpired ? const Color(0xFFEF4444) : AppColors.border,
+                  color: _isExpired
+                      ? const Color(0xFFEF4444)
+                      : AppColors.border,
                 ),
                 boxShadow: const [
                   BoxShadow(

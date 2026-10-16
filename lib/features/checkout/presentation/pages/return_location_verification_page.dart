@@ -41,7 +41,9 @@ class _ReturnLocationVerificationPageState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final id = widget.rentalId;
       if (id != null && id > 0) {
-        ref.read(checkoutControllerProvider.notifier).initialize(
+        ref
+            .read(checkoutControllerProvider.notifier)
+            .initialize(
               id,
               vehicleId: widget.vehicleId,
               staffId: widget.staffId,
@@ -61,12 +63,9 @@ class _ReturnLocationVerificationPageState
 
     final isValid = state.isLocationValid;
 
-    final displayStationName = state.stationName ??
-        widget.stationName ??
-        '--';
-    final displayStationAddress = state.stationAddress ??
-        widget.stationAddress ??
-        '--';
+    final displayStationName = state.stationName ?? widget.stationName ?? '--';
+    final displayStationAddress =
+        state.stationAddress ?? widget.stationAddress ?? '--';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -85,7 +84,9 @@ class _ReturnLocationVerificationPageState
           IconButton(
             tooltip: 'Làm mới vị trí',
             icon: const Icon(Icons.refresh, color: AppColors.primary),
-            onPressed: state.isLocationChecking ? null : controller.verifyLocation,
+            onPressed: state.isLocationChecking
+                ? null
+                : controller.verifyLocation,
           ),
         ],
       ),

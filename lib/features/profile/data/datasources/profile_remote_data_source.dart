@@ -231,9 +231,14 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<RentalDetailModel> getRentalDetail(int id) {
     return guardApiCall(() async {
-      final response = await _dio.get<Map<String, dynamic>>(
-        '/rentals/me/details/$id',
-      );
+      Response<Map<String, dynamic>> response;
+      try {
+        response = await _dio.get<Map<String, dynamic>>('/rentals/$id/details');
+      } on DioException {
+        response = await _dio.get<Map<String, dynamic>>(
+          '/rentals/me/details/$id',
+        );
+      }
       final data = response.data?['data'];
       if (data is Map<String, dynamic>) {
         return RentalDetailModel.fromJson(data);

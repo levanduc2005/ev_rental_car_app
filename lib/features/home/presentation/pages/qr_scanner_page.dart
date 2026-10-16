@@ -129,8 +129,8 @@ class _QrScannerPageState extends ConsumerState<QrScannerPage> {
             }
             final plate =
                 (vehicle.plateNumber != null && vehicle.plateNumber!.isNotEmpty)
-                    ? vehicle.plateNumber!
-                    : 'Chưa cập nhật';
+                ? vehicle.plateNumber!
+                : 'Chưa cập nhật';
             _showErrorDialog(
               title: 'Phương tiện không sẵn sàng',
               message: '${vehicle.name} (Biển số: $plate)\n$statusText',
@@ -275,7 +275,12 @@ class _QrScannerPageState extends ConsumerState<QrScannerPage> {
     );
   }
 
-  Widget _buildCorner({double? top, double? bottom, double? left, double? right}) {
+  Widget _buildCorner({
+    double? top,
+    double? bottom,
+    double? left,
+    double? right,
+  }) {
     return Positioned(
       top: top,
       bottom: bottom,
@@ -330,7 +335,10 @@ class _QrScannerPageState extends ConsumerState<QrScannerPage> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.flip_camera_ios_rounded, color: Colors.white70),
+            icon: const Icon(
+              Icons.flip_camera_ios_rounded,
+              color: Colors.white70,
+            ),
             tooltip: 'Đổi camera',
             onPressed: () => _cameraController.switchCamera(),
           ),
@@ -402,7 +410,10 @@ class _QrScannerPageState extends ConsumerState<QrScannerPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.75),
                     borderRadius: BorderRadius.circular(16),
@@ -435,7 +446,10 @@ class _QrScannerPageState extends ConsumerState<QrScannerPage> {
                     foregroundColor: Colors.white,
                     side: const BorderSide(color: Colors.white38),
                     backgroundColor: Colors.black54,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

@@ -45,7 +45,11 @@ void showImagePreviewDialog(
                     fit: BoxFit.contain,
                     errorBuilder: (_, _, _) => const Padding(
                       padding: EdgeInsets.all(32),
-                      child: Icon(Icons.broken_image, color: Colors.white70, size: 48),
+                      child: Icon(
+                        Icons.broken_image,
+                        color: Colors.white70,
+                        size: 48,
+                      ),
                     ),
                   ),
                 ),

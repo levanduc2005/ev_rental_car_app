@@ -4,10 +4,7 @@ import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 
 class CheckoutCompletionDialog extends StatelessWidget {
-  const CheckoutCompletionDialog({
-    super.key,
-    required this.rentalId,
-  });
+  const CheckoutCompletionDialog({super.key, required this.rentalId});
 
   final int? rentalId;
 

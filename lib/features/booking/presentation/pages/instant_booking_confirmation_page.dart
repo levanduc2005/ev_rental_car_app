@@ -249,7 +249,10 @@ class _InstantBookingConfirmationPageState
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.grey.shade600,
                         ),
-                        child: const Text('Hủy', style: TextStyle(fontSize: 15)),
+                        child: const Text(
+                          'Hủy',
+                          style: TextStyle(fontSize: 15),
+                        ),
                       ),
                       const Text(
                         'Chọn giờ & phút trả xe',
@@ -400,12 +403,14 @@ class _InstantBookingConfirmationPageState
     if (hours < 8) {
       hourlyRate = _vehicle!.pricePer4Hours / 4.0;
     } else if (hours < 12) {
-      hourlyRate = (_vehicle!.pricePer8Hours > 0
+      hourlyRate =
+          (_vehicle!.pricePer8Hours > 0
               ? _vehicle!.pricePer8Hours
               : _vehicle!.pricePerDay / 2) /
           8.0;
     } else if (hours < 24) {
-      hourlyRate = (_vehicle!.pricePer12Hours > 0
+      hourlyRate =
+          (_vehicle!.pricePer12Hours > 0
               ? _vehicle!.pricePer12Hours
               : _vehicle!.pricePerDay * 0.75) /
           12.0;
@@ -630,8 +635,11 @@ class _InstantBookingConfirmationPageState
                             ),
                             Builder(
                               builder: (context) {
-                                final diffMinutes = _endDateTime.difference(_startDateTime).inMinutes;
-                                final isExactPreset = diffMinutes == 240 ||
+                                final diffMinutes = _endDateTime
+                                    .difference(_startDateTime)
+                                    .inMinutes;
+                                final isExactPreset =
+                                    diffMinutes == 240 ||
                                     diffMinutes == 480 ||
                                     diffMinutes == 720 ||
                                     diffMinutes == 1440;
@@ -771,8 +779,9 @@ class _InstantBookingConfirmationPageState
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed:
-                          _isSubmitting ? null : _handleConfirmInstantBooking,
+                      onPressed: _isSubmitting
+                          ? null
+                          : _handleConfirmInstantBooking,
                       child: _isSubmitting
                           ? const SizedBox(
                               width: 22,
@@ -819,7 +828,9 @@ class _InstantBookingConfirmationPageState
           color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFF1F5F9),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFCBD5E1),
+            color: isSelected
+                ? const Color(0xFF2563EB)
+                : const Color(0xFFCBD5E1),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -842,8 +853,8 @@ class _InstantBookingConfirmationPageState
 
     final plate =
         (_vehicle!.plateNumber != null && _vehicle!.plateNumber!.isNotEmpty)
-            ? _vehicle!.plateNumber!
-            : 'Chưa cập nhật';
+        ? _vehicle!.plateNumber!
+        : 'Chưa cập nhật';
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -1103,7 +1114,9 @@ class _InstantPickerBox extends StatelessWidget {
             color: readOnly ? const Color(0xFFF8FAFC) : Colors.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: readOnly ? const Color(0xFFE2E8F0) : const Color(0xFFCBD5E1),
+              color: readOnly
+                  ? const Color(0xFFE2E8F0)
+                  : const Color(0xFFCBD5E1),
             ),
           ),
           child: Row(
@@ -1111,7 +1124,9 @@ class _InstantPickerBox extends StatelessWidget {
               Icon(
                 icon,
                 size: iconSize,
-                color: readOnly ? const Color(0xFF94A3B8) : const Color(0xFF334155),
+                color: readOnly
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF334155),
               ),
               const SizedBox(width: 8),
               Expanded(

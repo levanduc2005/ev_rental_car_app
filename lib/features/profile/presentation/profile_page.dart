@@ -198,6 +198,27 @@ class ProfilePage extends ConsumerWidget {
             ),
             const Gap(AppSpacing.lg),
 
+            if (user?.role.toUpperCase() == 'ROLE_STAFF' ||
+                user?.role.toUpperCase() == 'ROLE_ADMIN') ...[
+              const SectionHeader(title: 'Dành cho Nhân viên trạm'),
+              AppCard(
+                padding: EdgeInsets.zero,
+                child: ProfileMenuItem(
+                  icon: Icons.badge_rounded,
+                  iconColor: const Color(0xFF2563EB),
+                  title: 'Bàn giao xe tại trạm (Staff)',
+                  subtitle: 'Quản lý đơn nhận, hợp đồng DocuSeal & bàn giao xe',
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                  ),
+                  onTap: () => context.push(AppRoute.staffDashboard.path),
+                  showDivider: false,
+                ),
+              ),
+              const Gap(AppSpacing.lg),
+            ],
+
             // 2. Nhóm chức năng: Tài khoản & Xác minh
             const SectionHeader(title: 'Tài khoản & Giấy tờ'),
             AppCard(

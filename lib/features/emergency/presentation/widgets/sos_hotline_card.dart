@@ -22,7 +22,9 @@ class SosHotlineCard extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Không thể kích hoạt cuộc gọi đến số $displayHotline'),
+            content: Text(
+              'Không thể kích hoạt cuộc gọi đến số $displayHotline',
+            ),
           ),
         );
       }

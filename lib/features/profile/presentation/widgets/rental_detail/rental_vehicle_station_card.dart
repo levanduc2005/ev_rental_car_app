@@ -38,7 +38,8 @@ class RentalVehicleStationCard extends StatelessWidget {
                   width: 90,
                   height: 65,
                   color: const Color(0xFFF1F5F9),
-                  child: rental.vehicleImage != null &&
+                  child:
+                      rental.vehicleImage != null &&
                           rental.vehicleImage!.startsWith('http')
                       ? Image.network(
                           rental.vehicleImage!,

@@ -71,8 +71,12 @@ class SettlementBreakdownCard extends StatelessWidget {
             const SizedBox(height: 8),
             _buildRow(
               'Phí phạt trễ giờ & bù sạc pin:',
-              checkOutFee > 0 ? '-${currencyFormat.format(checkOutFee)}' : '0 đ',
-              color: checkOutFee > 0 ? AppColors.error : AppColors.textSecondary,
+              checkOutFee > 0
+                  ? '-${currencyFormat.format(checkOutFee)}'
+                  : '0 đ',
+              color: checkOutFee > 0
+                  ? AppColors.error
+                  : AppColors.textSecondary,
             ),
             const SizedBox(height: 8),
 
@@ -82,7 +86,9 @@ class SettlementBreakdownCard extends StatelessWidget {
               vehicleDamageFee > 0
                   ? '-${currencyFormat.format(vehicleDamageFee)}'
                   : '0 đ (Không có)',
-              color: vehicleDamageFee > 0 ? AppColors.error : AppColors.textSecondary,
+              color: vehicleDamageFee > 0
+                  ? AppColors.error
+                  : AppColors.textSecondary,
             ),
 
             // Danh sách chi tiết từng lỗi hư hỏng nếu có
@@ -131,7 +137,10 @@ class SettlementBreakdownCard extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton.icon(
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
