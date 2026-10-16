@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
-<<<<<<< HEAD
 import 'package:rental_car/features/active_trip/presentation/active_trip_page.dart';
 import 'package:rental_car/features/auth/domain/entities/user_entity.dart';
-=======
->>>>>>> 7c39fc5b174291fbc49582032f5d081202f6b4e3
 import 'package:rental_car/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/otp_page.dart';

@@ -49,7 +49,6 @@ class RentalBottomActionBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-<<<<<<< HEAD
             // 0. Giai đoạn CONFIRM / DEPOSITED -> Hướng dẫn gặp nhân viên trạm
             if (isConfirm) ...[
               Container(
@@ -147,7 +146,6 @@ class RentalBottomActionBar extends StatelessWidget {
                         ),
                       ),
                     ),
-=======
             // 1. Giai đoạn ONGOING / OVERDUE -> Cứu hộ SOS & Nút trả xe
             if (isOngoing || isOverdue) ...[
               OutlinedButton.icon(
@@ -172,7 +170,6 @@ class RentalBottomActionBar extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
->>>>>>> 7c39fc5b174291fbc49582032f5d081202f6b4e3
                   ),
                 ),
               ),
