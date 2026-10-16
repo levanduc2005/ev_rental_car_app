@@ -49,6 +49,7 @@ class RentalBottomActionBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+<<<<<<< HEAD
             // 0. Giai đoạn CONFIRM / DEPOSITED -> Hướng dẫn gặp nhân viên trạm
             if (isConfirm) ...[
               Container(
@@ -146,8 +147,34 @@ class RentalBottomActionBar extends StatelessWidget {
                         ),
                       ),
                     ),
+=======
+            // 1. Giai đoạn ONGOING / OVERDUE -> Cứu hộ SOS & Nút trả xe
+            if (isOngoing || isOverdue) ...[
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFDC2626),
+                  side: const BorderSide(color: Color(0xFFDC2626), width: 1.5),
+                  backgroundColor: const Color(0xFFFEF2F2),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ],
+                ),
+                onPressed: () {
+                  context.pushNamed(
+                    AppRoute.emergencyReport.name,
+                    extra: rental.id,
+                  );
+                },
+                icon: const Icon(Icons.emergency_rounded, size: 20),
+                label: const Text(
+                  'Báo cáo cứu hộ khẩn cấp (SOS)',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+>>>>>>> 7c39fc5b174291fbc49582032f5d081202f6b4e3
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(

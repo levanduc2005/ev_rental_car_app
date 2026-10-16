@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
+import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
 /// The app shell that hosts the bottom [NavigationBar].
@@ -36,12 +37,6 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             selectedIcon: const Icon(Icons.receipt_long),
             label: l10n.tabMyTrip,
           ),
-          //Điều khiển
-          NavigationDestination(
-            icon: const Icon(Icons.key_outlined),
-            selectedIcon: const Icon(Icons.key),
-            label: l10n.tabControl,
-          ),
           //Thông báo
           NavigationDestination(
             icon: const Icon(Icons.notifications_outlined),
@@ -60,9 +55,12 @@ class ScaffoldWithNavBar extends ConsumerWidget {
   }
 
   void _onDestinationSelected(int index, WidgetRef ref) {
-    if (index == 1) {
-      // Khi chọn Tab Đơn thuê (My Trip), tự động làm mới danh sách chuyến đi & đơn thuê
-      ref.read(myReservationsControllerProvider.notifier).loadReservations();
+    if (index == 1 || index == 3) {
+      // Khi chọn Tab Đơn thuê hoặc Hỗ trợ, tự động làm mới danh sách đơn thuê
+      ref.read(rentalHistoryControllerProvider.notifier).refresh();
+      if (index == 1) {
+        ref.read(myReservationsControllerProvider.notifier).loadReservations();
+      }
     }
 
     // `initialLocation: true` re-selecting the current tab pops it to its root.

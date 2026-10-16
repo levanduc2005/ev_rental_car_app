@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+<<<<<<< HEAD
 import 'package:rental_car/features/active_trip/presentation/active_trip_page.dart';
 import 'package:rental_car/features/auth/domain/entities/user_entity.dart';
+=======
+>>>>>>> 7c39fc5b174291fbc49582032f5d081202f6b4e3
 import 'package:rental_car/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/otp_page.dart';
@@ -21,6 +24,7 @@ import 'package:rental_car/features/checkout/presentation/pages/checkout_summary
 import 'package:rental_car/features/checkout/presentation/pages/return_location_verification_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/return_vehicle_log_page.dart';
 import 'package:rental_car/features/emergency/presentation/pages/emergency_report_page.dart';
+import 'package:rental_car/features/emergency/presentation/pages/support_emergency_page.dart';
 import 'package:rental_car/features/home/presentation/pages/home_page.dart';
 import 'package:rental_car/features/home/presentation/pages/qr_scanner_page.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
@@ -348,17 +352,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 2: Tab 3 - Điều khiển xe (Control)
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoute.control.path,
-                name: AppRoute.control.name,
-                builder: (_, _) => const ActiveTripPage(),
-              ),
-            ],
-          ),
-          // Branch 3: Tab 4 - Thông báo (Notification)
+          // Branch 2: Tab 3 - Thông báo (Notification)
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -373,18 +367,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch 3: Tab 4 - Hỗ trợ (Support)
+          // Branch 3: Tab 4 - Hỗ trợ & Cứu hộ SOS (Support & Emergency)
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: AppRoute.support.path,
                 name: AppRoute.support.name,
-                builder: (context, state) => Scaffold(
-                  appBar: AppBar(title: Text(context.l10n.tabSupport)),
-                  body: const Center(
-                    child: Icon(Icons.support_agent_outlined, size: 64),
-                  ),
-                ),
+                builder: (context, state) => const SupportEmergencyPage(),
               ),
             ],
           ),
