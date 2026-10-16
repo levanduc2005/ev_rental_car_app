@@ -35,13 +35,11 @@ abstract final class AppConfig {
   /// Cloudinary Cloud Name.
   static const String cloudinaryCloudName = String.fromEnvironment(
     'CLOUDINARY_CLOUD_NAME',
-    defaultValue: 'dxa6upoxl',
   );
 
   /// Cloudinary Upload Preset (unsigned).
   static const String cloudinaryUploadPreset = String.fromEnvironment(
     'CLOUDINARY_UPLOAD_PRESET',
-    defaultValue: 'emotion_mobile_preset',
   );
 
   /// Human-readable app name shown in the UI.

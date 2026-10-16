@@ -67,11 +67,11 @@ class _DocuSealSignPageState extends ConsumerState<DocuSealSignPage> {
       );
 
     final uri = Uri.tryParse(widget.signingUrl);
-    if (uri != null) {
+    if (uri != null && uri.isScheme('https')) {
       _controller.loadRequest(uri);
     } else {
       _errorMessage =
-          'Đường dẫn ký hợp đồng không hợp lệ: ${widget.signingUrl}';
+          'Đường dẫn ký hợp đồng không hợp lệ hoặc không bảo mật (yêu cầu HTTPS): ${widget.signingUrl}';
     }
   }
 

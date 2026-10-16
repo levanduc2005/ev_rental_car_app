@@ -2,10 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/core/error/failure.dart';
+import 'package:rental_car/features/booking/data/models/reservation_model.dart';
+import 'package:rental_car/features/checkout/data/models/rental_checklist_model.dart';
 import 'package:rental_car/features/profile/data/models/rental_detail_model.dart';
 import 'package:rental_car/features/staff/data/datasources/staff_remote_data_source.dart';
 import 'package:rental_car/features/staff/data/models/staff_station_model.dart';
 import 'package:rental_car/features/staff/data/repositories/staff_repository_impl.dart';
+import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 
 class MockStaffRemoteDataSource extends Mock implements StaffRemoteDataSource {}
 
@@ -56,6 +59,192 @@ void main() {
         ok: (_) => fail('Expected err'),
         err: (failure) => expect(failure, isA<NetworkFailure>()),
       );
+    });
+
+    test('filterReservations returns mapped entities on success', () async {
+      final models = [
+        const ReservationModel(
+          id: 1,
+          code: 'RES-001',
+          status: 'PENDING',
+          vehicleName: 'VF 5',
+          stationName: 'Trạm 1',
+        ),
+      ];
+
+      when(
+        () => mockRemoteDataSource.filterReservations(
+          search: 'RES',
+          status: ['PENDING'],
+        ),
+      ).thenAnswer((_) async => models);
+
+      final result = await repository.filterReservations(
+        search: 'RES',
+        status: ['PENDING'],
+      );
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (entities) {
+          expect(entities.length, 1);
+          expect(entities.first.code, 'RES-001');
+        },
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('filterRentals returns mapped entities on success', () async {
+      final models = [
+        RentalDetailModel(
+          id: 10,
+          status: 'ACTIVE',
+          vehicleName: 'VF 8',
+          rentFee: 1500000,
+          rentalDepositAmount: 500000,
+          createdAt: DateTime(2026, 10, 16),
+          seatCapacity: 5,
+          batteryCapacity: 87,
+        ),
+      ];
+
+      when(
+        () => mockRemoteDataSource.filterRentals(
+          search: 'VF',
+          status: ['ACTIVE'],
+        ),
+      ).thenAnswer((_) async => models);
+
+      final result = await repository.filterRentals(
+        search: 'VF',
+        status: ['ACTIVE'],
+      );
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (entities) {
+          expect(entities.length, 1);
+          expect(entities.first.vehicleName, 'VF 8');
+        },
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('getStationVehicles returns mapped entities on success', () async {
+      final entities = [
+        const VehicleEntity(
+          id: 1,
+          name: 'VF e34',
+          brand: 'VinFast',
+          pricePerDay: 800000,
+          batteryCapacity: 42,
+        ),
+      ];
+
+      when(
+        () => mockRemoteDataSource.getStationVehicles(5),
+      ).thenAnswer((_) async => entities);
+
+      final result = await repository.getStationVehicles(5);
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (res) {
+          expect(res.length, 1);
+          expect(res.first.name, 'VF e34');
+        },
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('getCheckInPaymentUrl returns payment url on success', () async {
+      const url = 'https://pay.payos.vn/123';
+      when(
+        () => mockRemoteDataSource.getCheckInPaymentUrl(rentalId: 10),
+      ).thenAnswer((_) async => url);
+
+      final result = await repository.getCheckInPaymentUrl(rentalId: 10);
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (payUrl) => expect(payUrl, url),
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('submitCheckInChecklist returns mapped entity on success', () async {
+      final model = RentalChecklistModel(
+        id: 1,
+        rentalId: 10,
+        type: 'CHECK_IN',
+        currentBattery: 90.0,
+        createdAt: DateTime(2026, 10, 16),
+      );
+
+      when(
+        () => mockRemoteDataSource.submitCheckInChecklist(
+          rentalId: 10,
+          staffEmail: 'staff@emotion.vn',
+          currentBattery: 90,
+          img: 'url1|url2',
+        ),
+      ).thenAnswer((_) async => model);
+
+      final result = await repository.submitCheckInChecklist(
+        rentalId: 10,
+        staffEmail: 'staff@emotion.vn',
+        currentBattery: 90,
+        img: 'url1|url2',
+      );
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (entity) {
+          expect(entity.id, 1);
+          expect(entity.currentBattery, 90.0);
+        },
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('getChecklists returns list on success', () async {
+      final models = [
+        RentalChecklistModel(
+          id: 1,
+          rentalId: 10,
+          type: 'CHECK_IN',
+          currentBattery: 90.0,
+          createdAt: DateTime(2026, 10, 16),
+        ),
+      ];
+
+      when(
+        () => mockRemoteDataSource.getChecklists(),
+      ).thenAnswer((_) async => models);
+
+      final result = await repository.getChecklists();
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (entities) => expect(entities.length, 1),
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('updateRentalStatus returns ok on success', () async {
+      when(
+        () => mockRemoteDataSource.updateRentalStatus(
+          rentalId: 10,
+          status: 'ACTIVE',
+        ),
+      ).thenAnswer((_) async => {});
+
+      final result = await repository.updateRentalStatus(
+        rentalId: 10,
+        status: 'ACTIVE',
+      );
+
+      expect(result.isOk, true);
     });
 
     test(
