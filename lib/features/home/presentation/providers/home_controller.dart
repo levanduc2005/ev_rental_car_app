@@ -1,10 +1,82 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/utils/result.dart';
-import 'package:rental_car/features/home/presentation/providers/home_state.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:rental_car/features/vehicles/domain/usecases/get_home_vehicles_usecase.dart';
 import 'package:rental_car/features/vehicles/domain/usecases/get_vehicle_brands_usecase.dart';
 import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
+
+class HomeState {
+  const HomeState({
+    this.isLoading = false,
+    this.isRefreshing = false,
+    this.errorMessage,
+    this.vehicles = const [],
+    this.brands = const [],
+    this.selectedBrand,
+  });
+
+  final bool isLoading;
+  final bool isRefreshing;
+  final String? errorMessage;
+  final List<VehicleEntity> vehicles;
+  final List<String> brands;
+  final String? selectedBrand;
+
+  static const Object _sentinel = Object();
+
+  HomeState copyWith({
+    bool? isLoading,
+    bool? isRefreshing,
+    Object? errorMessage = _sentinel,
+    List<VehicleEntity>? vehicles,
+    List<String>? brands,
+    Object? selectedBrand = _sentinel,
+  }) {
+    return HomeState(
+      isLoading: isLoading ?? this.isLoading,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
+      errorMessage: identical(errorMessage, _sentinel)
+          ? this.errorMessage
+          : errorMessage as String?,
+      vehicles: vehicles ?? this.vehicles,
+      brands: brands ?? this.brands,
+      selectedBrand: identical(selectedBrand, _sentinel)
+          ? this.selectedBrand
+          : selectedBrand as String?,
+    );
+  }
+
+  /// Danh sách xe sang / xế xịn
+  List<VehicleEntity> get luxuryVehicles {
+    var list = vehicles.where((v) => v.isLuxury).toList();
+    if (list.isEmpty && vehicles.isNotEmpty && selectedBrand == null) {
+      final sorted = List<VehicleEntity>.from(vehicles)
+        ..sort((a, b) => b.pricePerDay.compareTo(a.pricePerDay));
+      list = sorted.take(3).toList();
+    }
+    if (selectedBrand != null) {
+      list = list
+          .where((v) => v.brand.toUpperCase() == selectedBrand!.toUpperCase())
+          .toList();
+    }
+    return list;
+  }
+
+  /// Danh sách xe phổ thông / xe điện gợi ý
+  List<VehicleEntity> get recommendedVehicles {
+    var list = vehicles.where((v) => !v.isLuxury).toList();
+    if (list.isEmpty) list = vehicles;
+    if (selectedBrand != null) {
+      list = list
+          .where((v) => v.brand.toUpperCase() == selectedBrand!.toUpperCase())
+          .toList();
+    }
+    return list;
+  }
+
+  /// Kiểm tra có dữ liệu để hiển thị hay không
+  bool get hasData => vehicles.isNotEmpty;
+}
 
 class HomeController extends Notifier<HomeState> {
   GetHomeVehiclesUseCase get _getHomeVehiclesUseCase =>

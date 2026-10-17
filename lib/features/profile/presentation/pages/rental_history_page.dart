@@ -8,14 +8,14 @@ import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/core/theme/app_text_styles.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
-import 'package:rental_car/features/profile/presentation/controllers/rental_history_state.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
+import 'package:rental_car/features/profile/presentation/providers/rental_history_controller.dart';
 import 'package:rental_car/features/rating/presentation/providers/rating_providers.dart';
 import 'package:rental_car/features/rating/presentation/widgets/rating_dialog.dart';
 import 'package:rental_car/features/rating/presentation/widgets/rating_stars_bar.dart';
 
-class RentalHistoryScreen extends ConsumerWidget {
-  const RentalHistoryScreen({super.key});
+class RentalHistoryPage extends ConsumerWidget {
+  const RentalHistoryPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -711,3 +711,5 @@ class RentalHistoryScreen extends ConsumerWidget {
     );
   }
 }
+
+typedef RentalHistoryScreen = RentalHistoryPage;

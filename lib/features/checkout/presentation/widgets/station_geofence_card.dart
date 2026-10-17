@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
-import 'package:rental_car/features/checkout/presentation/providers/checkout_state.dart';
+import 'package:rental_car/features/checkout/presentation/providers/checkout_controller.dart';
 
 class StationGeofenceCard extends StatelessWidget {
   const StationGeofenceCard({

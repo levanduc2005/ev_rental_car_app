@@ -5,8 +5,7 @@ import 'package:rental_car/features/rating/data/repositories/rating_repository_i
 import 'package:rental_car/features/rating/domain/repositories/rating_repository.dart';
 import 'package:rental_car/features/rating/domain/usecases/get_all_ratings_usecase.dart';
 import 'package:rental_car/features/rating/domain/usecases/submit_rating_usecase.dart';
-import 'package:rental_car/features/rating/presentation/controllers/rating_controller.dart';
-import 'package:rental_car/features/rating/presentation/controllers/rating_state.dart';
+import 'package:rental_car/features/rating/presentation/providers/rating_controller.dart';
 
 // --- Data Layer Providers ---
 final ratingRemoteDataSourceProvider = Provider<RatingRemoteDataSource>((ref) {

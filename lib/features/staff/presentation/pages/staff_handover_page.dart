@@ -5,7 +5,7 @@ import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
 import 'package:rental_car/features/checkin/presentation/pages/docuseal_sign_page.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
-import 'package:rental_car/features/staff/presentation/controllers/staff_handover_state.dart';
+import 'package:rental_car/features/staff/presentation/providers/staff_handover_controller.dart';
 import 'package:rental_car/features/staff/presentation/providers/staff_providers.dart';
 import 'package:rental_car/features/staff/presentation/widgets/handover/staff_handover_stepper.dart';
 import 'package:rental_car/features/staff/presentation/widgets/handover/staff_step_completed.dart';

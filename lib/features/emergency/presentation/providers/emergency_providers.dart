@@ -5,8 +5,7 @@ import 'package:rental_car/features/emergency/data/repositories/emergency_reposi
 import 'package:rental_car/features/emergency/domain/repositories/emergency_repository.dart';
 import 'package:rental_car/features/emergency/domain/usecases/submit_emergency_report_usecase.dart';
 import 'package:rental_car/features/emergency/domain/usecases/upload_incident_image_usecase.dart';
-import 'package:rental_car/features/emergency/presentation/controllers/emergency_controller.dart';
-import 'package:rental_car/features/emergency/presentation/controllers/emergency_state.dart';
+import 'package:rental_car/features/emergency/presentation/providers/emergency_controller.dart';
 
 // --- Data Layer Providers ---
 final emergencyRemoteDataSourceProvider = Provider<EmergencyRemoteDataSource>((

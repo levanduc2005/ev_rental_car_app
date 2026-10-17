@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
-import 'package:rental_car/features/active_trip/presentation/active_trip_page.dart';
+import 'package:rental_car/features/active_trip/presentation/pages/active_trip_page.dart';
 import 'package:rental_car/features/auth/domain/entities/user_entity.dart';
 import 'package:rental_car/features/auth/presentation/pages/complete_profile_page.dart';
 import 'package:rental_car/features/auth/presentation/pages/login_page.dart';
@@ -26,12 +26,12 @@ import 'package:rental_car/features/home/presentation/pages/home_page.dart';
 import 'package:rental_car/features/home/presentation/pages/qr_scanner_page.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
-import 'package:rental_car/features/profile/presentation/pages/edit_profile_screen.dart';
-import 'package:rental_car/features/profile/presentation/pages/kyc_status_screen.dart';
-import 'package:rental_car/features/profile/presentation/pages/kyc_upload_screen.dart';
+import 'package:rental_car/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:rental_car/features/profile/presentation/pages/kyc_status_page.dart';
+import 'package:rental_car/features/profile/presentation/pages/kyc_upload_page.dart';
+import 'package:rental_car/features/profile/presentation/pages/profile_page.dart';
 import 'package:rental_car/features/profile/presentation/pages/rental_detail_page.dart';
-import 'package:rental_car/features/profile/presentation/pages/rental_history_screen.dart';
-import 'package:rental_car/features/profile/presentation/profile_page.dart';
+import 'package:rental_car/features/profile/presentation/pages/rental_history_page.dart';
 import 'package:rental_car/features/shell/presentation/scaffold_with_nav_bar.dart';
 import 'package:rental_car/features/staff/presentation/pages/staff_dashboard_page.dart';
 import 'package:rental_car/features/staff/presentation/pages/staff_handover_page.dart';
@@ -204,14 +204,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.editProfile.path,
         name: AppRoute.editProfile.name,
-        builder: (_, _) => const EditProfileScreen(),
+        builder: (_, _) => const EditProfilePage(),
       ),
       GoRoute(
         path: AppRoute.kycUpload.path,
         name: AppRoute.kycUpload.name,
         builder: (_, state) {
           final initialType = state.extra as DocumentType?;
-          return KycUploadScreen(initialType: initialType);
+          return KycUploadPage(initialType: initialType);
         },
       ),
       GoRoute(
@@ -219,17 +219,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: AppRoute.kycStatus.name,
         builder: (_, state) {
           if (state.extra is KycDocumentEntity) {
-            return KycStatusScreen(document: state.extra as KycDocumentEntity);
+            return KycStatusPage(document: state.extra as KycDocumentEntity);
           } else if (state.extra is DocumentType) {
-            return KycStatusScreen(initialType: state.extra as DocumentType);
+            return KycStatusPage(initialType: state.extra as DocumentType);
           }
-          return const KycStatusScreen();
+          return const KycStatusPage();
         },
       ),
       GoRoute(
         path: AppRoute.rentalHistory.path,
         name: AppRoute.rentalHistory.name,
-        builder: (_, _) => const RentalHistoryScreen(),
+        builder: (_, _) => const RentalHistoryPage(),
       ),
       GoRoute(
         path: AppRoute.rentalDetail.path,

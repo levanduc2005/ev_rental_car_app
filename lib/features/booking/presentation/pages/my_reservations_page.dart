@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
-import 'package:rental_car/features/booking/presentation/providers/my_reservations_state.dart';
 import 'package:rental_car/features/booking/presentation/widgets/my_reservations/rentals_tab_content.dart';
 import 'package:rental_car/features/booking/presentation/widgets/my_reservations/reservations_tab_content.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';

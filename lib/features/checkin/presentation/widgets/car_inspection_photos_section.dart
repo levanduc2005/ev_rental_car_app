@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
-import 'package:rental_car/features/checkin/presentation/controllers/checkin_state.dart';
+import 'package:rental_car/features/checkin/presentation/providers/checkin_controller.dart';
 
 class CarInspectionPhotosSection extends StatelessWidget {
   const CarInspectionPhotosSection({

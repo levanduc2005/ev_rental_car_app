@@ -10,12 +10,9 @@ import 'package:rental_car/features/profile/domain/usecases/get_rental_detail_us
 import 'package:rental_car/features/profile/domain/usecases/get_rental_history_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/upload_kyc_document_usecase.dart';
-import 'package:rental_car/features/profile/presentation/controllers/kyc_controller.dart';
-import 'package:rental_car/features/profile/presentation/controllers/kyc_state.dart';
-import 'package:rental_car/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:rental_car/features/profile/presentation/controllers/profile_state.dart';
-import 'package:rental_car/features/profile/presentation/controllers/rental_history_controller.dart';
-import 'package:rental_car/features/profile/presentation/controllers/rental_history_state.dart';
+import 'package:rental_car/features/profile/presentation/providers/kyc_controller.dart';
+import 'package:rental_car/features/profile/presentation/providers/profile_controller.dart';
+import 'package:rental_car/features/profile/presentation/providers/rental_history_controller.dart';
 
 // --- Data Layer Providers ---
 final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((

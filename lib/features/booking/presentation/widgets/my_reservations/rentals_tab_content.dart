@@ -5,9 +5,8 @@ import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/booking/presentation/widgets/my_reservations/my_reservations_status_views.dart';
 import 'package:rental_car/features/booking/presentation/widgets/my_reservations/rental_item_card.dart';
-import 'package:rental_car/features/profile/presentation/controllers/rental_history_controller.dart';
-import 'package:rental_car/features/profile/presentation/controllers/rental_history_state.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
+import 'package:rental_car/features/profile/presentation/providers/rental_history_controller.dart';
 
 /// Giao diện danh sách các Đơn thuê xe thực tế (Rental)
 class RentalsTabContent extends ConsumerWidget {

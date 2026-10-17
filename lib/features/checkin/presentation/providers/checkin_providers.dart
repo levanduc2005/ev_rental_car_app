@@ -8,8 +8,7 @@ import 'package:rental_car/features/checkin/domain/usecases/confirm_contract_sig
 import 'package:rental_car/features/checkin/domain/usecases/generate_contract_usecase.dart';
 import 'package:rental_car/features/checkin/domain/usecases/submit_pickup_checklist_usecase.dart';
 import 'package:rental_car/features/checkin/domain/usecases/upload_car_image_usecase.dart';
-import 'package:rental_car/features/checkin/presentation/controllers/checkin_controller.dart';
-import 'package:rental_car/features/checkin/presentation/controllers/checkin_state.dart';
+import 'package:rental_car/features/checkin/presentation/providers/checkin_controller.dart';
 
 // --- Data Layer Providers ---
 final checkinRemoteDataSourceProvider = Provider<CheckinRemoteDataSource>((

@@ -13,10 +13,8 @@ import 'package:rental_car/features/staff/domain/usecases/get_staff_profile_usec
 import 'package:rental_car/features/staff/domain/usecases/get_station_vehicles_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/submit_staff_checklist_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/update_rental_status_usecase.dart';
-import 'package:rental_car/features/staff/presentation/controllers/staff_dashboard_controller.dart';
-import 'package:rental_car/features/staff/presentation/controllers/staff_dashboard_state.dart';
-import 'package:rental_car/features/staff/presentation/controllers/staff_handover_controller.dart';
-import 'package:rental_car/features/staff/presentation/controllers/staff_handover_state.dart';
+import 'package:rental_car/features/staff/presentation/providers/staff_dashboard_controller.dart';
+import 'package:rental_car/features/staff/presentation/providers/staff_handover_controller.dart';
 
 // --- Data Layer Providers ---
 final staffRemoteDataSourceProvider = Provider<StaffRemoteDataSource>((ref) {

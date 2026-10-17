@@ -7,14 +7,14 @@ import 'package:rental_car/core/theme/app_text_styles.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 
-class EditProfileScreen extends ConsumerStatefulWidget {
-  const EditProfileScreen({super.key});
+class EditProfilePage extends ConsumerStatefulWidget {
+  const EditProfilePage({super.key});
 
   @override
-  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
+class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
@@ -154,3 +154,5 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 }
+
+typedef EditProfileScreen = EditProfilePage;

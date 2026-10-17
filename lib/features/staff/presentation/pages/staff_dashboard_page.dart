@@ -5,8 +5,8 @@ import 'package:rental_car/features/auth/presentation/providers/auth_controller.
 import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/profile/presentation/pages/rental_detail_page.dart';
-import 'package:rental_car/features/staff/presentation/controllers/staff_dashboard_state.dart';
 import 'package:rental_car/features/staff/presentation/pages/staff_handover_page.dart';
+import 'package:rental_car/features/staff/presentation/providers/staff_dashboard_controller.dart';
 import 'package:rental_car/features/staff/presentation/providers/staff_providers.dart';
 import 'package:rental_car/features/staff/presentation/widgets/staff_checklists_tab.dart';
 import 'package:rental_car/features/staff/presentation/widgets/staff_rentals_tab.dart';

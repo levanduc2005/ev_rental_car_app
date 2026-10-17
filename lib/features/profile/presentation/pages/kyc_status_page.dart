@@ -8,20 +8,20 @@ import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/core/theme/app_text_styles.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
-import 'package:rental_car/features/profile/presentation/controllers/kyc_state.dart';
+import 'package:rental_car/features/profile/presentation/providers/kyc_controller.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 
-class KycStatusScreen extends ConsumerStatefulWidget {
-  const KycStatusScreen({this.document, this.initialType, super.key});
+class KycStatusPage extends ConsumerStatefulWidget {
+  const KycStatusPage({this.document, this.initialType, super.key});
 
   final KycDocumentEntity? document;
   final DocumentType? initialType;
 
   @override
-  ConsumerState<KycStatusScreen> createState() => _KycStatusScreenState();
+  ConsumerState<KycStatusPage> createState() => _KycStatusPageState();
 }
 
-class _KycStatusScreenState extends ConsumerState<KycStatusScreen> {
+class _KycStatusPageState extends ConsumerState<KycStatusPage> {
   late DocumentType _selectedTab;
 
   @override
@@ -721,3 +721,5 @@ class _KycStatusScreenState extends ConsumerState<KycStatusScreen> {
     );
   }
 }
+
+typedef KycStatusScreen = KycStatusPage;

@@ -8,20 +8,20 @@ import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/core/theme/app_text_styles.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
-import 'package:rental_car/features/profile/presentation/controllers/kyc_state.dart';
+import 'package:rental_car/features/profile/presentation/providers/kyc_controller.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 import 'package:rental_car/features/profile/presentation/widgets/image_picker_bottom_sheet.dart';
 
-class KycUploadScreen extends ConsumerStatefulWidget {
-  const KycUploadScreen({this.initialType, super.key});
+class KycUploadPage extends ConsumerStatefulWidget {
+  const KycUploadPage({this.initialType, super.key});
 
   final DocumentType? initialType;
 
   @override
-  ConsumerState<KycUploadScreen> createState() => _KycUploadScreenState();
+  ConsumerState<KycUploadPage> createState() => _KycUploadPageState();
 }
 
-class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
+class _KycUploadPageState extends ConsumerState<KycUploadPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _numberController;
   DocumentType _selectedType = DocumentType.license;
@@ -634,3 +634,5 @@ class _KycUploadScreenState extends ConsumerState<KycUploadScreen> {
     );
   }
 }
+
+typedef KycUploadScreen = KycUploadPage;

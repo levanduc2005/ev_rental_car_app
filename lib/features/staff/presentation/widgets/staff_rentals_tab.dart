@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
-import 'package:rental_car/features/staff/presentation/controllers/staff_dashboard_state.dart';
+import 'package:rental_car/features/staff/presentation/providers/staff_dashboard_controller.dart';
 import 'package:rental_car/features/staff/presentation/providers/staff_providers.dart';
 import 'package:rental_car/features/staff/presentation/widgets/staff_rental_card.dart';
 import 'package:rental_car/features/staff/presentation/widgets/staff_station_header_card.dart';

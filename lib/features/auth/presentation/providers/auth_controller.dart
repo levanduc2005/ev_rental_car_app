@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rental_car/features/auth/domain/entities/user_entity.dart';
 import 'package:rental_car/features/auth/domain/usecases/check_profile_setup_skipped_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/complete_profile_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/get_current_user_usecase.dart';
@@ -8,9 +9,57 @@ import 'package:rental_car/features/auth/domain/usecases/set_profile_setup_skipp
 import 'package:rental_car/features/auth/domain/usecases/sign_in_with_google_usecase.dart';
 import 'package:rental_car/features/auth/domain/usecases/verify_otp_usecase.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rental_car/features/auth/presentation/providers/auth_state.dart';
 
-export 'package:rental_car/features/auth/presentation/providers/auth_state.dart';
+enum AuthStatus {
+  initial, // trạng thái khởi tạo: đang kiểm tra phiên đăng nhập cũ trong máy
+  unauthenticated, // chưa đăng nhập -> màn hình email
+  otpSent, // đã gửi OTP -> màn hình nhập OTP
+  authenticated, // đã đăng nhập thành công
+}
+
+class AuthState {
+  final AuthStatus status;
+  final UserEntity? user;
+  final String? emailForOtp;
+  final bool isLoading;
+  final String? errorMessage;
+  final bool hasSkippedProfile;
+
+  const AuthState({
+    this.status = AuthStatus.initial,
+    this.user,
+    this.emailForOtp,
+    this.isLoading = false,
+    this.errorMessage,
+    this.hasSkippedProfile = false,
+  });
+
+  bool get isAuthenticated => status == AuthStatus.authenticated;
+
+  bool get requiresProfileSetup =>
+      isAuthenticated &&
+      (user?.fullName == null || user!.fullName!.trim().isEmpty) &&
+      !hasSkippedProfile;
+
+  AuthState copyWith({
+    AuthStatus? status,
+    UserEntity? user,
+    String? emailForOtp,
+    bool? isLoading,
+    String? errorMessage,
+    bool? hasSkippedProfile,
+    bool clearError = false,
+  }) {
+    return AuthState(
+      status: status ?? this.status,
+      user: user ?? this.user,
+      emailForOtp: emailForOtp ?? this.emailForOtp,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      hasSkippedProfile: hasSkippedProfile ?? this.hasSkippedProfile,
+    );
+  }
+}
 
 class AuthController extends Notifier<AuthState> {
   GetCurrentUserUseCase get _getCurrentUserUseCase =>
