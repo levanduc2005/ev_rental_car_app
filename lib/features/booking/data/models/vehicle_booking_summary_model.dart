@@ -22,6 +22,7 @@ class VehicleBookingSummaryModel {
     this.price8h = 0,
     this.price12h = 0,
     this.price24h = 0,
+    this.status,
   });
 
   final int id;
@@ -35,6 +36,7 @@ class VehicleBookingSummaryModel {
   final int? stationId;
   final String? stationName;
   final String? stationAddress;
+  final String? status;
   final String? location;
   final int seats;
   final String transmission;
@@ -115,6 +117,7 @@ class VehicleBookingSummaryModel {
       stationId: stationId,
       stationName: stationName,
       stationAddress: stationAddress,
+      status: json['status'] as String?,
       location: stationAddress ?? stationName ?? 'Trạm xe e-Motion',
       seats: (json['seats'] as num?)?.toInt() ?? 4,
       transmission: json['transmission'] as String? ?? 'Số tự động',
@@ -140,6 +143,7 @@ class VehicleBookingSummaryModel {
       stationId: stationId,
       stationName: stationName,
       stationAddress: stationAddress,
+      status: status,
       location: location,
       seats: seats,
       transmission: transmission,

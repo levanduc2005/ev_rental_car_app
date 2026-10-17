@@ -1,5 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Quyền truy cập vị trí GPS -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Quyền chụp ảnh hiện trường cứu hộ và quét mã QR -->
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:label="E-Motion"
@@ -46,6 +51,16 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Hỗ trợ gọi Hotline cứu hộ khẩn cấp 24/7 (tel:1900xxxx) -->
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+        <!-- Hỗ trợ mở liên kết Google Maps chỉ đường -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
         </intent>
     </queries>
 </manifest>

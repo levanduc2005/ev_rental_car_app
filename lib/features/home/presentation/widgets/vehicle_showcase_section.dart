@@ -355,9 +355,11 @@ class _RentalVehicleCard extends StatelessWidget {
                         icon: Icons.settings_outlined,
                       ),
                       const SizedBox(width: 4),
-                      _SpecChip(
-                        label: vehicle.fuelType,
-                        icon: Icons.bolt_rounded,
+                      Expanded(
+                        child: _SpecChip(
+                          label: vehicle.fuelType,
+                          icon: Icons.bolt_rounded,
+                        ),
                       ),
                     ],
                   ),
@@ -391,12 +393,16 @@ class _RentalVehicleCard extends StatelessWidget {
                           ),
                           if (vehicle.oldPrice4h.isNotEmpty) ...[
                             const SizedBox(width: 6),
-                            Text(
-                              vehicle.oldPrice4h,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey.shade400,
-                                decoration: TextDecoration.lineThrough,
+                            Flexible(
+                              child: Text(
+                                vehicle.oldPrice4h,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey.shade400,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -410,6 +416,8 @@ class _RentalVehicleCard extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                           color: Colors.grey.shade600,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -442,9 +450,13 @@ class _SpecChip extends StatelessWidget {
         children: [
           Icon(icon, size: 11, color: Colors.grey.shade700),
           const SizedBox(width: 2),
-          Text(
-            label,
-            style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

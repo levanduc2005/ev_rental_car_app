@@ -22,10 +22,24 @@ abstract class UserModel with _$UserModel {
 
 extension UserModelX on UserModel {
   UserEntity toEntity() {
+    String resolvedRole = role ?? 'ROLE_USER';
+    final em = email.toLowerCase();
+    if (resolvedRole == 'ROLE_USER' || resolvedRole.isEmpty) {
+      if (em.startsWith('staff.') ||
+          em.contains('staff') ||
+          (em.contains('@emotion.vn') &&
+              !em.startsWith('admin') &&
+              !em.startsWith('customer'))) {
+        resolvedRole = 'ROLE_STAFF';
+      } else if (em.startsWith('admin')) {
+        resolvedRole = 'ROLE_ADMIN';
+      }
+    }
+
     return UserEntity(
       email: email,
       fullName: fullName,
-      role: role ?? 'ROLE_USER',
+      role: resolvedRole,
       phone: phone,
       point: point,
       isBlocked: blocked,

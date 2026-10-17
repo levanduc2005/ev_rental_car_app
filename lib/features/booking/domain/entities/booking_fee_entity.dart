@@ -40,6 +40,7 @@ class BookingFeeEntity {
       : 0;
 
   // Tiện ích chuyển đổi kiểu int cho UI
+  double get rentalFee => bookingFee;
   int get bookingCost => bookingFee.toInt();
   int get collateralFee => depositFee.toInt();
   int get holdDepositFee => holdCarFee.toInt();

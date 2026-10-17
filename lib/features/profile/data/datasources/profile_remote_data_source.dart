@@ -4,6 +4,7 @@ import 'package:rental_car/core/config/app_config.dart';
 import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/core/network/api_handler.dart';
 import 'package:rental_car/features/profile/data/models/kyc_document_model.dart';
+import 'package:rental_car/features/profile/data/models/rental_detail_model.dart';
 import 'package:rental_car/features/profile/data/models/rental_item_model.dart';
 import 'package:rental_car/features/profile/data/models/user_profile_model.dart';
 
@@ -29,6 +30,7 @@ abstract interface class ProfileRemoteDataSource {
     int limit = 10,
     String search = '',
   });
+  Future<RentalDetailModel> getRentalDetail(int id);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -223,6 +225,25 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         }
       }
       return const [];
+    });
+  }
+
+  @override
+  Future<RentalDetailModel> getRentalDetail(int id) {
+    return guardApiCall(() async {
+      Response<Map<String, dynamic>> response;
+      try {
+        response = await _dio.get<Map<String, dynamic>>('/rentals/$id/details');
+      } on DioException {
+        response = await _dio.get<Map<String, dynamic>>(
+          '/rentals/me/details/$id',
+        );
+      }
+      final data = response.data?['data'];
+      if (data is Map<String, dynamic>) {
+        return RentalDetailModel.fromJson(data);
+      }
+      throw Exception('Không nhận được dữ liệu chi tiết đơn thuê từ máy chủ');
     });
   }
 

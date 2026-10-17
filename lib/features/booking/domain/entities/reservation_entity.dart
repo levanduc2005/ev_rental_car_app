@@ -69,6 +69,14 @@ class ReservationEntity {
   /// - Cho phép hủy bất cứ lúc nào đối với đơn PENDING (chưa cọc) và CONFIRM (đã cọc chờ nhận xe).
   bool get canCancel => isPending || isConfirmed;
 
+  /// Kiểm tra điều kiện bắt đầu nhận xe tại trạm (đã cọc & tới trước giờ nhận 30 phút)
+  bool get canStartCheckIn {
+    if (!isConfirmed) return false;
+    if (startTime == null) return true;
+    final now = DateTime.now();
+    return now.isAfter(startTime!.subtract(const Duration(minutes: 30)));
+  }
+
   /// Kiểm tra xem đơn CONFIRMED hủy có được hoàn cọc hay không (còn >= 5 ngày trước giờ nhận xe).
   bool get isEligibleForRefund {
     final now = DateTime.now();

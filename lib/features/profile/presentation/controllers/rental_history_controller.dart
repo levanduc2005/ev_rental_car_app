@@ -46,9 +46,16 @@ class RentalHistoryController extends Notifier<RentalHistoryState> {
 
     result.when(
       ok: (items) {
+        final sorted = [...items]
+          ..sort((a, b) {
+            if (b.createdAt != null && a.createdAt != null) {
+              return b.createdAt!.compareTo(a.createdAt!);
+            }
+            return b.id.compareTo(a.id);
+          });
         state = state.copyWith(
           status: RentalHistoryStatus.success,
-          items: items,
+          items: sorted,
           clearError: true,
         );
       },

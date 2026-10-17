@@ -55,7 +55,7 @@ class MyReservationsState {
   }
 
   List<ReservationEntity> get filteredReservations {
-    return switch (selectedFilter) {
+    final list = switch (selectedFilter) {
       ReservationTabFilter.all => reservations,
       ReservationTabFilter.pending =>
         reservations.where((r) => r.isPending).toList(),
@@ -70,6 +70,13 @@ class MyReservationsState {
             .where((r) => r.isCancelled || r.isFailed || r.isOverdue)
             .toList(),
     };
+
+    return [...list]..sort((a, b) {
+      if (b.createdAt != null && a.createdAt != null) {
+        return b.createdAt!.compareTo(a.createdAt!);
+      }
+      return b.id.compareTo(a.id);
+    });
   }
 
   MyReservationsState copyWith({

@@ -1,5 +1,6 @@
 import 'package:rental_car/core/utils/result.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
+import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
 import 'package:rental_car/features/profile/domain/entities/user_profile_entity.dart';
 
@@ -37,4 +38,7 @@ abstract interface class ProfileRepository {
     int limit = 10,
     String search = '',
   });
+
+  /// Lấy chi tiết đơn thuê xe theo ID
+  Future<Result<RentalDetailEntity>> getRentalDetail(int id);
 }

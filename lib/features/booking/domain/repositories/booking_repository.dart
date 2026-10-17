@@ -21,6 +21,7 @@ abstract interface class BookingRepository {
     required int stationId,
     required DateTime startTime,
     required DateTime endTime,
+    bool isInstant = false,
   });
 
   /// Lấy danh sách các đơn đặt xe của người dùng qua API /api/reservations/email

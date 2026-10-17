@@ -37,9 +37,7 @@ class PayOSPaymentInfoModel {
     final accountNumber = json['accountNumber']?.toString() ?? '';
     final accountName = json['accountName']?.toString() ?? '';
     final bank = json['bankName']?.toString();
-    final description =
-        json['description']?.toString() ??
-        (code.startsWith('BBC') ? code : 'BBC$code');
+    final description = json['description']?.toString() ?? code;
     final rawQr = json['qrCode']?.toString();
     final qrCodeUrl = (rawQr != null && rawQr.startsWith('http'))
         ? rawQr

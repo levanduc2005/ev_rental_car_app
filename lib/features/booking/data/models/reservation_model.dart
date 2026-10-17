@@ -82,8 +82,35 @@ class ReservationModel {
     }
 
     final station = json['station'] as Map<String, dynamic>?;
+    final stationName =
+        json['stationName'] as String? ??
+        station?['name'] as String? ??
+        station?['stationName'] as String?;
     final stationAddress =
-        json['stationAddress'] as String? ?? station?['address'] as String?;
+        json['stationAddress'] as String? ??
+        station?['address'] as String? ??
+        station?['stationAddress'] as String?;
+    final stationId = json['stationId'] as int? ?? station?['id'] as int?;
+
+    final user = json['user'] as Map<String, dynamic>?;
+    final userEmail =
+        json['userEmail'] as String? ??
+        user?['email'] as String? ??
+        json['email'] as String? ??
+        json['customerEmail'] as String?;
+
+    final vehicleMap = json['vehicle'] as Map<String, dynamic>?;
+    final vehicleName =
+        json['vehicleName'] as String? ??
+        parsedVehicle?.name ??
+        vehicleMap?['name'] as String? ??
+        vehicleMap?['modelName'] as String?;
+    final vehicleImage =
+        json['vehicleImage'] as String? ??
+        parsedVehicle?.imageUrl ??
+        vehicleMap?['imageUrl'] as String? ??
+        vehicleMap?['image'] as String?;
+
     final depositAmount =
         (json['depositAmount'] as num?)?.toDouble() ??
         (json['depositFee'] as num?)?.toDouble();
@@ -98,13 +125,13 @@ class ReservationModel {
       createdAt: json['createdAt'] as String?,
       startTime: json['startTime'] as String?,
       endTime: json['endTime'] as String?,
-      userEmail: json['userEmail'] as String?,
-      stationId: json['stationId'] as int?,
-      stationName: json['stationName'] as String?,
+      userEmail: userEmail,
+      stationId: stationId,
+      stationName: stationName,
       stationAddress: stationAddress,
       vehicle: parsedVehicle,
-      vehicleName: json['vehicleName'] as String?,
-      vehicleImage: json['vehicleImage'] as String?,
+      vehicleName: vehicleName,
+      vehicleImage: vehicleImage,
       paymentUrl: paymentUrl,
       paymentInfo: paymentInfo,
       depositAmount: depositAmount,

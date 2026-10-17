@@ -6,6 +6,7 @@ import 'package:rental_car/features/profile/domain/repositories/profile_reposito
 import 'package:rental_car/features/profile/domain/usecases/delete_kyc_document_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/get_kyc_status_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:rental_car/features/profile/domain/usecases/get_rental_detail_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/get_rental_history_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:rental_car/features/profile/domain/usecases/upload_kyc_document_usecase.dart';
@@ -58,6 +59,10 @@ final getRentalHistoryUseCaseProvider = Provider<GetRentalHistoryUseCase>((
   ref,
 ) {
   return GetRentalHistoryUseCase(ref.watch(profileRepositoryProvider));
+});
+
+final getRentalDetailUseCaseProvider = Provider<GetRentalDetailUseCase>((ref) {
+  return GetRentalDetailUseCase(ref.watch(profileRepositoryProvider));
 });
 
 // --- Presentation Layer Controllers ---

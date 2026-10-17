@@ -14,6 +14,8 @@ enum AppRoute {
   support('/support'), // Hỗ trợ
   vehicleDetail('/vehicles/:id'),
   booking('/booking'),
+  qrScan('/home/qr-scan'),
+  instantBooking('/booking/instant'),
   activeTrip('/active-trip'),
   payment('/payment'),
   bookingSuccess('/booking-success'),
@@ -22,7 +24,15 @@ enum AppRoute {
   editProfile('/profile/edit'),
   kycUpload('/profile/kyc-upload'),
   kycStatus('/profile/kyc-status'),
-  rentalHistory('/profile/rental-history');
+  rentalHistory('/profile/rental-history'),
+  rentalDetail('/rentals/:id'),
+  returnLocationVerification('/checkout/verify-location'),
+  returnVehicleLog('/checkout/vehicle-log'),
+  checkoutSummary('/checkout/summary'),
+  checkIn('/checkin/:id'),
+  emergencyReport('/emergency-report'),
+  staffDashboard('/staff/dashboard'),
+  staffHandover('/staff/handover');
 
   const AppRoute(this.path);
 
