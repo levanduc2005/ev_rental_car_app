@@ -272,7 +272,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                   : 0.0);
         final durationLabel = _getPackageDurationLabel(_selectedPackageId);
         final packageHours = _getPackageHours(_selectedPackageId);
-        final pointPerHour = detail.viewingCount > 0 ? detail.viewingCount : 4;
+        final pointPerHour = detail.point;
         final earnedPoints = packageHours * pointPerHour;
         final userPoints = ref.watch(authControllerProvider).user?.point ?? 0;
 
@@ -394,11 +394,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // 3. BANNER "TỰ NHẬN XE THÔNG MINH"
-                      const SmartPickupBanner(),
-                      const SizedBox(height: 20),
-
-                      // 4. BẢNG GIÁ THAM KHẢO (Động theo giá xe và phản hồi khi nhấn chọn)
+                      // 3. BẢNG GIÁ THAM KHẢO (Động theo giá xe và phản hồi khi nhấn chọn)
                       VehiclePricePackageGrid(
                         selectedPackageId: _selectedPackageId,
                         price4h: detail.pricePer4Hours,
@@ -409,7 +405,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // 5. THỜI GIAN THUÊ XE
+                      // 4. THỜI GIAN THUÊ XE
                       RentalTimeCard(
                         durationText: 'Thời gian thuê ($durationLabel)',
                         timeRangeText: _formatTimeRange(
@@ -420,7 +416,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       ),
                       const SizedBox(height: 12),
 
-                      // 5b. LỊCH XE BẬN & CẢNH BÁO TRÙNG LỊCH (GET /vehicles/{id}/schedule)
+                      // 4b. LỊCH XE BẬN & CẢNH BÁO TRÙNG LỊCH (GET /vehicles/{id}/schedule)
                       VehicleScheduleCard(
                         scheduleSlots: scheduleSlots,
                         selectedStart: _startDateTime,
@@ -430,14 +426,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // 6. VỊ TRÍ NHẬN & TRẢ XE (TẠI TRẠM e-Motion)
-                      LocationSelectorCard(
-                        stationAddress: detail.location,
-                        stationName: detail.stationName,
-                      ),
-                      const SizedBox(height: 20),
-
-                      // 7. CHI TIẾT THANH TOÁN (Cập nhật động theo gói và quy định đặt cọc FE & BE)
+                      // 5. CHI TIẾT THANH TOÁN (Cập nhật động theo gói và quy định đặt cọc FE & BE)
                       PricingBreakdownCard(
                         rentalDurationLabel: 'Phí thuê xe ($durationLabel)',
                         rentalFeeText: _formatVnd(rentalFee),
@@ -453,43 +442,48 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // 9. PHỤ PHÍ CÓ THỂ PHÁT SINH
-                      const AdditionalFeesCard(),
-                      const SizedBox(height: 20),
-
-                      // 10. ĐẶC ĐIỂM XE
+                      // 6. ĐẶC ĐIỂM XE (100% dữ liệu từ Backend)
                       VehicleSpecsGrid(
                         seats: '${detail.seats} chỗ',
-                        transmission: detail.transmission,
+                        category: detail.category,
                         fuelType: detail.fuelType,
                         consumption: detail.consumption,
+                        plateNumber: detail.plateNumber,
                         pointPerHour: pointPerHour,
                       ),
                       const SizedBox(height: 20),
 
-                      // 11. MÔ TẢ XE
-                      const Text(
-                        'Mô tả',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
+                      // 7. MÔ TẢ XE (Chỉ hiển thị khi có dữ liệu từ Backend)
+                      if (detail.description != null &&
+                          detail.description!.trim().isNotEmpty) ...[
+                        const Text(
+                          'Mô tả',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0F172A),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        detail.description ??
-                            'Xe đời mới, trang bị hiện đại, vận hành êm ái và tiết kiệm.',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          height: 1.5,
-                          color: Color(0xFF475569),
+                        const SizedBox(height: 8),
+                        Text(
+                          detail.description!,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            height: 1.5,
+                            color: Color(0xFF475569),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 20),
+                      ],
 
-                      // 11. VỊ TRÍ XE & TRẠM SẠC TRÊN BẢN ĐỒ
+                      // 8. TRẠM NHẬN XE & CHỈ ĐƯỜNG GOOGLE MAPS
                       VehicleStationMapCard(
+                        station: detail.station,
+                        latitude: detail.station?.latitude,
+                        longitude: detail.station?.longitude,
+                        distanceKm: detail.distanceKm > 0
+                            ? detail.distanceKm
+                            : null,
                         stationAddress: detail.location,
                         stationName: detail.stationName,
                         vehicleName: detail.name,
@@ -497,14 +491,6 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                           context.pushNamed(AppRoute.mapSearch.name);
                         },
                       ),
-                      const SizedBox(height: 20),
-
-                      // 13. CÁC TIỆN NGHI KHÁC
-                      const AmenitiesSection(),
-                      const SizedBox(height: 20),
-
-                      // 14. CHÍNH SÁCH HUỶ CHUYẾN
-                      const CancellationPolicyTable(),
                       const SizedBox(height: 20),
 
                       // Khoảng đệm tránh bị che bởi thanh Sticky Bottom Bar

@@ -85,34 +85,6 @@ class _VehicleDetailCarouselState extends State<VehicleDetailCarousel> {
             }),
           ),
         ),
-
-        // 3. Nút VR / 360 góc dưới bên phải
-        Positioned(
-          bottom: 10,
-          right: 12,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.55),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.view_in_ar_rounded, color: Colors.white, size: 15),
-                SizedBox(width: 4),
-                Text(
-                  'VR',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ],
     );
   }

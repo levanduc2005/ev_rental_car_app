@@ -270,10 +270,7 @@ class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
                   onPressed: () => context.goNamed(AppRoute.mapSearch.name),
                   child: const Text(
                     'Tìm và đặt xe khác',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
               ] else ...[

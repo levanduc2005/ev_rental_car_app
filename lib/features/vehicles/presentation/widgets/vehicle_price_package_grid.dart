@@ -5,13 +5,11 @@ class PricePackage {
     required this.id,
     required this.name,
     required this.priceText,
-    this.isHot = false,
   });
 
   final String id;
   final String name;
   final String priceText;
-  final bool isHot;
 }
 
 /// Lưới chọn gói giá tham khảo (Slide 10)
@@ -41,27 +39,31 @@ class VehiclePricePackageGrid extends StatelessWidget {
     return '$strđ';
   }
 
+  static String _formatPrice(double? val) {
+    if (val == null || val <= 0) return 'Liên hệ';
+    return _formatVnd(val);
+  }
+
   List<PricePackage> get packages => [
     PricePackage(
       id: '4h',
       name: 'Gói 4 giờ',
-      priceText: _formatVnd(price4h ?? 500000),
+      priceText: _formatPrice(price4h),
     ),
     PricePackage(
       id: '8h',
       name: 'Gói 8 giờ',
-      priceText: _formatVnd(price8h ?? 700000),
-      isHot: true,
+      priceText: _formatPrice(price8h),
     ),
     PricePackage(
       id: '12h',
       name: 'Gói 12 giờ',
-      priceText: _formatVnd(price12h ?? 800000),
+      priceText: _formatPrice(price12h),
     ),
     PricePackage(
       id: '24h',
       name: 'Gói 24 giờ (1 ngày)',
-      priceText: _formatVnd(price24h ?? 1000000),
+      priceText: _formatPrice(price24h),
     ),
   ];
 
@@ -119,41 +121,17 @@ class VehiclePricePackageGrid extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          pkg.name,
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            color: isSelected
-                                ? const Color(0xFF1976D2)
-                                : const Color(0xFF64748B),
-                            fontWeight: isSelected
-                                ? FontWeight.w700
-                                : FontWeight.w500,
-                          ),
-                        ),
-                        if (pkg.isHot)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEF4444),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text(
-                              'HOT',
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                      ],
+                    Text(
+                      pkg.name,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: isSelected
+                            ? const Color(0xFF1976D2)
+                            : const Color(0xFF64748B),
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(

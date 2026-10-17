@@ -53,7 +53,9 @@ class PayOSPaymentInfoModel {
     } else if (json['expiredAt'] != null) {
       final rawExp = json['expiredAt'];
       if (rawExp is num) {
-        parsedExpiresAt = DateTime.fromMillisecondsSinceEpoch(rawExp.toInt() * 1000);
+        parsedExpiresAt = DateTime.fromMillisecondsSinceEpoch(
+          rawExp.toInt() * 1000,
+        );
       } else {
         parsedExpiresAt = DateTime.tryParse(rawExp.toString());
       }

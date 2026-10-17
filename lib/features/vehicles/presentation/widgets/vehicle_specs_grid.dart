@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 
-/// Đặc điểm xe (Slide 10)
+/// Đặc điểm xe (Chuẩn 100% dữ liệu từ Backend)
 class VehicleSpecsGrid extends StatelessWidget {
   const VehicleSpecsGrid({
     required this.seats,
-    required this.transmission,
     required this.fuelType,
     required this.consumption,
+    this.category,
+    this.plateNumber,
     this.pointPerHour = 4,
     super.key,
   });
 
   final String seats;
-  final String transmission;
   final String fuelType;
   final String consumption;
+  final String? category;
+  final String? plateNumber;
   final int pointPerHour;
 
   @override
@@ -43,9 +45,11 @@ class VehicleSpecsGrid extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: _buildSpecCard(
-                icon: Icons.tune_rounded,
-                label: 'Truyền động',
-                value: transmission,
+                icon: Icons.category_outlined,
+                label: 'Phân khúc',
+                value: (category != null && category!.trim().isNotEmpty)
+                    ? category!.trim()
+                    : 'Xe điện EV',
               ),
             ),
           ],
@@ -84,10 +88,12 @@ class VehicleSpecsGrid extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: _buildSpecCard(
-                icon: Icons.verified_user_outlined,
-                label: 'Bảo hiểm',
-                value: 'Chính hãng',
-                iconColor: const Color(0xFF10B981),
+                icon: Icons.badge_outlined,
+                label: 'Biển số xe',
+                value: (plateNumber != null && plateNumber!.trim().isNotEmpty)
+                    ? plateNumber!.trim()
+                    : 'Chưa cập nhật',
+                iconColor: const Color(0xFF1976D2),
               ),
             ),
           ],
@@ -103,7 +109,7 @@ class VehicleSpecsGrid extends StatelessWidget {
     Color? iconColor,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(12),
@@ -112,18 +118,13 @@ class VehicleSpecsGrid extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: iconColor != null
-                  ? iconColor.withValues(alpha: 0.12)
-                  : const Color(0xFFF0F7FF),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child: Icon(
-              icon,
-              color: iconColor ?? const Color(0xFF1976D2),
-              size: 20,
-            ),
+            child: Icon(icon, size: 18, color: iconColor ?? const Color(0xFF1976D2)),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -135,17 +136,19 @@ class VehicleSpecsGrid extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 11,
                     color: Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 1),
                 Text(
                   value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xFF0F172A),
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

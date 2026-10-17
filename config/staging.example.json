@@ -3,6 +3,6 @@
   "API_BASE_URL": "https://staging.api.example.com",
   "API_TIMEOUT_MS": 20000,
   "ENABLE_LOGGING": true,
-  "CLOUDINARY_CLOUD_NAME": "dxa6upoxl",
-  "CLOUDINARY_UPLOAD_PRESET": "emotion_mobile_preset"
+  "CLOUDINARY_CLOUD_NAME": "YOUR_CLOUD_NAME",
+  "CLOUDINARY_UPLOAD_PRESET": "YOUR_UPLOAD_PRESET"
 }

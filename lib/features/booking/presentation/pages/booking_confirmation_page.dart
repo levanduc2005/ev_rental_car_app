@@ -96,7 +96,8 @@ class _BookingConfirmationPageState
       context.pushNamed(AppRoute.payment.name);
     } else {
       final error = ref.read(bookingFormControllerProvider).errorMessage;
-      final isOngoingRentalError = error != null &&
+      final isOngoingRentalError =
+          error != null &&
           (error.contains('chưa hoàn thành') ||
               error.contains('đang có') ||
               error.contains('USER_HAS_ONGOING_RENTAL'));

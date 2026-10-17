@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 
-/// Thẻ hiển thị xe chuẩn xác 100% theo Slide 08 - Danh sách tìm kiếm xe
+/// Thẻ hiển thị xe trong danh sách tìm kiếm (100% dữ liệu từ Backend)
 class VehicleListCard extends StatelessWidget {
   const VehicleListCard({
     required this.item,
@@ -19,13 +19,10 @@ class VehicleListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int effectiveSalePriceK;
-    final int effectiveOriginalPriceK;
     final String effectiveUnit;
-    final String effectiveDuration;
 
     if (targetHours != null && targetHours! > 0) {
       effectiveSalePriceK = item.priceKForDuration(targetHours!);
-      effectiveOriginalPriceK = item.originalPriceKForDuration(targetHours!);
       effectiveUnit =
           targetUnit ??
           (targetHours! <= 4
@@ -37,14 +34,9 @@ class VehicleListCard extends StatelessWidget {
                           : (targetHours! <= 24
                                 ? 'ngày'
                                 : '${(targetHours! / 24).ceil()} ngày'))));
-      effectiveDuration = targetHours! < 24
-          ? '≈ $effectiveUnit'
-          : '≈ ${(targetHours! / 24).ceil()} ngày';
     } else {
       effectiveSalePriceK = item.salePriceK;
-      effectiveOriginalPriceK = item.originalPriceK;
       effectiveUnit = item.priceUnit;
-      effectiveDuration = item.estimatedDuration;
     }
 
     return Container(
@@ -70,111 +62,23 @@ class VehicleListCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. KHU VỰC HÌNH ẢNH XE & CÁC BADGE
-              Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9.5,
-                    child: Image.network(
-                      item.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: const Color(0xFFE2E8F0),
-                        child: const Center(
-                          child: Icon(
-                            Icons.directions_car_filled,
-                            size: 60,
-                            color: Color(0xFF94A3B8),
-                          ),
-                        ),
+              // 1. HÌNH ẢNH XE
+              AspectRatio(
+                aspectRatio: 16 / 9.5,
+                child: Image.network(
+                  item.imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: const Color(0xFFE2E8F0),
+                    child: const Center(
+                      child: Icon(
+                        Icons.directions_car_filled,
+                        size: 60,
+                        color: Color(0xFF94A3B8),
                       ),
                     ),
                   ),
-
-                  // Badge góc trên bên phải: "🏷️ Giảm 12%"
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.12),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.local_offer_outlined,
-                            size: 13,
-                            color: Color(0xFFE53935),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            item.discountText,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFFE53935),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Badge góc dưới bên phải trên ảnh: "🔑 Gặp chủ xe"
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF7E22CE), // Màu tím đặc trưng
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.25),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.key_rounded,
-                            size: 13,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            item.deliveryType,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
 
               // 2. KHU VỰC THÔNG TIN CHI TIẾT
@@ -183,7 +87,7 @@ class VehicleListCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Hàng 1: Tên xe + Badge "👑 Xế xịn"
+                    // Hàng 1: Tên xe & Badge phân khúc/hãng xe từ Backend
                     Row(
                       children: [
                         Expanded(
@@ -199,7 +103,7 @@ class VehicleListCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (item.isLuxury) ...[
+                        if (item.brand.isNotEmpty) ...[
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -207,109 +111,91 @@ class VehicleListCard extends StatelessWidget {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEF3C7),
+                              color: const Color(0xFFEFF6FF),
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                color: const Color(0xFFFDE68A),
+                                color: const Color(0xFFBFDBFE),
                                 width: 0.8,
                               ),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  '👑',
-                                  style: TextStyle(fontSize: 11),
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  item.luxuryTag,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF92400E),
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              item.brand,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1D4ED8),
+                              ),
                             ),
                           ),
                         ],
                       ],
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
 
-                    // Hàng 2: Địa điểm
-                    Text(
-                      item.location,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        color: Color(0xFF64748B),
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Hàng 3: Khoảng cách & Giá tiền
+                    // Hàng 2: Trạm sạc / Địa điểm
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
                       children: [
-                        // Khoảng cách
-                        Flexible(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  '~ ${item.distanceKm.toStringAsFixed(1)} km',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF334155),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(
-                                Icons.info_outline_rounded,
-                                size: 14,
-                                color: Color(0xFF94A3B8),
-                              ),
-                            ],
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 14,
+                          color: Color(0xFF64748B),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            item.location,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              color: Color(0xFF64748B),
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
 
-                        // Giá tiền: Giá gạch ngang + Giá giảm màu xanh lục
+                    // Hàng 3: Khoảng cách & Giá thuê thực tế từ Backend
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (item.distanceKm > 0)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.near_me_outlined,
+                                size: 14,
+                                color: Color(0xFF0284C7),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${item.distanceKm.toStringAsFixed(1)} km',
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF0284C7),
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          const SizedBox.shrink(),
+
+                        // Giá tiền thực tế theo giờ / ngày từ Backend
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           textBaseline: TextBaseline.alphabetic,
                           children: [
-                            if (effectiveOriginalPriceK >
-                                effectiveSalePriceK) ...[
-                              Text(
-                                '${effectiveOriginalPriceK}K',
-                                style: const TextStyle(
-                                  fontSize: 12.5,
-                                  color: Color(0xFF94A3B8),
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationColor: Color(0xFF94A3B8),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                            ],
                             Text(
                               '${effectiveSalePriceK}K',
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 19,
                                 fontWeight: FontWeight.w800,
-                                color: Color(0xFF0F9D58), // Màu xanh lục
+                                color: Color(0xFF0F9D58),
                               ),
                             ),
                             Text(
@@ -324,48 +210,6 @@ class VehicleListCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-
-                    // Hàng 4: Người đang xem & Thời gian ước tính
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.local_fire_department_rounded,
-                                size: 15,
-                                color: Color(0xFFFF5722),
-                              ),
-                              const SizedBox(width: 3),
-                              Flexible(
-                                child: Text(
-                                  '${item.viewingCount} người đang xem',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 11.5,
-                                    color: Color(0xFFEA580C),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          effectiveDuration,
-                          style: const TextStyle(
-                            fontSize: 11.5,
-                            color: Color(0xFF94A3B8),
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
 
                     const SizedBox(height: 10),
                     const Divider(
@@ -375,44 +219,27 @@ class VehicleListCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
 
-                    // Hàng 5: Thông số xe (số chỗ, số tự động, loại nhiên liệu) & Chú thích VAT
+                    // Hàng 4: Thông số xe thực tế từ Backend (Số ghế, Phân khúc, Mức Pin %)
                     Row(
                       children: [
-                        Expanded(
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildSpecItem(
-                                  Icons.person_outline_rounded,
-                                  '${item.seats} chỗ',
-                                ),
-                                const SizedBox(width: 10),
-                                _buildSpecItem(
-                                  Icons.tune_rounded,
-                                  item.transmission.replaceAll('Số ', ''),
-                                ),
-                                const SizedBox(width: 10),
-                                _buildSpecItem(
-                                  item.fuelType.toLowerCase().contains('điện')
-                                      ? Icons.bolt_rounded
-                                      : Icons.local_gas_station_outlined,
-                                  _formatShortFuel(item.fuelType),
-                                ),
-                              ],
-                            ),
-                          ),
+                        _buildSpecItem(
+                          Icons.person_outline_rounded,
+                          '${item.seats} chỗ',
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Giá chưa gồm VAT',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontStyle: FontStyle.italic,
-                            color: Color(0xFF94A3B8),
+                        const SizedBox(width: 14),
+                        if (item.category != null && item.category!.isNotEmpty) ...[
+                          _buildSpecItem(
+                            Icons.category_outlined,
+                            item.category!,
                           ),
+                          const SizedBox(width: 14),
+                        ],
+                        _buildSpecItem(
+                          Icons.bolt_rounded,
+                          'Pin ${item.batteryLevel}%',
+                          iconColor: item.batteryLevel < 20
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFF10B981),
                         ),
                       ],
                     ),
@@ -426,11 +253,11 @@ class VehicleListCard extends StatelessWidget {
     );
   }
 
-  Widget _buildSpecItem(IconData icon, String text) {
+  Widget _buildSpecItem(IconData icon, String text, {Color? iconColor}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: const Color(0xFF64748B)),
+        Icon(icon, size: 15, color: iconColor ?? const Color(0xFF64748B)),
         const SizedBox(width: 4),
         Text(
           text,
@@ -444,12 +271,5 @@ class VehicleListCard extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatShortFuel(String fuel) {
-    if (fuel.contains('Điện')) return 'Điện';
-    if (fuel.contains('Xăng')) return 'Xăng';
-    if (fuel.contains('Dầu')) return 'Dầu';
-    return fuel;
   }
 }
