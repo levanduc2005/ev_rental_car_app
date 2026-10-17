@@ -326,14 +326,10 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.background,
+              color: isSelected ? AppColors.primary : AppColors.background,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.border,
+                color: isSelected ? AppColors.primary : AppColors.border,
               ),
             ),
             child: Text(

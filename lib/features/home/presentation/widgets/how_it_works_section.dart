@@ -272,9 +272,7 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
                 width: isSelected ? 22 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.border,
+                  color: isSelected ? AppColors.primary : AppColors.border,
                   borderRadius: BorderRadius.circular(3),
                 ),
               );

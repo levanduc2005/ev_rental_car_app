@@ -41,10 +41,7 @@ final activeRentalDetailControllerProvider =
     FutureProvider.family<ActiveRentalEntity, int>((ref, rentalId) async {
       final useCase = ref.watch(getActiveRentalDetailUseCaseProvider);
       final result = await useCase(rentalId);
-      return result.when(
-        ok: (data) => data,
-        err: (failure) => throw failure,
-      );
+      return result.when(ok: (data) => data, err: (failure) => throw failure);
     });
 
 /// Provider tự động lấy chuyến xe đang chạy của user hiện tại
@@ -55,8 +52,5 @@ final currentActiveRentalControllerProvider =
 
       final useCase = ref.watch(getCurrentActiveRentalUseCaseProvider);
       final result = await useCase(email: user.email);
-      return result.when(
-        ok: (data) => data,
-        err: (failure) => throw failure,
-      );
+      return result.when(ok: (data) => data, err: (failure) => throw failure);
     });

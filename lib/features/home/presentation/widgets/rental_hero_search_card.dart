@@ -328,9 +328,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected
-                ? AppColors.primary
-                : AppColors.border,
+            color: isSelected ? AppColors.primary : AppColors.border,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -347,9 +345,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
               child: Icon(
                 Icons.location_city_rounded,
                 size: 22,
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.textSecondary,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -359,9 +355,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textPrimary,
+                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
                 ),
               ),
             ),

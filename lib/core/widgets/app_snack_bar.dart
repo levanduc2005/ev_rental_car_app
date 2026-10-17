@@ -10,18 +10,12 @@ enum SnackType { info, success, error }
 extension AppSnackBar on BuildContext {
   void showSnackBar(String message, {SnackType type = SnackType.info}) {
     final (background, icon) = switch (type) {
-      SnackType.info => (
-        AppColors.textPrimary,
-        Icons.info_outline_rounded,
-      ),
+      SnackType.info => (AppColors.textPrimary, Icons.info_outline_rounded),
       SnackType.success => (
         AppColors.success,
         Icons.check_circle_outline_rounded,
       ),
-      SnackType.error => (
-        AppColors.error,
-        Icons.error_outline_rounded,
-      ),
+      SnackType.error => (AppColors.error, Icons.error_outline_rounded),
     };
 
     ScaffoldMessenger.of(this)

@@ -46,16 +46,8 @@ class VehiclePricePackageGrid extends StatelessWidget {
   }
 
   List<PricePackage> get packages => [
-    PricePackage(
-      id: '4h',
-      name: 'Gói 4 giờ',
-      priceText: _formatPrice(price4h),
-    ),
-    PricePackage(
-      id: '8h',
-      name: 'Gói 8 giờ',
-      priceText: _formatPrice(price8h),
-    ),
+    PricePackage(id: '4h', name: 'Gói 4 giờ', priceText: _formatPrice(price4h)),
+    PricePackage(id: '8h', name: 'Gói 8 giờ', priceText: _formatPrice(price8h)),
     PricePackage(
       id: '12h',
       name: 'Gói 12 giờ',
@@ -109,12 +101,12 @@ class VehiclePricePackageGrid extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryLight : AppColors.surface,
+                  color: isSelected
+                      ? AppColors.primaryLight
+                      : AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary
-                        : AppColors.border,
+                    color: isSelected ? AppColors.primary : AppColors.border,
                     width: isSelected ? 1.5 : 1.0,
                   ),
                 ),

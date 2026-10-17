@@ -77,10 +77,7 @@ class VehicleStationMapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = resolveStationName(
-      stationName,
-      stationAddress,
-    );
+    final displayName = resolveStationName(stationName, stationAddress);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

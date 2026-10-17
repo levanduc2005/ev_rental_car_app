@@ -22,8 +22,9 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor:
-          isDark ? const Color(0xFF0F172A) : AppColors.background,
+      scaffoldBackgroundColor: isDark
+          ? const Color(0xFF0F172A)
+          : AppColors.background,
       appBarTheme: AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -99,9 +100,7 @@ abstract final class AppTheme {
         backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w700,
@@ -127,11 +126,11 @@ abstract final class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 4,
-        backgroundColor: isDark ? const Color(0xFF334155) : AppColors.textPrimary,
+        backgroundColor: isDark
+            ? const Color(0xFF334155)
+            : AppColors.textPrimary,
         contentTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 14,
@@ -142,16 +141,20 @@ abstract final class AppTheme {
         indicatorColor: AppColors.primary,
         indicatorSize: TabBarIndicatorSize.label,
         labelColor: AppColors.primary,
-        unselectedLabelColor:
-            isDark ? const Color(0xFF94A3B8) : AppColors.textSecondary,
+        unselectedLabelColor: isDark
+            ? const Color(0xFF94A3B8)
+            : AppColors.textSecondary,
         labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        unselectedLabelStyle:
-            const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        unselectedLabelStyle: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
         dividerColor: isDark ? const Color(0xFF334155) : AppColors.border,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor:
-            isDark ? const Color(0xFF1E293B) : AppColors.background,
+        backgroundColor: isDark
+            ? const Color(0xFF1E293B)
+            : AppColors.background,
         selectedColor: AppColors.primary.withValues(alpha: 0.12),
         labelStyle: TextStyle(
           fontSize: 13,
@@ -161,9 +164,7 @@ abstract final class AppTheme {
         side: BorderSide(
           color: isDark ? const Color(0xFF334155) : AppColors.border,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.primary,
@@ -188,15 +189,9 @@ abstract final class AppTheme {
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(
-              color: AppColors.primary,
-              size: 24,
-            );
+            return const IconThemeData(color: AppColors.primary, size: 24);
           }
-          return const IconThemeData(
-            color: AppColors.textMuted,
-            size: 24,
-          );
+          return const IconThemeData(color: AppColors.textMuted, size: 24);
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {

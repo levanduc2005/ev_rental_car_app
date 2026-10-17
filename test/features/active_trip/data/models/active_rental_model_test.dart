@@ -14,9 +14,7 @@ void main() {
         'userEmail': 'duc@example.com',
         'contractStatus': 'SIGNED',
         'contractUrl': 'https://contract.url',
-        'rentalDeposit': {
-          'amount': 3000000.0,
-        },
+        'rentalDeposit': {'amount': 3000000.0},
         'vehicle': {
           'id': 2,
           'name': 'VinFast VF 5 Plus',

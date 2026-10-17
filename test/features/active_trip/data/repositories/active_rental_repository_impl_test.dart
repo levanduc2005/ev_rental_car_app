@@ -47,23 +47,29 @@ void main() {
       verify(() => mockRemoteDataSource.getRentalDetail(50)).called(1);
     });
 
-    test('getActiveRentalDetail returns ServerFailure on ServerException', () async {
-      when(
-        () => mockRemoteDataSource.getRentalDetail(50),
-      ).thenThrow(const ServerException(message: 'Lỗi server'));
+    test(
+      'getActiveRentalDetail returns ServerFailure on ServerException',
+      () async {
+        when(
+          () => mockRemoteDataSource.getRentalDetail(50),
+        ).thenThrow(const ServerException(message: 'Lỗi server'));
 
-      final result = await repository.getActiveRentalDetail(50);
+        final result = await repository.getActiveRentalDetail(50);
 
-      expect(result.isErr, isTrue);
-      expect(result.failureOrNull, isA<ServerFailure>());
-    });
+        expect(result.isErr, isTrue);
+        expect(result.failureOrNull, isA<ServerFailure>());
+      },
+    );
 
     test('getCurrentActiveRental returns null when no active rental', () async {
       when(
-        () => mockRemoteDataSource.getCurrentActiveRental(email: 'user@test.com'),
+        () =>
+            mockRemoteDataSource.getCurrentActiveRental(email: 'user@test.com'),
       ).thenAnswer((_) async => null);
 
-      final result = await repository.getCurrentActiveRental(email: 'user@test.com');
+      final result = await repository.getCurrentActiveRental(
+        email: 'user@test.com',
+      );
 
       expect(result.isOk, isTrue);
       expect(result.valueOrNull, isNull);

@@ -6,7 +6,8 @@ import 'package:rental_car/features/active_trip/domain/repositories/active_renta
 import 'package:rental_car/features/active_trip/domain/usecases/get_active_rental_detail_use_case.dart';
 import 'package:rental_car/features/active_trip/domain/usecases/get_current_active_rental_use_case.dart';
 
-class MockActiveRentalRepository extends Mock implements ActiveRentalRepository {}
+class MockActiveRentalRepository extends Mock
+    implements ActiveRentalRepository {}
 
 void main() {
   late MockActiveRentalRepository mockRepository;
@@ -29,7 +30,9 @@ void main() {
   setUp(() {
     mockRepository = MockActiveRentalRepository();
     getDetailUseCase = GetActiveRentalDetailUseCase(repository: mockRepository);
-    getCurrentUseCase = GetCurrentActiveRentalUseCase(repository: mockRepository);
+    getCurrentUseCase = GetCurrentActiveRentalUseCase(
+      repository: mockRepository,
+    );
   });
 
   group('GetActiveRentalDetailUseCase', () {

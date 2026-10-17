@@ -14,9 +14,7 @@ class InsuranceBanner extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.primaryLight,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.15),
-          ),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
         ),
         child: Row(
           children: [

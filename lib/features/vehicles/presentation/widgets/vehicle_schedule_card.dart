@@ -58,9 +58,7 @@ class VehicleScheduleCard extends StatelessWidget {
                         ? Icons.warning_amber_rounded
                         : Icons.calendar_month_outlined,
                     size: 18,
-                    color: hasConflict
-                        ? AppColors.error
-                        : AppColors.primary,
+                    color: hasConflict ? AppColors.error : AppColors.primary,
                   ),
                   const SizedBox(width: 8),
                   Text(

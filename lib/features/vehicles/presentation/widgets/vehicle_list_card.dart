@@ -115,7 +115,9 @@ class VehicleListCard extends StatelessWidget {
                               color: AppColors.primaryLight,
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                color: AppColors.borderFocused.withValues(alpha: 0.3),
+                                color: AppColors.borderFocused.withValues(
+                                  alpha: 0.3,
+                                ),
                               ),
                             ),
                             child: Text(
@@ -227,7 +229,8 @@ class VehicleListCard extends StatelessWidget {
                           '${item.seats} chỗ',
                         ),
                         const SizedBox(width: 14),
-                        if (item.category != null && item.category!.isNotEmpty) ...[
+                        if (item.category != null &&
+                            item.category!.isNotEmpty) ...[
                           _buildSpecItem(
                             Icons.category_outlined,
                             item.category!,

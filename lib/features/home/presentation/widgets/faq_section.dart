@@ -174,7 +174,9 @@ class _FaqSectionState extends State<FaqSection> {
                                 height: 28,
                                 decoration: BoxDecoration(
                                   color: isExpanded
-                                      ? AppColors.primary.withValues(alpha: 0.12)
+                                      ? AppColors.primary.withValues(
+                                          alpha: 0.12,
+                                        )
                                       : Colors.grey.shade100,
                                   shape: BoxShape.circle,
                                 ),
