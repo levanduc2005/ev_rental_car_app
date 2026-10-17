@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_schedule.dart';
 
 /// Thẻ hiển thị lịch xe bận và cảnh báo nếu khung giờ chọn bị trùng
@@ -58,8 +59,8 @@ class VehicleScheduleCard extends StatelessWidget {
                         : Icons.calendar_month_outlined,
                     size: 18,
                     color: hasConflict
-                        ? const Color(0xFFDC2626)
-                        : const Color(0xFF1976D2),
+                        ? AppColors.error
+                        : AppColors.primary,
                   ),
                   const SizedBox(width: 8),
                   Text(

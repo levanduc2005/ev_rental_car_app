@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 
 /// Nút "Xem tất cả" / "Xem thêm" dùng chung cho tiêu đề các section trong trang Home
 class SectionSeeAllButton extends StatelessWidget {
@@ -25,7 +26,7 @@ class SectionSeeAllButton extends StatelessWidget {
               text,
               style: const TextStyle(
                 fontSize: 12,
-                color: Color(0xFF1976D2),
+                color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -33,7 +34,7 @@ class SectionSeeAllButton extends StatelessWidget {
             const Icon(
               Icons.chevron_right_rounded,
               size: 16,
-              color: Color(0xFF1976D2),
+              color: AppColors.primary,
             ),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 
 class GuideStep {
@@ -80,26 +81,26 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Tiêu đề phân mục
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Hướng Dẫn Thuê Xe',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF1976D2),
+                  color: AppColors.primary,
                   letterSpacing: -0.3,
                 ),
               ),
-              const SizedBox(height: 3),
+              SizedBox(height: 3),
               Text(
                 'Chỉ với 4 bước đơn giản để trải nghiệm thuê xe e-Motion một cách nhanh chóng',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade600,
+                  color: AppColors.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -136,7 +137,7 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isCurrent
-                          ? const Color(0xFF1976D2).withValues(alpha: 0.4)
+                          ? AppColors.primary.withValues(alpha: 0.4)
                           : colorScheme.outlineVariant.withValues(alpha: 0.35),
                       width: isCurrent ? 1.5 : 1.0,
                     ),
@@ -165,12 +166,12 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
                               fit: BoxFit.cover,
                               errorBuilder: (_, _, _) => Container(
                                 height: 135,
-                                color: const Color(0xFFE3F2FD),
+                                color: AppColors.primaryLight,
                                 child: const Center(
                                   child: Icon(
                                     Icons.electric_car_rounded,
                                     size: 40,
-                                    color: Color(0xFF1976D2),
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ),
@@ -186,7 +187,7 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1976D2),
+                                color: AppColors.primary,
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
@@ -230,7 +231,7 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF0F172A),
+                                color: AppColors.textPrimary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -238,9 +239,9 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
                             const SizedBox(height: 4),
                             Text(
                               step.description,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey.shade600,
+                                color: AppColors.textSecondary,
                                 height: 1.35,
                               ),
                               maxLines: 2,
@@ -272,8 +273,8 @@ class _HowItWorksSectionState extends State<HowItWorksSection> {
                 height: 6,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? const Color(0xFF1976D2)
-                      : Colors.grey.shade300,
+                      ? AppColors.primary
+                      : AppColors.border,
                   borderRadius: BorderRadius.circular(3),
                 ),
               );

@@ -130,56 +130,62 @@ class CarInspectionPhotosSection extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEFF6FF),
-                    borderRadius: BorderRadius.circular(10),
+              Material(
+                color: Colors.transparent,
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt_rounded,
+                      color: Color(0xFF2563EB),
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.camera_alt_rounded,
-                    color: Color(0xFF2563EB),
+                  title: const Text(
+                    'Chụp ảnh trực tiếp bằng Camera',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
+                  subtitle: const Text(
+                    'Khuyến nghị khi bàn giao xe thực tế tại trạm',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetCtx);
+                    onPickPhotos(ImageSource.camera);
+                  },
                 ),
-                title: const Text(
-                  'Chụp ảnh trực tiếp bằng Camera',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                subtitle: const Text(
-                  'Khuyến nghị khi bàn giao xe thực tế tại trạm',
-                  style: TextStyle(fontSize: 12),
-                ),
-                onTap: () {
-                  Navigator.pop(sheetCtx);
-                  onPickPhotos(ImageSource.camera);
-                },
               ),
               const Divider(height: 1),
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(10),
+              Material(
+                color: Colors.transparent,
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.photo_library_rounded,
+                      color: Color(0xFF475569),
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.photo_library_rounded,
-                    color: Color(0xFF475569),
+                  title: const Text(
+                    'Chọn từ thư viện ảnh (Nhiều ảnh)',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
+                  subtitle: const Text(
+                    'Chọn một hoặc nhiều ảnh đã chụp sẵn',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetCtx);
+                    onPickPhotos(ImageSource.gallery);
+                  },
                 ),
-                title: const Text(
-                  'Chọn từ thư viện ảnh (Nhiều ảnh)',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-                subtitle: const Text(
-                  'Chọn một hoặc nhiều ảnh đã chụp sẵn',
-                  style: TextStyle(fontSize: 12),
-                ),
-                onTap: () {
-                  Navigator.pop(sheetCtx);
-                  onPickPhotos(ImageSource.gallery);
-                },
               ),
               const SizedBox(height: 10),
             ],

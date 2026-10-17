@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 import 'package:rental_car/l10n/l10n.dart';
@@ -18,38 +19,60 @@ class ScaffoldWithNavBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) => _onDestinationSelected(index, ref),
-        destinations: [
-          //Thuê xe
-          NavigationDestination(
-            icon: const Icon(Icons.directions_car_outlined),
-            selectedIcon: const Icon(Icons.directions_car),
-            label: l10n.tabRent,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          border: Border(
+            top: BorderSide(
+              color: isDark ? const Color(0xFF334155) : AppColors.border,
+            ),
           ),
-          //Đơn hàng (Đơn đặt trước & Đơn thuê)
-          NavigationDestination(
-            icon: const Icon(Icons.receipt_long_outlined),
-            selectedIcon: const Icon(Icons.receipt_long),
-            label: l10n.tabMyTrip,
-          ),
-          //Thông báo
-          NavigationDestination(
-            icon: const Icon(Icons.notifications_outlined),
-            selectedIcon: const Icon(Icons.notifications),
-            label: l10n.tabNotification,
-          ),
-          //Hỗ trợ
-          NavigationDestination(
-            icon: const Icon(Icons.headphones_outlined),
-            selectedIcon: const Icon(Icons.headphones),
-            label: l10n.tabSupport,
-          ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          height: 64,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          selectedIndex: navigationShell.currentIndex,
+          onDestinationSelected: (index) => _onDestinationSelected(index, ref),
+          destinations: [
+            // Thuê xe
+            NavigationDestination(
+              icon: const Icon(Icons.directions_car_outlined),
+              selectedIcon: const Icon(Icons.directions_car_rounded),
+              label: l10n.tabRent,
+            ),
+            // Đơn hàng (Đơn đặt trước & Đơn thuê)
+            NavigationDestination(
+              icon: const Icon(Icons.receipt_long_outlined),
+              selectedIcon: const Icon(Icons.receipt_long_rounded),
+              label: l10n.tabMyTrip,
+            ),
+            // Thông báo
+            NavigationDestination(
+              icon: const Icon(Icons.notifications_none_rounded),
+              selectedIcon: const Icon(Icons.notifications_rounded),
+              label: l10n.tabNotification,
+            ),
+            // Hỗ trợ & Cứu hộ SOS
+            NavigationDestination(
+              icon: const Icon(Icons.headset_mic_outlined),
+              selectedIcon: const Icon(Icons.headset_mic_rounded),
+              label: l10n.tabSupport,
+            ),
+          ],
+        ),
       ),
     );
   }

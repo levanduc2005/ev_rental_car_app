@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/home/presentation/widgets/section_see_all_button.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
@@ -60,7 +61,7 @@ class VehicleCardData {
           : (entity.isElectric ? '⚡ 100% Điện' : null),
       topBadgeColor: entity.isLuxury
           ? const Color(0xFFE65100)
-          : (entity.isElectric ? const Color(0xFF1976D2) : null),
+          : (entity.isElectric ? AppColors.primary : null),
       bottomBadgeText: 'Tự nhận xe',
       isLuxury: entity.isLuxury,
     );
@@ -247,7 +248,7 @@ class _RentalVehicleCard extends StatelessWidget {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1976D2),
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -301,7 +302,7 @@ class _RentalVehicleCard extends StatelessWidget {
                           const Icon(
                             Icons.star_rounded,
                             size: 16,
-                            color: Color(0xFF1976D2),
+                            color: AppColors.warning,
                           ),
                           const SizedBox(width: 2),
                           Text(
@@ -309,7 +310,7 @@ class _RentalVehicleCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF1976D2),
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ],
@@ -379,7 +380,7 @@ class _RentalVehicleCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF1976D2),
+                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(width: 2),

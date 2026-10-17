@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 
 class FaqItem {
@@ -103,7 +104,7 @@ class _FaqSectionState extends State<FaqSection> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF1976D2),
+              color: AppColors.primary,
               letterSpacing: -0.3,
             ),
           ),
@@ -137,7 +138,7 @@ class _FaqSectionState extends State<FaqSection> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isExpanded
-                        ? const Color(0xFF1976D2).withValues(alpha: 0.45)
+                        ? AppColors.primary.withValues(alpha: 0.45)
                         : colorScheme.outlineVariant.withValues(alpha: 0.35),
                     width: isExpanded ? 1.5 : 1.0,
                   ),
@@ -173,9 +174,7 @@ class _FaqSectionState extends State<FaqSection> {
                                 height: 28,
                                 decoration: BoxDecoration(
                                   color: isExpanded
-                                      ? const Color(
-                                          0xFF1976D2,
-                                        ).withValues(alpha: 0.12)
+                                      ? AppColors.primary.withValues(alpha: 0.12)
                                       : Colors.grey.shade100,
                                   shape: BoxShape.circle,
                                 ),
@@ -184,7 +183,7 @@ class _FaqSectionState extends State<FaqSection> {
                                     Icons.help_outline_rounded,
                                     size: 16,
                                     color: isExpanded
-                                        ? const Color(0xFF1976D2)
+                                        ? AppColors.primary
                                         : Colors.grey.shade600,
                                   ),
                                 ),
@@ -201,7 +200,7 @@ class _FaqSectionState extends State<FaqSection> {
                                         ? FontWeight.w700
                                         : FontWeight.w600,
                                     color: isExpanded
-                                        ? const Color(0xFF1976D2)
+                                        ? AppColors.primary
                                         : const Color(0xFF0F172A),
                                   ),
                                 ),
@@ -215,7 +214,7 @@ class _FaqSectionState extends State<FaqSection> {
                                 child: Icon(
                                   Icons.keyboard_arrow_down_rounded,
                                   color: isExpanded
-                                      ? const Color(0xFF1976D2)
+                                      ? AppColors.primary
                                       : Colors.grey.shade500,
                                   size: 22,
                                 ),
@@ -271,7 +270,7 @@ class _FaqSectionState extends State<FaqSection> {
                     ? Icons.keyboard_arrow_up_rounded
                     : Icons.keyboard_arrow_down_rounded,
                 size: 18,
-                color: const Color(0xFF1976D2),
+                color: AppColors.primary,
               ),
               label: Text(
                 _showAll
@@ -280,7 +279,7 @@ class _FaqSectionState extends State<FaqSection> {
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1976D2),
+                  color: AppColors.primary,
                 ),
               ),
             ),
@@ -293,7 +292,7 @@ class _FaqSectionState extends State<FaqSection> {
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
+                colors: [AppColors.primaryLight, Color(0xFFDBEAFE)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -310,7 +309,7 @@ class _FaqSectionState extends State<FaqSection> {
                   ),
                   child: const Icon(
                     Icons.support_agent_rounded,
-                    color: Color(0xFF1976D2),
+                    color: AppColors.primary,
                     size: 24,
                   ),
                 ),
@@ -342,7 +341,7 @@ class _FaqSectionState extends State<FaqSection> {
                 const SizedBox(width: AppSpacing.sm),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1976D2),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 
 /// Thẻ hiển thị xe trong danh sách tìm kiếm (100% dữ liệu từ Backend)
@@ -42,7 +43,7 @@ class VehicleListCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -51,7 +52,7 @@ class VehicleListCard extends StatelessWidget {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+        border: Border.all(color: AppColors.border),
       ),
       child: Material(
         color: Colors.transparent,
@@ -69,12 +70,12 @@ class VehicleListCard extends StatelessWidget {
                   item.imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    color: const Color(0xFFE2E8F0),
+                    color: AppColors.border,
                     child: const Center(
                       child: Icon(
                         Icons.directions_car_filled,
                         size: 60,
-                        color: Color(0xFF94A3B8),
+                        color: AppColors.textMuted,
                       ),
                     ),
                   ),
@@ -96,7 +97,7 @@ class VehicleListCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 15.5,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFF0F172A),
+                              color: AppColors.textPrimary,
                               letterSpacing: 0.2,
                             ),
                             maxLines: 1,
@@ -111,11 +112,10 @@ class VehicleListCard extends StatelessWidget {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEFF6FF),
+                              color: AppColors.primaryLight,
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(
-                                color: const Color(0xFFBFDBFE),
-                                width: 0.8,
+                                color: AppColors.borderFocused.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -123,7 +123,7 @@ class VehicleListCard extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF1D4ED8),
+                                color: AppColors.primaryDark,
                               ),
                             ),
                           ),
@@ -138,7 +138,7 @@ class VehicleListCard extends StatelessWidget {
                         const Icon(
                           Icons.location_on_outlined,
                           size: 14,
-                          color: Color(0xFF64748B),
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -148,7 +148,7 @@ class VehicleListCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 12.5,
-                              color: Color(0xFF64748B),
+                              color: AppColors.textSecondary,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -168,7 +168,7 @@ class VehicleListCard extends StatelessWidget {
                               const Icon(
                                 Icons.near_me_outlined,
                                 size: 14,
-                                color: Color(0xFF0284C7),
+                                color: AppColors.primary,
                               ),
                               const SizedBox(width: 4),
                               Text(
@@ -176,7 +176,7 @@ class VehicleListCard extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0284C7),
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ],
@@ -195,7 +195,7 @@ class VehicleListCard extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 19,
                                 fontWeight: FontWeight.w800,
-                                color: Color(0xFF0F9D58),
+                                color: AppColors.primary,
                               ),
                             ),
                             Text(
@@ -203,7 +203,7 @@ class VehicleListCard extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F9D58),
+                                color: AppColors.primary,
                               ),
                             ),
                           ],
@@ -215,7 +215,7 @@ class VehicleListCard extends StatelessWidget {
                     const Divider(
                       height: 1,
                       thickness: 0.8,
-                      color: Color(0xFFF1F5F9),
+                      color: AppColors.border,
                     ),
                     const SizedBox(height: 10),
 
@@ -238,8 +238,8 @@ class VehicleListCard extends StatelessWidget {
                           Icons.bolt_rounded,
                           'Pin ${item.batteryLevel}%',
                           iconColor: item.batteryLevel < 20
-                              ? const Color(0xFFEF4444)
-                              : const Color(0xFF10B981),
+                              ? AppColors.error
+                              : AppColors.accent,
                         ),
                       ],
                     ),
@@ -257,7 +257,7 @@ class VehicleListCard extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 15, color: iconColor ?? const Color(0xFF64748B)),
+        Icon(icon, size: 15, color: iconColor ?? AppColors.textSecondary),
         const SizedBox(width: 4),
         Text(
           text,
@@ -265,7 +265,7 @@ class VehicleListCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontSize: 12,
-            color: Color(0xFF334155),
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w500,
           ),
         ),

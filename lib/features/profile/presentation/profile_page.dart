@@ -205,7 +205,6 @@ class ProfilePage extends ConsumerWidget {
                 padding: EdgeInsets.zero,
                 child: ProfileMenuItem(
                   icon: Icons.badge_rounded,
-                  iconColor: const Color(0xFF2563EB),
                   title: 'Bàn giao xe tại trạm (Staff)',
                   subtitle: 'Quản lý đơn nhận, hợp đồng DocuSeal & bàn giao xe',
                   trailing: const Icon(

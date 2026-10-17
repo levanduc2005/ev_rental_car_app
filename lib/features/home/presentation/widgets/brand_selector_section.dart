@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 
 class BrandItem {
@@ -54,7 +55,7 @@ class BrandSelectorSection extends StatelessWidget {
         'vinfast',
         null,
         Icons.bolt_rounded,
-        Color(0xFF1976D2),
+        AppColors.primary,
       ),
       (
         'TESLA',
@@ -205,7 +206,7 @@ class BrandSelectorSection extends StatelessWidget {
       logoUrl:
           'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/$slug.png',
       icon: Icons.directions_car_filled_rounded,
-      color: const Color(0xFF1976D2),
+      color: AppColors.primary,
     );
   }
 

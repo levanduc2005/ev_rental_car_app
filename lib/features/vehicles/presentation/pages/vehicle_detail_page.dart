@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/booking/presentation/providers/booking_form_controller.dart';
 import 'package:rental_car/features/booking/presentation/widgets/rental_schedule_bottom_sheet.dart';
@@ -375,7 +376,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                           const Icon(
                             Icons.location_on,
                             size: 16,
-                            color: Color(0xFF1976D2),
+                            color: AppColors.primary,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -566,7 +567,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                                 style: const TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w900,
-                                  color: Color(0xFF1976D2),
+                                  color: AppColors.primary,
                                 ),
                               ),
                               TextSpan(
@@ -588,8 +589,8 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
                       backgroundColor: hasScheduleConflict
-                          ? const Color(0xFFDC2626)
-                          : const Color(0xFF1976D2),
+                          ? AppColors.error
+                          : AppColors.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 14,
@@ -602,7 +603,7 @@ class _VehicleDetailPageState extends ConsumerState<VehicleDetailPage> {
                         ? () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                backgroundColor: Color(0xFFDC2626),
+                                backgroundColor: AppColors.error,
                                 content: Text(
                                   'Xe đã có khách đặt trong khung giờ này. Vui lòng chọn giờ khác!',
                                 ),

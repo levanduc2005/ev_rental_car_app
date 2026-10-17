@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 
 class PricePackage {
   const PricePackage({
@@ -108,12 +109,12 @@ class VehiclePricePackageGrid extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFFF0F7FF) : Colors.white,
+                  color: isSelected ? AppColors.primaryLight : AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
-                        ? const Color(0xFF1976D2)
-                        : const Color(0xFFE2E8F0),
+                        ? AppColors.primary
+                        : AppColors.border,
                     width: isSelected ? 1.5 : 1.0,
                   ),
                 ),
@@ -126,8 +127,8 @@ class VehiclePricePackageGrid extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11.5,
                         color: isSelected
-                            ? const Color(0xFF1976D2)
-                            : const Color(0xFF64748B),
+                            ? AppColors.primary
+                            : AppColors.textSecondary,
                         fontWeight: isSelected
                             ? FontWeight.w700
                             : FontWeight.w500,
@@ -140,8 +141,8 @@ class VehiclePricePackageGrid extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: isSelected
-                            ? const Color(0xFF1976D2)
-                            : const Color(0xFF0F172A),
+                            ? AppColors.primary
+                            : AppColors.textPrimary,
                       ),
                     ),
                   ],

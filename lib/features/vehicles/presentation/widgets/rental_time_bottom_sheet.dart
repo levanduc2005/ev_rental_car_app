@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 
 /// Modal Bottom Sheet chọn ngày và giờ thuê xe chuyên nghiệp
 class RentalTimeBottomSheet extends StatefulWidget {
@@ -126,8 +127,8 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF1976D2),
-              onSurface: Color(0xFF0F172A),
+              primary: AppColors.primary,
+              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,
@@ -173,8 +174,8 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF1976D2),
-              onSurface: Color(0xFF0F172A),
+              primary: AppColors.primary,
+              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,
@@ -274,7 +275,7 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
               children: [
                 const Icon(
                   Icons.calendar_month_rounded,
-                  color: Color(0xFF1976D2),
+                  color: AppColors.primary,
                   size: 22,
                 ),
                 const SizedBox(width: 8),
@@ -370,12 +371,12 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF1976D2)
+                          ? AppColors.primary
                           : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF1976D2)
+                            ? AppColors.primary
                             : const Color(0xFFE2E8F0),
                       ),
                     ),
@@ -444,7 +445,7 @@ class _RentalTimeBottomSheetState extends State<RentalTimeBottomSheet> {
                   widget.onApply?.call(_startTime, _endTime, _selectedPackage);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1976D2),
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

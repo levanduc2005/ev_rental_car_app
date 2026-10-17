@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/home/presentation/providers/home_providers.dart';
 import 'package:rental_car/features/home/presentation/widgets/brand_selector_section.dart';
@@ -23,7 +24,7 @@ class HomePage extends ConsumerWidget {
     final homeState = ref.watch(homeControllerProvider);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -34,7 +35,7 @@ class HomePage extends ConsumerWidget {
           IconButton(
             icon: const Icon(
               Icons.qr_code_scanner_rounded,
-              color: Color(0xFF0284C7),
+              color: AppColors.primary,
             ),
             tooltip: 'Quét QR thuê xe tại trạm',
             onPressed: () {

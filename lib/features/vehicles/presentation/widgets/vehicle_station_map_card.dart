@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -143,7 +144,7 @@ class VehicleStationMapCard extends StatelessWidget {
                       Icon(
                         Icons.map_outlined,
                         size: 15,
-                        color: Color(0xFF1976D2),
+                        color: AppColors.primary,
                       ),
                       SizedBox(width: 4),
                       Text(
@@ -151,7 +152,7 @@ class VehicleStationMapCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1976D2),
+                          color: AppColors.primary,
                         ),
                       ),
                     ],
@@ -186,13 +187,15 @@ class VehicleStationMapCard extends StatelessWidget {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEFF6FF),
+                      color: AppColors.primaryLight,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDBEAFE)),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                      ),
                     ),
                     child: const Icon(
                       Icons.ev_station_rounded,
-                      color: Color(0xFF1976D2),
+                      color: AppColors.primary,
                       size: 22,
                     ),
                   ),
@@ -227,7 +230,7 @@ class VehicleStationMapCard extends StatelessWidget {
               const Divider(height: 1, color: Color(0xFFF1F5F9)),
               const SizedBox(height: 12),
               Material(
-                color: const Color(0xFF1976D2),
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
                   onTap: () => _openDirections(context),

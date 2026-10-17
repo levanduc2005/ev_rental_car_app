@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 
 /// Phần chọn thời gian thuê xe (Slide 10)
 class RentalTimeCard extends StatelessWidget {
@@ -40,12 +41,12 @@ class RentalTimeCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                  color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
                   Icons.calendar_month_outlined,
-                  color: Color(0xFF1976D2),
+                  color: AppColors.primary,
                   size: 22,
                 ),
               ),
@@ -81,7 +82,7 @@ class RentalTimeCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1976D2),
+                    color: AppColors.primary,
                   ),
                 ),
               ),

@@ -44,31 +44,37 @@ class EmergencyPhotoPicker extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.md),
-                ListTile(
-                  leading: const Icon(
-                    Icons.camera_alt_rounded,
-                    color: AppColors.primary,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.camera_alt_rounded,
+                      color: AppColors.primary,
+                    ),
+                    title: const Text('Chụp ảnh trực tiếp (Camera)'),
+                    subtitle: const Text(
+                      'Khuyên dùng để nhân viên cứu hộ nắm rõ tình trạng',
+                    ),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      onPickImage(ImageSource.camera);
+                    },
                   ),
-                  title: const Text('Chụp ảnh trực tiếp (Camera)'),
-                  subtitle: const Text(
-                    'Khuyên dùng để nhân viên cứu hộ nắm rõ tình trạng',
-                  ),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    onPickImage(ImageSource.camera);
-                  },
                 ),
                 const Divider(),
-                ListTile(
-                  leading: const Icon(
-                    Icons.photo_library_rounded,
-                    color: AppColors.accent,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.photo_library_rounded,
+                      color: AppColors.accent,
+                    ),
+                    title: const Text('Chọn từ thư viện ảnh (Gallery)'),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      onPickImage(ImageSource.gallery);
+                    },
                   ),
-                  title: const Text('Chọn từ thư viện ảnh (Gallery)'),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    onPickImage(ImageSource.gallery);
-                  },
                 ),
               ],
             ),

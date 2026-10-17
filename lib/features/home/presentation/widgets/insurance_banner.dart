@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 
 class InsuranceBanner extends StatelessWidget {
@@ -11,9 +12,11 @@ class InsuranceBanner extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: const Color(0xFFF0F5FF),
+          color: AppColors.primaryLight,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFD9E6FF)),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.15),
+          ),
         ),
         child: Row(
           children: [
@@ -21,13 +24,13 @@ class InsuranceBanner extends StatelessWidget {
             Container(
               width: 44,
               height: 44,
-              decoration: const BoxDecoration(
-                color: Color(0xFFD6E4FF),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.verified_user_rounded,
-                color: Color(0xFF1976D2),
+                color: AppColors.primary,
                 size: 24,
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 
 /// Chi tiết thanh toán & Quy định đặt cọc (Chuẩn nghiệp vụ e-Motion FE & BE)
 class PricingBreakdownCard extends StatelessWidget {
@@ -113,7 +114,7 @@ class PricingBreakdownCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF1976D2),
+                  color: AppColors.primary,
                 ),
               ),
             ],
@@ -141,7 +142,7 @@ class PricingBreakdownCard extends StatelessWidget {
                     Icon(
                       Icons.format_list_numbered_rounded,
                       size: 16,
-                      color: Color(0xFF1976D2),
+                      color: AppColors.primary,
                     ),
                     SizedBox(width: 6),
                     Text(
@@ -149,7 +150,7 @@ class PricingBreakdownCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF1976D2),
+                        color: AppColors.primary,
                         letterSpacing: 0.3,
                       ),
                     ),
@@ -166,7 +167,7 @@ class PricingBreakdownCard extends StatelessWidget {
                       height: 22,
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF1976D2),
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                       child: const Text(
@@ -201,7 +202,7 @@ class PricingBreakdownCard extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF1976D2),
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ],
@@ -234,7 +235,7 @@ class PricingBreakdownCard extends StatelessWidget {
                       height: 22,
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF1976D2),
+                        color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                       child: const Text(

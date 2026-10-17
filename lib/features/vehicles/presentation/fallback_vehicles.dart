@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/home/presentation/widgets/vehicle_showcase_section.dart';
 
 /// Dữ liệu xe dự phòng tập trung — dùng khi BE offline.
@@ -27,7 +28,7 @@ abstract final class FallbackVehicles {
       oldPrice4h: '350K',
       price24h: '600K',
       topBadgeText: '⚡ 100% Điện',
-      topBadgeColor: Color(0xFF1976D2),
+      topBadgeColor: AppColors.primary,
       bottomBadgeText: 'Tự nhận xe',
     ),
     VehicleCardData(
@@ -44,7 +45,7 @@ abstract final class FallbackVehicles {
       oldPrice4h: '500K',
       price24h: '900K',
       topBadgeText: '⚡ 100% Điện',
-      topBadgeColor: Color(0xFF1976D2),
+      topBadgeColor: AppColors.primary,
       bottomBadgeText: 'Tự nhận xe',
     ),
     VehicleCardData(
@@ -61,7 +62,7 @@ abstract final class FallbackVehicles {
       oldPrice4h: '700K',
       price24h: '1.200K',
       topBadgeText: '⚡ 100% Điện',
-      topBadgeColor: Color(0xFF1976D2),
+      topBadgeColor: AppColors.primary,
       bottomBadgeText: 'Tự nhận xe',
     ),
   ];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 
 /// Header thanh tìm kiếm hiện đại gồm:
 /// - Hàng 1: [Nút Quay lại] + [Ô Search Text] + [Nút Bộ lọc (kèm Badge số lượng)]
@@ -112,7 +113,7 @@ class _VehicleSearchHeaderState extends State<VehicleSearchHeader> {
                         const Icon(
                           Icons.search_rounded,
                           size: 20,
-                          color: Color(0xFF1976D2),
+                          color: AppColors.primary,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -170,7 +171,7 @@ class _VehicleSearchHeaderState extends State<VehicleSearchHeader> {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1976D2),
+                          color: AppColors.primary,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -231,7 +232,7 @@ class _VehicleSearchHeaderState extends State<VehicleSearchHeader> {
                       const Icon(
                         Icons.access_time_filled_rounded,
                         size: 15,
-                        color: Color(0xFF1976D2),
+                        color: AppColors.primary,
                       ),
                       const SizedBox(width: 8),
                       Expanded(

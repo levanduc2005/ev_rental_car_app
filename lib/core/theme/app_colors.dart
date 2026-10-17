@@ -7,7 +7,13 @@ import 'package:flutter/material.dart';
 abstract final class AppColors {
   // --- Màu thương hiệu (Brand Colors) ---
   /// Màu xanh điện chính (Primary Electric Blue)
-  static const Color primary = Color(0xFF3D5AFE);
+  static const Color primary = Color(0xFF2563EB);
+
+  /// Màu xanh điện đậm (Hover / Pressed state)
+  static const Color primaryDark = Color(0xFF1D4ED8);
+
+  /// Màu xanh điện nhạt cho nền tag, badge, icon container (Blue-50)
+  static const Color primaryLight = Color(0xFFEFF6FF);
 
   /// Màu xanh lá sinh thái / trạm sạc / pin đầy (Eco Electric Green)
   static const Color accent = Color(0xFF10B981);
@@ -33,7 +39,7 @@ abstract final class AppColors {
   static const Color border = Color(0xFFE2E8F0);
 
   /// Màu viền khi được chọn (Active / Focused border)
-  static const Color borderFocused = Color(0xFF3D5AFE);
+  static const Color borderFocused = Color(0xFF2563EB);
 
   // --- Màu trạng thái (Feedback Colors) ---
   /// Trạng thái thành công (Xanh lục)

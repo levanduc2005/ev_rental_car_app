@@ -73,58 +73,64 @@ class ImagePickerBottomSheet extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.lg),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: AppColors.primary,
+                  ),
+                ),
+                title: const Text(
+                  'Chụp ảnh từ Camera',
+                  style: AppTextStyles.title,
+                ),
+                subtitle: const Text(
+                  'Sử dụng camera điện thoại chụp trực tiếp',
+                  style: AppTextStyles.caption,
+                ),
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
+                  side: const BorderSide(color: AppColors.border),
                 ),
-                child: const Icon(
-                  Icons.camera_alt_rounded,
-                  color: AppColors.primary,
-                ),
+                onTap: () => _pickImage(context, ImageSource.camera),
               ),
-              title: const Text(
-                'Chụp ảnh từ Camera',
-                style: AppTextStyles.title,
-              ),
-              subtitle: const Text(
-                'Sử dụng camera điện thoại chụp trực tiếp',
-                style: AppTextStyles.caption,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                side: const BorderSide(color: AppColors.border),
-              ),
-              onTap: () => _pickImage(context, ImageSource.camera),
             ),
             const SizedBox(height: AppSpacing.sm),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                decoration: BoxDecoration(
-                  color: AppColors.accent.withValues(alpha: 0.1),
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.accent,
+                  ),
+                ),
+                title: const Text(
+                  'Chọn từ Thư viện ảnh',
+                  style: AppTextStyles.title,
+                ),
+                subtitle: const Text(
+                  'Tải ảnh có sẵn từ bộ sưu tập của bạn',
+                  style: AppTextStyles.caption,
+                ),
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
+                  side: const BorderSide(color: AppColors.border),
                 ),
-                child: const Icon(
-                  Icons.photo_library_rounded,
-                  color: AppColors.accent,
-                ),
+                onTap: () => _pickImage(context, ImageSource.gallery),
               ),
-              title: const Text(
-                'Chọn từ Thư viện ảnh',
-                style: AppTextStyles.title,
-              ),
-              subtitle: const Text(
-                'Tải ảnh có sẵn từ bộ sưu tập của bạn',
-                style: AppTextStyles.caption,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                side: const BorderSide(color: AppColors.border),
-              ),
-              onTap: () => _pickImage(context, ImageSource.gallery),
             ),
             const SizedBox(height: AppSpacing.md),
             TextButton(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart';
 import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
@@ -85,8 +86,8 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF2563EB),
-              onSurface: Color(0xFF0F172A),
+              primary: AppColors.primary,
+              onSurface: AppColors.textPrimary,
             ),
           ),
           child: child!,
@@ -178,7 +179,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       TextButton(
@@ -194,7 +195,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                           Navigator.pop(ctx);
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF2563EB),
+                          foregroundColor: AppColors.primary,
                         ),
                         child: const Text(
                           'Xong',
@@ -323,13 +324,13 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF2563EB).withValues(alpha: 0.06)
+              ? AppColors.primary.withValues(alpha: 0.06)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF2563EB)
-                : const Color(0xFFE2E8F0),
+                ? AppColors.primary
+                : AppColors.border,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -339,7 +340,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFF2563EB).withValues(alpha: 0.12)
+                    ? AppColors.primary.withValues(alpha: 0.12)
                     : const Color(0xFFF1F5F9),
                 shape: BoxShape.circle,
               ),
@@ -347,8 +348,8 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                 Icons.location_city_rounded,
                 size: 22,
                 color: isSelected
-                    ? const Color(0xFF2563EB)
-                    : const Color(0xFF64748B),
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -359,15 +360,15 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                   fontSize: 16,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                   color: isSelected
-                      ? const Color(0xFF2563EB)
-                      : const Color(0xFF0F172A),
+                      ? AppColors.primary
+                      : AppColors.textPrimary,
                 ),
               ),
             ),
             if (isSelected)
               const Icon(
                 Icons.check_circle_rounded,
-                color: Color(0xFF2563EB),
+                color: AppColors.primary,
                 size: 22,
               ),
           ],
@@ -499,7 +500,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2563EB),
+                    color: AppColors.primary,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(
@@ -703,7 +704,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
                   height: 48,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

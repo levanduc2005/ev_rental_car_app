@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_filter.dart';
 
 /// Modal Bộ lọc tìm kiếm xe (Slide 09 - Bộ lọc tìm kiếm xe)
@@ -256,7 +257,7 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
                     flex: 2,
                     child: FilledButton(
                       style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xFF1976D2),
+                        backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -326,13 +327,13 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
               color: isSelected
-                  ? const Color(0xFF1976D2)
-                  : const Color(0xFFF8FAFC),
+                  ? AppColors.primary
+                  : AppColors.background,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected
-                    ? const Color(0xFF1976D2)
-                    : const Color(0xFFE2E8F0),
+                    ? AppColors.primary
+                    : AppColors.border,
               ),
             ),
             child: Text(
@@ -340,7 +341,7 @@ class _VehicleFilterBottomSheetState extends State<VehicleFilterBottomSheet> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF334155),
+                color: isSelected ? Colors.white : AppColors.textSecondary,
               ),
             ),
           ),

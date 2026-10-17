@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
+import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:rental_car/features/vehicles/presentation/providers/vehicle_providers.dart';
 import 'package:rental_car/features/vehicles/presentation/widgets/rental_time_bottom_sheet.dart';
@@ -188,7 +189,7 @@ class _MapSearchPageState extends ConsumerState<MapSearchPage> {
                             const SizedBox(height: 14),
                             FilledButton.icon(
                               style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF1976D2),
+                                backgroundColor: AppColors.primary,
                               ),
                               onPressed: () {
                                 ref
