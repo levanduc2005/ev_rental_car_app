@@ -23,10 +23,14 @@ class RentalItemCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          context.pushNamed(
-            AppRoute.rentalDetail.name,
-            pathParameters: {'id': item.id.toString()},
-          );
+          if (isOngoing) {
+            context.pushNamed(AppRoute.activeTrip.name, extra: item.id);
+          } else {
+            context.pushNamed(
+              AppRoute.rentalDetail.name,
+              pathParameters: {'id': item.id.toString()},
+            );
+          }
         },
         borderRadius: BorderRadius.circular(14),
         child: Container(
@@ -187,38 +191,9 @@ class RentalItemCard extends StatelessWidget {
                     ),
                   ],
                   if (isOngoing) ...[
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFDC2626),
-                        side: const BorderSide(color: Color(0xFFDC2626)),
-                        backgroundColor: const Color(0xFFFEF2F2),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        context.pushNamed(
-                          AppRoute.emergencyReport.name,
-                          extra: item.id,
-                        );
-                      },
-                      icon: const Icon(Icons.emergency_rounded, size: 16),
-                      label: const Text(
-                        'Cứu hộ SOS',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
+                        backgroundColor: const Color(0xFF059669),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
@@ -227,19 +202,17 @@ class RentalItemCard extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        elevation: 1,
                       ),
                       onPressed: () {
                         context.pushNamed(
-                          AppRoute.returnLocationVerification.name,
+                          AppRoute.activeTrip.name,
                           extra: item.id,
                         );
                       },
-                      icon: const Icon(
-                        Icons.assignment_return_rounded,
-                        size: 16,
-                      ),
+                      icon: const Icon(Icons.navigation_rounded, size: 16),
                       label: const Text(
-                        'Trả xe & Quyết toán',
+                        'Vào chuyến đi',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,

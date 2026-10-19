@@ -19,9 +19,20 @@ class ActiveRentalRemoteDataSourceImpl implements ActiveRentalRemoteDataSource {
   @override
   Future<ActiveRentalModel> getRentalDetail(int rentalId) {
     return guardApiCall(() async {
-      final response = await _dio.get<Map<String, dynamic>>(
-        '/rentals/me/details/$rentalId',
-      );
+      Response<Map<String, dynamic>> response;
+      try {
+        response = await _dio.get<Map<String, dynamic>>(
+          '/rentals/me/details/$rentalId',
+        );
+      } on DioException {
+        try {
+          response = await _dio.get<Map<String, dynamic>>(
+            '/rentals/$rentalId/details',
+          );
+        } on DioException {
+          response = await _dio.get<Map<String, dynamic>>('/rentals/$rentalId');
+        }
+      }
       final data = response.data?['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw const ParsingException('Không tìm thấy thông tin chuyến đi.');
@@ -37,7 +48,7 @@ class ActiveRentalRemoteDataSourceImpl implements ActiveRentalRemoteDataSource {
         '/rentals/email',
         data: {
           'email': email,
-          'status': ['IN_PROGRESS'],
+          'status': ['ONGOING', 'IN_PROGRESS'],
           'page': 1,
           'limit': 1,
           'search': '',

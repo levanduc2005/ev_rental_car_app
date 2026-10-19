@@ -16,18 +16,11 @@ class RentalBottomActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isConfirm = rental.isConfirm || rental.isDeposited;
-    final isOngoing = rental.isOngoing;
-    final isOverdue = rental.isOverdue || rental.isOverdueTime;
     final isChecking = rental.isChecking;
     final isPendingFee = rental.isPendingFee;
     final isCompleted = rental.isCompleted;
 
-    if (!isConfirm &&
-        !isOngoing &&
-        !isOverdue &&
-        !isChecking &&
-        !isPendingFee &&
-        !isCompleted) {
+    if (!isConfirm && !isChecking && !isPendingFee && !isCompleted) {
       return const SizedBox.shrink();
     }
 
@@ -81,54 +74,6 @@ class RentalBottomActionBar extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-              ),
-            ],
-
-            // 1. Giai đoạn ONGOING / OVERDUE -> Cứu hộ SOS & Nút trả xe
-            if (isOngoing || isOverdue) ...[
-              OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFDC2626),
-                  side: const BorderSide(color: Color(0xFFDC2626), width: 1.5),
-                  backgroundColor: const Color(0xFFFEF2F2),
-                  padding: const EdgeInsets.symmetric(vertical: 13),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: () {
-                  context.pushNamed(
-                    AppRoute.emergencyReport.name,
-                    extra: rental.id,
-                  );
-                },
-                icon: const Icon(Icons.emergency_rounded, size: 20),
-                label: const Text(
-                  'Báo cáo cứu hộ khẩn cấp (SOS)',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  context.pushNamed(
-                    AppRoute.returnLocationVerification.name,
-                    extra: rental,
-                  );
-                },
-                icon: const Icon(Icons.assignment_return_rounded, size: 20),
-                label: const Text(
-                  'Tiến hành trả xe & Kiểm tra',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
             ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
+import 'package:rental_car/core/utils/map_launcher.dart';
 import 'package:rental_car/features/vehicles/domain/entities/station_entity.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Thẻ hiển thị Trạm nhận xe & Địa chỉ
 /// (Hiển thị tên trạm, địa chỉ chi tiết, khoảng cách và nút Chỉ đường Google Maps)
@@ -35,44 +35,13 @@ class VehicleStationMapCard extends StatelessWidget {
 
   /// Mở ứng dụng Google Maps hoặc trình duyệt để dẫn đường từ vị trí user tới trạm nhận xe
   Future<void> _openDirections(BuildContext context) async {
-    final lat = latitude ?? station?.latitude;
-    final lng = longitude ?? station?.longitude;
-
-    final Uri googleMapsUrl;
-    if (lat != null && lng != null && lat != 0.0 && lng != 0.0) {
-      // Ưu tiên 1: Dẫn đường bằng tọa độ GPS chuẩn xác
-      googleMapsUrl = Uri.parse(
-        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
-      );
-    } else {
-      // Ưu tiên 2: Fallback dẫn đường theo tên và địa chỉ trạm
-      final query = Uri.encodeComponent(
-        stationName != null && stationName!.isNotEmpty
-            ? '$stationName, $stationAddress'
-            : stationAddress,
-      );
-      googleMapsUrl = Uri.parse(
-        'https://www.google.com/maps/dir/?api=1&destination=$query',
-      );
-    }
-
-    try {
-      final launched = await launchUrl(
-        googleMapsUrl,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể mở ứng dụng Bản đồ.')),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Lỗi mở bản đồ: $e')));
-      }
-    }
+    await MapLauncher.openDirections(
+      context: context,
+      latitude: latitude ?? station?.latitude,
+      longitude: longitude ?? station?.longitude,
+      stationName: stationName,
+      stationAddress: stationAddress,
+    );
   }
 
   @override

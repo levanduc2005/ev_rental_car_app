@@ -34,7 +34,7 @@ abstract class ActiveRentalEntity with _$ActiveRentalEntity {
   /// Đơn thuê có đang trong trạng thái hoạt động / đang chạy không
   bool get isActive {
     final s = status.toUpperCase();
-    return s == 'IN_PROGRESS' || s == 'ACTIVE';
+    return s == 'IN_PROGRESS' || s == 'ACTIVE' || s == 'ONGOING';
   }
 
   /// Thời gian đã trôi qua kể từ khi bắt đầu nhận xe

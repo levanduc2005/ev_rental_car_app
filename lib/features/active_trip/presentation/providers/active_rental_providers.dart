@@ -54,3 +54,8 @@ final currentActiveRentalControllerProvider =
       final result = await useCase(email: user.email);
       return result.when(ok: (data) => data, err: (failure) => throw failure);
     });
+
+/// Provider đếm nhịp mỗi giây cho đồng hồ đếm ngược chuyến đi
+final activeTripTickerProvider = StreamProvider.autoDispose<int>((ref) {
+  return Stream.periodic(const Duration(seconds: 1), (i) => i);
+});

@@ -240,12 +240,20 @@ class CheckoutController extends Notifier<CheckoutState> {
         return;
       }
 
-      final position = await Geolocator.getCurrentPosition(
+      // 1. Thử lấy lastKnownPosition nhanh
+      Position? position;
+      try {
+        position = await Geolocator.getLastKnownPosition().timeout(
+          const Duration(seconds: 2),
+        );
+      } catch (_) {}
+
+      // 2. Nếu chưa có, lấy vị trí với accuracy medium và timeout nghiêm ngặt
+      position ??= await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 10),
+          accuracy: LocationAccuracy.medium,
         ),
-      );
+      ).timeout(const Duration(seconds: 4));
 
       final distance = Geolocator.distanceBetween(
         position.latitude,

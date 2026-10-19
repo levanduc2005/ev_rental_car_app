@@ -304,7 +304,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoute.activeTrip.path,
         name: AppRoute.activeTrip.name,
-        builder: (_, _) => const ActiveTripPage(),
+        builder: (_, state) {
+          final rentalId = state.extra is int ? state.extra as int : null;
+          return ActiveTripPage(rentalId: rentalId);
+        },
       ),
       GoRoute(
         path: AppRoute.staffDashboard.path,

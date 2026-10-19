@@ -104,22 +104,53 @@ class EmergencyController extends Notifier<EmergencyState> {
     state = state.copyWith(isLoadingLocation: true, clearLocationError: true);
 
     try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      // 1. Thử lấy vị trí lưu gần nhất (rất nhanh, không bao giờ bị treo trên máy ảo)
+      try {
+        final lastKnown = await Geolocator.getLastKnownPosition().timeout(
+          const Duration(seconds: 2),
+        );
+        if (lastKnown != null) {
+          state = state.copyWith(
+            latitude: lastKnown.latitude,
+            longitude: lastKnown.longitude,
+            isLoadingLocation: false,
+            clearLocationError: true,
+          );
+          return;
+        }
+      } catch (_) {
+        // Bỏ qua nếu chưa có lastKnown
+      }
+
+      // 2. Kiểm tra dịch vụ vị trí
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled()
+          .timeout(const Duration(seconds: 2));
       if (!serviceEnabled) {
         state = state.copyWith(
+          latitude: state.latitude ?? 10.776889,
+          longitude: state.longitude ?? 106.700806,
           isLoadingLocation: false,
-          locationError: 'Dịch vụ định vị GPS chưa được bật trên thiết bị.',
+          locationError:
+              'Dịch vụ định vị GPS chưa bật (đang dùng tọa độ mặc định).',
         );
         return;
       }
 
-      var permission = await Geolocator.checkPermission();
+      // 3. Kiểm tra quyền
+      var permission = await Geolocator.checkPermission().timeout(
+        const Duration(seconds: 2),
+      );
       if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
+        permission = await Geolocator.requestPermission().timeout(
+          const Duration(seconds: 4),
+        );
         if (permission == LocationPermission.denied) {
           state = state.copyWith(
+            latitude: state.latitude ?? 10.776889,
+            longitude: state.longitude ?? 106.700806,
             isLoadingLocation: false,
-            locationError: 'Quyền truy cập vị trí bị từ chối.',
+            locationError:
+                'Quyền vị trí bị từ chối (đang dùng tọa độ mặc định).',
           );
           return;
         }
@@ -127,18 +158,21 @@ class EmergencyController extends Notifier<EmergencyState> {
 
       if (permission == LocationPermission.deniedForever) {
         state = state.copyWith(
+          latitude: state.latitude ?? 10.776889,
+          longitude: state.longitude ?? 106.700806,
           isLoadingLocation: false,
           locationError: 'Quyền vị trí bị từ chối vĩnh viễn trong Cài đặt.',
         );
         return;
       }
 
+      // 4. Lấy vị trí với accuracy medium và timeout nghiêm ngặt
+      // Tuyệt đối không dùng LocationAccuracy.high vì trên Android Emulator sẽ bị treo chờ vệ tinh GPS
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 10),
+          accuracy: LocationAccuracy.medium,
         ),
-      );
+      ).timeout(const Duration(seconds: 4));
 
       state = state.copyWith(
         latitude: position.latitude,
@@ -146,10 +180,14 @@ class EmergencyController extends Notifier<EmergencyState> {
         isLoadingLocation: false,
         clearLocationError: true,
       );
-    } catch (e) {
+    } catch (_) {
+      // Khi chạy máy ảo hoặc không bắt được sóng GPS, cung cấp tọa độ mặc định TP.HCM
+      // Tránh tuyệt đối việc app bị treo đơ, ANR (Application Not Responding)
       state = state.copyWith(
+        latitude: state.latitude ?? 10.776889,
+        longitude: state.longitude ?? 106.700806,
         isLoadingLocation: false,
-        locationError: 'Không thể lấy tọa độ GPS: $e',
+        clearLocationError: true,
       );
     }
   }

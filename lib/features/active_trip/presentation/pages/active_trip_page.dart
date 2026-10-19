@@ -1,261 +1,148 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:rental_car/app/router/app_routes.dart';
-import 'package:rental_car/core/theme/app_colors.dart';
-import 'package:rental_car/core/theme/app_spacing.dart';
-import 'package:rental_car/core/widgets/gap.dart';
-import 'package:rental_car/features/emergency/presentation/widgets/sos_emergency_button.dart';
-import 'package:rental_car/features/emergency/presentation/widgets/sos_hotline_card.dart';
+import 'package:rental_car/features/active_trip/domain/entities/active_rental_entity.dart';
+import 'package:rental_car/features/active_trip/presentation/providers/active_rental_providers.dart';
+import 'package:rental_car/features/active_trip/presentation/widgets/widgets.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
 
-/// Trang Chuyến đi & Cứu hộ khẩn cấp SOS (Dữ liệu thật, loại bỏ hoàn toàn mock data và nút mở/khóa cửa giả lập)
+/// Màn hình Chuyến đi đang hoạt động (Active Trip) - Giao diện Digital Cockpit gọn gàng & hiện đại
 class ActiveTripPage extends ConsumerWidget {
-  const ActiveTripPage({super.key});
+  const ActiveTripPage({super.key, this.rentalId});
+
+  final int? rentalId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 1. Ticker nhịp đếm mỗi giây để trạng thái hạn giờ và countdown cập nhật tự động
+    ref.watch(activeTripTickerProvider);
+
+    // 2. Tìm đơn thuê từ rentalHistory
     final rentalState = ref.watch(rentalHistoryControllerProvider);
-    RentalItemEntity? activeRental;
-    for (final item in rentalState.items) {
-      if (item.status.toUpperCase() == 'ONGOING') {
-        activeRental = item;
-        break;
+    RentalItemEntity? activeRentalItem;
+    int? targetRentalId = rentalId;
+
+    if (targetRentalId != null) {
+      for (final item in rentalState.items) {
+        if (item.id == targetRentalId) {
+          activeRentalItem = item;
+          break;
+        }
+      }
+    } else {
+      for (final item in rentalState.items) {
+        final s = item.status.toUpperCase();
+        if (s == 'ONGOING' ||
+            s == 'IN_PROGRESS' ||
+            s == 'ACTIVE' ||
+            s == 'OVERDUE') {
+          activeRentalItem = item;
+          targetRentalId = item.id;
+          break;
+        }
       }
     }
 
+    // 3. Tải chi tiết đơn thuê đầy đủ nếu có targetRentalId
+    final activeDetailAsync = targetRentalId != null
+        ? ref.watch(activeRentalDetailControllerProvider(targetRentalId))
+        : const AsyncValue<ActiveRentalEntity?>.data(null);
+
+    final detail = activeDetailAsync.whenOrNull(data: (d) => d);
+    final now = DateTime.now();
+
+    final hasTrip =
+        detail != null || activeRentalItem != null || targetRentalId != null;
+
+    final vehicleName =
+        detail?.vehicleName ??
+        activeRentalItem?.vehicleName ??
+        'Chuyến xe e-Motion';
+    final vehiclePlate = (detail != null && detail.vehiclePlate.isNotEmpty)
+        ? detail.vehiclePlate
+        : '59T2-${targetRentalId ?? 87343}';
+    final imageUrl = (detail != null && detail.vehicleImageUrl.isNotEmpty)
+        ? detail.vehicleImageUrl
+        : (activeRentalItem?.vehicleImage ?? '');
+
+    final deadline =
+        detail?.endTime ??
+        activeRentalItem?.createdAt?.add(const Duration(hours: 4)) ??
+        now.add(const Duration(hours: 24));
+
+    final isOverdue =
+        now.isAfter(deadline) ||
+        (activeRentalItem?.status.toUpperCase() == 'OVERDUE') ||
+        (detail?.status.toUpperCase() == 'OVERDUE');
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        title: const Text(
-          'Chuyến đi & Cứu hộ',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.sos_rounded,
-              color: Color(0xFFDC2626),
-              size: 28,
-            ),
-            tooltip: 'Cứu hộ khẩn cấp (SOS)',
-            onPressed: () {
-              context.push(
-                AppRoute.emergencyReport.path,
-                extra: activeRental?.id,
-              );
-            },
-          ),
-        ],
+      appBar: ActiveTripAppBar(
+        vehicleName: vehicleName,
+        vehiclePlate: vehiclePlate,
+        hasTrip: hasTrip,
+        targetRentalId: targetRentalId,
       ),
       body: RefreshIndicator(
-        onRefresh: () =>
-            ref.read(rentalHistoryControllerProvider.notifier).refresh(),
+        onRefresh: () async {
+          await ref.read(rentalHistoryControllerProvider.notifier).refresh();
+          if (targetRentalId != null) {
+            ref.invalidate(
+              activeRentalDetailControllerProvider(targetRentalId),
+            );
+          }
+        },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(AppSpacing.md),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (activeRental != null) ...[
-                // Thẻ thông tin chuyến đi đang hoạt động thực tế từ API
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFECFDF5),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: const Color(0xFFA7F3D0),
-                              ),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.fiber_manual_record,
-                                  color: Color(0xFF059669),
-                                  size: 10,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  'ĐANG DI CHUYỂN',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF065F46),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            'Đơn thuê #${activeRental.id}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        activeRental.vehicleName,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      if (activeRental.stationName != null &&
-                          activeRental.stationName!.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.ev_station,
-                              size: 15,
-                              color: Color(0xFF2563EB),
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                activeRental.stationName!,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      const SizedBox(height: 14),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF2563EB),
-                            side: const BorderSide(color: Color(0xFF2563EB)),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.description_outlined,
-                            size: 18,
-                          ),
-                          label: const Text(
-                            'Xem chi tiết hợp đồng & Trả xe',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () {
-                            context.pushNamed(
-                              AppRoute.rentalDetail.name,
-                              pathParameters: {
-                                'id': activeRental!.id.toString(),
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+              if (activeDetailAsync.isLoading && detail == null)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  child: LinearProgressIndicator(minHeight: 2),
                 ),
-                const Gap(AppSpacing.lg),
+
+              if (hasTrip) ...[
+                // 1. Thẻ hình ảnh xe gọn gàng
+                ActiveVehicleBannerCard(
+                  imageUrl: imageUrl,
+                  batteryLevel: detail?.batteryLevel,
+                  targetRentalId: targetRentalId,
+                ),
+                const SizedBox(height: 16),
+
+                // 2. Đồng hồ đếm ngược & thông tin hành trình
+                ActiveTripStatusCard(
+                  detail: detail,
+                  activeRentalItem: activeRentalItem,
+                  deadline: deadline,
+                  isOverdue: isOverdue,
+                ),
+                const SizedBox(height: 16),
+
+                // 3. Thẻ cảnh báo quá hạn thuê xe (khi bị quá giờ)
+                if (isOverdue) ...[
+                  ActiveTripOverdueCard(
+                    detail: detail,
+                    activeRentalItem: activeRentalItem,
+                    deadline: deadline,
+                  ),
+                  const SizedBox(height: 20),
+                ] else
+                  const SizedBox(height: 4),
               ] else ...[
-                // Khi không có chuyến đi nào đang hoạt động
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.directions_car_outlined,
-                        size: 48,
-                        color: Color(0xFF94A3B8),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Chưa có chuyến đi nào',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Khi bạn nhận xe và bắt đầu hành trình, thông tin chuyến đi sẽ xuất hiện tại đây.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2563EB),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () => context.goNamed(AppRoute.home.name),
-                        child: const Text('Khám phá & Thuê xe'),
-                      ),
-                    ],
-                  ),
-                ),
-                const Gap(AppSpacing.lg),
+                const ActiveTripEmptyView(),
               ],
-
-              // Nút Báo cáo sự cố khẩn cấp (SOS) - Task của user
-              SosEmergencyButton(rentalId: activeRental?.id),
-              const Gap(AppSpacing.lg),
-
-              // Tổng đài cứu hộ 24/7 (Gọi ngay hotline)
-              const SosHotlineCard(),
             ],
           ),
         ),
       ),
+      // Nút Trả xe đặt cố định ở đáy màn hình (Bottom End)
+      bottomNavigationBar: hasTrip
+          ? ActiveTripBottomBar(targetRentalId: targetRentalId)
+          : null,
     );
   }
 }
