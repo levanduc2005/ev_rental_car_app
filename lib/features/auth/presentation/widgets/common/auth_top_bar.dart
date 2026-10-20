@@ -3,10 +3,16 @@ import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/l10n/l10n.dart';
 
 class AuthTopBar extends StatelessWidget {
-  const AuthTopBar({this.title, this.onClose, super.key});
+  const AuthTopBar({
+    this.title,
+    this.onClose,
+    this.showCloseButton = true,
+    super.key,
+  });
 
   final String? title;
   final VoidCallback? onClose;
+  final bool showCloseButton;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +24,8 @@ class AuthTopBar extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           // Nút tròn (X) bên trái
-          Align(
+          if (showCloseButton)
+            Align(
             alignment: Alignment.centerLeft,
             child: Container(
               width: 40,

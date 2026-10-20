@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/theme.dart';
 import 'package:rental_car/features/auth/presentation/widgets/common/auth_top_bar.dart';
 import 'package:rental_car/features/auth/presentation/widgets/login/login_form.dart';
@@ -12,21 +10,15 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
             AuthTopBar(
-              onClose: () {
-                if (context.canPop()) {
-                  context.pop();
-                } else {
-                  context.goNamed(AppRoute.home.name);
-                }
-              },
+              showCloseButton: false,
             ),
-            const Expanded(
+            Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: Column(
