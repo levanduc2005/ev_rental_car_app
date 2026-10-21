@@ -381,35 +381,20 @@ class StaffHandoverController extends Notifier<StaffHandoverState> {
     );
   }
 
-  /// Chụp ảnh hoặc chọn ảnh tự do (Camera hoặc Gallery)
+  /// Chụp ảnh ngoại quan xe (Chỉ dùng Camera)
   Future<void> pickPhotos(ImageSource source) async {
     try {
-      if (source == ImageSource.camera) {
-        final picked = await _imagePicker.pickImage(
-          source: ImageSource.camera,
-          imageQuality: 85,
-          maxWidth: 1600,
-          maxHeight: 1200,
-        );
-        if (picked != null) {
-          await _uploadSinglePhoto(picked.path);
-        }
-      } else {
-        final pickedList = await _imagePicker.pickMultiImage(
-          imageQuality: 85,
-          maxWidth: 1600,
-          maxHeight: 1200,
-        );
-        if (pickedList.isNotEmpty) {
-          for (final picked in pickedList) {
-            await _uploadSinglePhoto(picked.path);
-          }
-        }
+      final picked = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+        maxWidth: 1600,
+        maxHeight: 1200,
+      );
+      if (picked != null) {
+        await _uploadSinglePhoto(picked.path);
       }
     } catch (e) {
-      state = state.copyWith(
-        errorMessage: () => 'Không thể mở máy ảnh hoặc thư viện: $e',
-      );
+      state = state.copyWith(errorMessage: () => 'Không thể mở máy ảnh: $e');
     }
   }
 

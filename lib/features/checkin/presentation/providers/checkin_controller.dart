@@ -332,36 +332,22 @@ class CheckInController extends Notifier<CheckInState> {
     );
   }
 
-  /// Chụp ảnh hoặc chọn ảnh tự do cho nhân viên (không bắt buộc chia góc)
-  Future<void> pickAndUploadPhotos({required ImageSource source}) async {
+  /// Chụp ảnh xe cho nhân viên (Chỉ dùng Camera)
+  Future<void> pickAndUploadPhotos({
+    ImageSource source = ImageSource.camera,
+  }) async {
     try {
-      if (source == ImageSource.camera) {
-        final picked = await _imagePicker.pickImage(
-          source: ImageSource.camera,
-          imageQuality: 85,
-          maxWidth: 1600,
-          maxHeight: 1200,
-        );
-        if (picked != null) {
-          await _uploadSinglePhoto(picked.path);
-        }
-      } else {
-        // Cho phép chọn nhiều ảnh một lúc từ thư viện
-        final pickedList = await _imagePicker.pickMultiImage(
-          imageQuality: 85,
-          maxWidth: 1600,
-          maxHeight: 1200,
-        );
-        if (pickedList.isNotEmpty) {
-          for (final picked in pickedList) {
-            await _uploadSinglePhoto(picked.path);
-          }
-        }
+      final picked = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+        maxWidth: 1600,
+        maxHeight: 1200,
+      );
+      if (picked != null) {
+        await _uploadSinglePhoto(picked.path);
       }
     } catch (e) {
-      state = state.copyWith(
-        errorMessage: () => 'Không thể mở máy ảnh hoặc thư viện: $e',
-      );
+      state = state.copyWith(errorMessage: () => 'Không thể mở máy ảnh: $e');
     }
   }
 
@@ -418,7 +404,7 @@ class CheckInController extends Notifier<CheckInState> {
   Future<void> pickAndUploadImage(CarAngle angle, ImageSource source) async {
     try {
       final picked = await _imagePicker.pickImage(
-        source: source,
+        source: ImageSource.camera,
         imageQuality: 85,
         maxWidth: 1600,
         maxHeight: 1200,

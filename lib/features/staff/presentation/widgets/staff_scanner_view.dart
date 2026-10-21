@@ -212,6 +212,18 @@ class _StaffScannerViewState extends ConsumerState<StaffScannerView> {
                   MobileScanner(
                     controller: _scannerController,
                     onDetect: _handleBarcode,
+                    errorBuilder: (context, error, child) {
+                      return Center(
+                        child: Text(
+                          'Không thể mở camera: ${error.errorCode.name}',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    },
                   ),
                   // Viewfinder Overlay
                   Center(

@@ -24,10 +24,16 @@ class StaffRentalCard extends StatelessWidget {
         return const Color(0xFF16A34A);
       case 'ONGOING':
         return const Color(0xFF2563EB);
+      case 'CHECKING':
+      case 'PENDING_FEE':
+      case 'PENDING_EXTEND_FEE':
+        return const Color(0xFFD97706);
       case 'OVERDUE':
         return const Color(0xFFDC2626);
       case 'COMPLETED':
         return const Color(0xFF059669);
+      case 'CANCELLED':
+        return const Color(0xFF64748B);
       default:
         return const Color(0xFF64748B);
     }
@@ -40,13 +46,21 @@ class StaffRentalCard extends StatelessWidget {
       case 'CONTRACTING':
         return 'Đang ký HĐ';
       case 'CONFIRM':
-        return 'Chờ bàn giao';
+        return 'Đã xác nhận';
       case 'ONGOING':
-        return 'Đang di chuyển';
+        return 'Đang thuê';
+      case 'CHECKING':
+        return 'Đang kiểm tra';
+      case 'PENDING_FEE':
+        return 'Chờ quyết toán';
+      case 'PENDING_EXTEND_FEE':
+        return 'Chờ phí gia hạn';
       case 'OVERDUE':
         return 'Quá hạn trả';
       case 'COMPLETED':
-        return 'Hoàn tất';
+        return 'Hoàn thành';
+      case 'CANCELLED':
+        return 'Đã hủy';
       default:
         return status;
     }
@@ -61,7 +75,13 @@ class StaffRentalCard extends StatelessWidget {
       case 'CONFIRM':
         return 'Chụp ảnh & Bàn giao xe';
       case 'ONGOING':
-        return 'Xem chi tiết chuyến đi';
+        return 'Nhận trả xe (Check-out)';
+      case 'OVERDUE':
+        return 'Nhận trả xe quá hạn';
+      case 'PENDING_FEE':
+        return 'Quyết toán cọc & Thu phí';
+      case 'COMPLETED':
+        return 'Xem chi tiết đơn hoàn tất';
       default:
         return 'Xem chi tiết';
     }
@@ -74,6 +94,13 @@ class StaffRentalCard extends StatelessWidget {
         return Icons.edit_document;
       case 'CONFIRM':
         return Icons.camera_alt_outlined;
+      case 'ONGOING':
+      case 'OVERDUE':
+        return Icons.assignment_return_rounded;
+      case 'PENDING_FEE':
+        return Icons.payments_outlined;
+      case 'COMPLETED':
+        return Icons.task_alt_rounded;
       default:
         return Icons.arrow_forward_rounded;
     }
@@ -86,10 +113,14 @@ class StaffRentalCard extends StatelessWidget {
     final actionLabel = _getActionLabel(rental.status);
     final actionIcon = _getActionIcon(rental.status);
 
-    final isHandoverPhase =
+    final hasAction =
         rental.status.toUpperCase() == 'PENDING' ||
         rental.status.toUpperCase() == 'CONTRACTING' ||
-        rental.status.toUpperCase() == 'CONFIRM';
+        rental.status.toUpperCase() == 'CONFIRM' ||
+        rental.status.toUpperCase() == 'ONGOING' ||
+        rental.status.toUpperCase() == 'OVERDUE' ||
+        rental.status.toUpperCase() == 'PENDING_FEE' ||
+        rental.status.toUpperCase() == 'COMPLETED';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -246,7 +277,7 @@ class StaffRentalCard extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 // Nút hành động
-                if (isHandoverPhase && onTapAction != null) ...[
+                if (hasAction && onTapAction != null) ...[
                   Row(
                     children: [
                       Expanded(

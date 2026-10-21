@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 import 'package:rental_car/features/booking/domain/entities/reservation_entity.dart';
+import 'package:rental_car/features/checkout/presentation/pages/checkout_summary_page.dart';
+import 'package:rental_car/features/checkout/presentation/pages/rental_checkout_page.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/profile/presentation/pages/rental_detail_page.dart';
 import 'package:rental_car/features/staff/presentation/pages/staff_handover_page.dart';
@@ -30,34 +32,68 @@ class _StaffDashboardPageState extends ConsumerState<StaffDashboardPage> {
     });
   }
 
-  void _onStartHandoverReservation(ReservationEntity reservation) {
+  Future<void> _onStartHandoverReservation(
+    ReservationEntity reservation,
+  ) async {
     ref
         .read(staffHandoverControllerProvider.notifier)
         .setup(reservation: reservation);
 
-    Navigator.of(context).push(
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => StaffHandoverPage(reservation: reservation),
       ),
     );
+    if (mounted) {
+      ref.read(staffDashboardControllerProvider.notifier).refreshData();
+    }
   }
 
-  void _onContinueRental(RentalDetailEntity rental) {
+  Future<void> _onContinueRental(RentalDetailEntity rental) async {
     ref.read(staffHandoverControllerProvider.notifier).setup(rental: rental);
 
-    Navigator.of(context).push(
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => StaffHandoverPage(rental: rental),
       ),
     );
+    if (mounted) {
+      ref.read(staffDashboardControllerProvider.notifier).refreshData();
+    }
   }
 
-  void _onOpenRentalDetail(RentalDetailEntity rental) {
-    Navigator.of(context).push(
+  Future<void> _onStartCheckoutRental(RentalDetailEntity rental) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            RentalCheckoutPage(rentalId: rental.id, initialRental: rental),
+      ),
+    );
+    if (mounted) {
+      ref.read(staffDashboardControllerProvider.notifier).refreshData();
+    }
+  }
+
+  Future<void> _onSettleRental(RentalDetailEntity rental) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CheckoutSummaryPage(rentalId: rental.id),
+      ),
+    );
+    if (mounted) {
+      ref.read(staffDashboardControllerProvider.notifier).refreshData();
+    }
+  }
+
+  Future<void> _onOpenRentalDetail(RentalDetailEntity rental) async {
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => RentalDetailPage(rentalId: rental.id),
       ),
     );
+    if (mounted) {
+      ref.read(staffDashboardControllerProvider.notifier).refreshData();
+    }
   }
 
   int _tabToIndex(StaffBottomTab tab) {
@@ -196,8 +232,14 @@ class _StaffDashboardPageState extends ConsumerState<StaffDashboardPage> {
                 StaffRentalsTab(
                   onOpenDetail: _onOpenRentalDetail,
                   onContinueRental: _onContinueRental,
+                  onCheckoutRental: _onStartCheckoutRental,
+                  onSettleRental: _onSettleRental,
                 ),
-                StaffScannerView(onStartHandover: _onStartHandoverReservation),
+                currentTabIndex == 2
+                    ? StaffScannerView(
+                        onStartHandover: _onStartHandoverReservation,
+                      )
+                    : const SizedBox.shrink(),
                 const StaffChecklistsTab(),
                 const StaffVehiclesTab(),
               ],

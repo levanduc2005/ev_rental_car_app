@@ -180,13 +180,27 @@ class CheckinRemoteDataSourceImpl implements CheckinRemoteDataSource {
   @override
   Future<DocuSealContractModel> generateContract(int rentalId) {
     return guardApiCall(() async {
-      final response = await _dio.post<Map<String, dynamic>>(
-        '/rentals/$rentalId/contract',
-      );
+      final response = await _dio.post<dynamic>('/rentals/$rentalId/contract');
 
-      final data = response.data?['data'];
+      final respData = response.data;
+      dynamic data;
+      if (respData is Map<String, dynamic>) {
+        data = respData['data'];
+      } else {
+        data = respData;
+      }
+
       if (data is Map<String, dynamic>) {
         return DocuSealContractModel.fromJson(data);
+      }
+      if (data is String && data.isNotEmpty) {
+        return DocuSealContractModel(
+          rentalId: rentalId,
+          contractId: rentalId,
+          contractCode: 'HD-$rentalId',
+          contractStatus: 'PENDING_SIGNATURE',
+          signingUrl: data,
+        );
       }
       throw const ParsingException(
         'Không nhận được đường dẫn hợp đồng DocuSeal từ máy chủ.',

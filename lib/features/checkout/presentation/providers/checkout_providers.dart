@@ -4,6 +4,8 @@ import 'package:rental_car/features/checkout/data/datasources/checkout_remote_da
 import 'package:rental_car/features/checkout/data/datasources/checkout_remote_data_source_impl.dart';
 import 'package:rental_car/features/checkout/data/repositories/checkout_repository_impl.dart';
 import 'package:rental_car/features/checkout/domain/repositories/checkout_repository.dart';
+import 'package:rental_car/features/checkout/domain/usecases/create_checkout_checklist_usecase.dart';
+import 'package:rental_car/features/checkout/domain/usecases/create_or_update_vehicle_log_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/get_checklists_by_rental_id_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/get_rental_overview_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/process_checkout_payment_usecase.dart';
@@ -36,6 +38,20 @@ final processCheckoutPaymentUseCaseProvider =
 final getChecklistsByRentalIdUseCaseProvider =
     Provider<GetChecklistsByRentalIdUseCase>((ref) {
       return GetChecklistsByRentalIdUseCase(
+        ref.watch(checkoutRepositoryProvider),
+      );
+    });
+
+final createCheckoutChecklistUseCaseProvider =
+    Provider<CreateCheckoutChecklistUseCase>((ref) {
+      return CreateCheckoutChecklistUseCase(
+        ref.watch(checkoutRepositoryProvider),
+      );
+    });
+
+final createOrUpdateVehicleLogUseCaseProvider =
+    Provider<CreateOrUpdateVehicleLogUseCase>((ref) {
+      return CreateOrUpdateVehicleLogUseCase(
         ref.watch(checkoutRepositoryProvider),
       );
     });

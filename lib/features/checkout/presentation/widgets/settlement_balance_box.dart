@@ -25,18 +25,19 @@ class SettlementBalanceBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                isRefund
-                    ? 'TIỀN CỌC HOÀN LẠI THỰC NHẬN:'
-                    : 'SỐ TIỀN CẦN THANH TOÁN THÊM:',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: isRefund
-                      ? const Color(0xFF065F46)
-                      : const Color(0xFF991B1B),
+              Expanded(
+                child: Text(
+                  isRefund ? 'TIỀN CỌC HOÀN LẠI:' : 'SỐ TIỀN CẦN THANH TOÁN:',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isRefund
+                        ? const Color(0xFF065F46)
+                        : const Color(0xFF991B1B),
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Text(
                 currencyFormat.format(balance.abs()),
                 style: TextStyle(

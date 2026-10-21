@@ -186,7 +186,10 @@ class RentalDetailModel {
       id: json['id'] as int? ?? 0,
       vehicleId: vehicleId,
       staffId: staffId,
-      status: json['status'] as String? ?? 'ONGOING',
+      status:
+          (json['status'] ?? json['rentalStatus'] ?? json['rental_status'])
+              as String? ??
+          'ONGOING',
       startTime: json['startTime'] != null
           ? DateTime.tryParse(json['startTime'] as String)
           : null,

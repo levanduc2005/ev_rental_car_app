@@ -77,33 +77,34 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
           initialEndDate: _endDate,
           initialStartTime: _startTime,
           initialEndTime: _endTime,
-          onConfirm: ({
-            required String cityName,
-            required String cityCode,
-            required DateTime startDate,
-            required DateTime endDate,
-            required TimeOfDay startTime,
-            required TimeOfDay endTime,
-          }) {
-            setState(() {
-              _selectedCityName = cityName;
-              _selectedCityCode = cityCode;
-              _startDate = startDate;
-              _endDate = endDate;
-              _startTime = startTime;
-              _endTime = endTime;
-              _hasCustomized = true;
-            });
+          onConfirm:
+              ({
+                required String cityName,
+                required String cityCode,
+                required DateTime startDate,
+                required DateTime endDate,
+                required TimeOfDay startTime,
+                required TimeOfDay endTime,
+              }) {
+                setState(() {
+                  _selectedCityName = cityName;
+                  _selectedCityCode = cityCode;
+                  _startDate = startDate;
+                  _endDate = endDate;
+                  _startTime = startTime;
+                  _endTime = endTime;
+                  _hasCustomized = true;
+                });
 
-            _executeSearch(
-              cityName: cityName,
-              cityCode: cityCode,
-              startDate: startDate,
-              endDate: endDate,
-              startTime: startTime,
-              endTime: endTime,
-            );
-          },
+                _executeSearch(
+                  cityName: cityName,
+                  cityCode: cityCode,
+                  startDate: startDate,
+                  endDate: endDate,
+                  startTime: startTime,
+                  endTime: endTime,
+                );
+              },
         );
       },
     );
@@ -131,16 +132,18 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
     );
 
     // Cập nhật bộ lọc trước khi điều hướng để MapSearchPage nhận diện ngay Frame 0
-    ref.read(vehicleFilterProvider.notifier).updateFilter(
-      const VehicleFilter().copyWith(
-        city: cityCode,
-        location: cityName,
-        startTime: startDateTime,
-        endTime: endDateTime,
-        brand: 'Tất cả',
-        clearSearch: true,
-      ),
-    );
+    ref
+        .read(vehicleFilterProvider.notifier)
+        .updateFilter(
+          const VehicleFilter().copyWith(
+            city: cityCode,
+            location: cityName,
+            startTime: startDateTime,
+            endTime: endDateTime,
+            brand: 'Tất cả',
+            clearSearch: true,
+          ),
+        );
 
     // Điều hướng sang màn hình tìm kiếm & bản đồ xe
     context.goNamed(
@@ -190,10 +193,7 @@ class _RentalHeroSearchCardState extends ConsumerState<RentalHeroSearchCard> {
           children: [
             // Badge giới thiệu
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(20),
@@ -385,7 +385,8 @@ class _SearchBottomSheetModal extends StatefulWidget {
     required DateTime endDate,
     required TimeOfDay startTime,
     required TimeOfDay endTime,
-  }) onConfirm;
+  })
+  onConfirm;
 
   @override
   State<_SearchBottomSheetModal> createState() =>
@@ -515,7 +516,10 @@ class _SearchBottomSheetModalState extends State<_SearchBottomSheetModal> {
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.grey.shade600,
                           ),
-                          child: const Text('Hủy', style: TextStyle(fontSize: 15)),
+                          child: const Text(
+                            'Hủy',
+                            style: TextStyle(fontSize: 15),
+                          ),
                         ),
                         Text(
                           isStart ? 'Chọn giờ nhận xe' : 'Chọn giờ trả xe',
@@ -529,7 +533,10 @@ class _SearchBottomSheetModalState extends State<_SearchBottomSheetModal> {
                           onPressed: () {
                             setState(() {
                               if (isStart) {
-                                _startTime = TimeOfDay(hour: tempHour, minute: 0);
+                                _startTime = TimeOfDay(
+                                  hour: tempHour,
+                                  minute: 0,
+                                );
                                 _adjustEndDateIfTooShort();
                               } else {
                                 _endTime = TimeOfDay(hour: tempHour, minute: 0);
@@ -689,7 +696,9 @@ class _SearchBottomSheetModalState extends State<_SearchBottomSheetModal> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? AppColors.primary : const Color(0xFF0F172A),
+                  color: isSelected
+                      ? AppColors.primary
+                      : const Color(0xFF0F172A),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

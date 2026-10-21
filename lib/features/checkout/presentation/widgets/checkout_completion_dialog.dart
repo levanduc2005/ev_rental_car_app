@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 
+import 'package:rental_car/features/profile/presentation/pages/rental_detail_page.dart';
+
 class CheckoutCompletionDialog extends StatelessWidget {
   const CheckoutCompletionDialog({super.key, required this.rentalId});
 
@@ -20,13 +22,16 @@ class CheckoutCompletionDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      actionsOverflowDirection: VerticalDirection.down,
       title: const Row(
         children: [
           Icon(Icons.check_circle, color: AppColors.success, size: 28),
           SizedBox(width: 8),
-          Text(
-            'Quyết toán thành công!',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+          Expanded(
+            child: Text(
+              'Quyết toán thành công!',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -39,9 +44,13 @@ class CheckoutCompletionDialog extends StatelessWidget {
         TextButton(
           onPressed: () {
             Navigator.pop(context);
-            context.goNamed(AppRoute.home.name);
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.goNamed(AppRoute.home.name);
+            }
           },
-          child: const Text('Về Trang chủ'),
+          child: const Text('Đóng'),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -51,10 +60,13 @@ class CheckoutCompletionDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
             if (rentalId != null && rentalId! > 0) {
-              context.pushReplacementNamed(
-                AppRoute.rentalDetail.name,
-                pathParameters: {'id': rentalId.toString()},
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute<void>(
+                  builder: (_) => RentalDetailPage(rentalId: rentalId!),
+                ),
               );
+            } else if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
             } else {
               context.goNamed(AppRoute.home.name);
             }
