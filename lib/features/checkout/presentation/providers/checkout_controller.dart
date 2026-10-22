@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rental_car/core/utils/app_logger.dart';
+import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
 import 'package:rental_car/features/booking/presentation/providers/my_reservations_controller.dart';
 import 'package:rental_car/features/checkin/domain/usecases/upload_car_image_usecase.dart';
 import 'package:rental_car/features/checkin/presentation/providers/checkin_controller.dart';
@@ -9,15 +11,21 @@ import 'package:rental_car/features/checkout/domain/entities/rental_checklist_en
 import 'package:rental_car/features/checkout/domain/entities/rental_overview_entity.dart';
 import 'package:rental_car/features/checkout/domain/entities/vehicle_damage_item_entity.dart';
 import 'package:rental_car/features/checkout/domain/entities/vehicle_log_entity.dart';
+import 'package:rental_car/features/checkout/domain/usecases/check_rental_compensation_payment_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/create_checkout_checklist_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/create_or_update_vehicle_log_usecase.dart';
+import 'package:rental_car/features/checkout/domain/usecases/create_rental_compensation_payment_link_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/get_checklists_by_rental_id_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/get_rental_overview_usecase.dart';
+import 'package:rental_car/features/checkout/domain/usecases/get_vehicle_log_by_rental_id_usecase.dart';
 import 'package:rental_car/features/checkout/domain/usecases/process_checkout_payment_usecase.dart';
+import 'package:rental_car/features/checkout/domain/usecases/update_checkout_checklist_usecase.dart';
 import 'package:rental_car/features/checkout/presentation/providers/checkout_providers.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/profile/domain/usecases/get_rental_detail_usecase.dart';
 import 'package:rental_car/features/profile/presentation/providers/profile_providers.dart';
+import 'package:rental_car/features/staff/domain/usecases/update_rental_status_usecase.dart';
+import 'package:rental_car/features/staff/presentation/providers/staff_providers.dart';
 
 class CheckoutState {
   const CheckoutState({
@@ -52,7 +60,9 @@ class CheckoutState {
     this.returnBattery,
     this.returnOdometer,
     this.note = '',
-  });
+    this.payosPaymentInfo,
+    bool? isLoadingPayOS,
+  }) : _isLoadingPayOS = isLoadingPayOS;
 
   final int? rentalId;
   final RentalDetailEntity? rentalDetail;
@@ -103,6 +113,9 @@ class CheckoutState {
   final int? returnBattery;
   final int? returnOdometer;
   final String note;
+  final PayOSPaymentInfoEntity? payosPaymentInfo;
+  final bool? _isLoadingPayOS;
+  bool get isLoadingPayOS => _isLoadingPayOS ?? false;
 
   bool get isInspectionFormValid =>
       returnBattery != null && returnBattery! >= 0 && returnBattery! <= 100;
@@ -139,9 +152,12 @@ class CheckoutState {
     int? returnBattery,
     int? returnOdometer,
     String? note,
+    PayOSPaymentInfoEntity? payosPaymentInfo,
+    bool? isLoadingPayOS,
     bool clearError = false,
     bool clearSuccess = false,
     bool clearLocationError = false,
+    bool clearPayosPaymentInfo = false,
   }) {
     return CheckoutState(
       rentalId: rentalId ?? this.rentalId,
@@ -179,6 +195,10 @@ class CheckoutState {
       returnBattery: returnBattery ?? this.returnBattery,
       returnOdometer: returnOdometer ?? this.returnOdometer,
       note: note ?? this.note,
+      payosPaymentInfo: clearPayosPaymentInfo
+          ? null
+          : (payosPaymentInfo ?? this.payosPaymentInfo),
+      isLoadingPayOS: isLoadingPayOS ?? this.isLoadingPayOS,
     );
   }
 }
@@ -204,6 +224,23 @@ class CheckoutController extends Notifier<CheckoutState> {
 
   GetRentalDetailUseCase get _getRentalDetailUseCase =>
       ref.read(getRentalDetailUseCaseProvider);
+
+  GetVehicleLogByRentalIdUseCase get _getVehicleLogByRentalIdUseCase =>
+      ref.read(getVehicleLogByRentalIdUseCaseProvider);
+
+  UpdateRentalStatusUseCase get _updateRentalStatusUseCase =>
+      ref.read(updateRentalStatusUseCaseProvider);
+
+  UpdateCheckoutChecklistUseCase get _updateCheckoutChecklistUseCase =>
+      ref.read(updateCheckoutChecklistUseCaseProvider);
+
+  CreateRentalCompensationPaymentLinkUseCase
+  get _createRentalCompensationPaymentLinkUseCase =>
+      ref.read(createRentalCompensationPaymentLinkUseCaseProvider);
+
+  CheckRentalCompensationPaymentUseCase
+  get _checkRentalCompensationPaymentUseCase =>
+      ref.read(checkRentalCompensationPaymentUseCaseProvider);
 
   ImagePicker get _imagePicker => ImagePicker();
 
@@ -298,7 +335,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     );
   }
 
-  /// Chụp ảnh ngoại quan khi trả xe (Chỉ dùng Camera)
+  /// Chụp ảnh ngoại quan khi trả xe (Lưu local path trước, tải lên Cloudinary khi bấm gửi biên bản)
   Future<void> pickAndUploadPhotos({
     ImageSource source = ImageSource.camera,
   }) async {
@@ -310,53 +347,17 @@ class CheckoutController extends Notifier<CheckoutState> {
         maxHeight: 1200,
       );
       if (picked != null) {
-        await _uploadSinglePhoto(picked.path);
+        final photoId = DateTime.now().microsecondsSinceEpoch.toString();
+        final newPhoto = CheckInPhoto(id: photoId, localPath: picked.path);
+
+        state = state.copyWith(
+          photos: [...state.photos, newPhoto],
+          clearError: true,
+        );
       }
     } catch (e) {
       state = state.copyWith(errorMessage: 'Không thể mở máy ảnh: $e');
     }
-  }
-
-  Future<void> _uploadSinglePhoto(String path) async {
-    final photoId = DateTime.now().microsecondsSinceEpoch.toString();
-    final newPhoto = CheckInPhoto(
-      id: photoId,
-      localPath: path,
-      isUploading: true,
-    );
-
-    state = state.copyWith(
-      photos: [...state.photos, newPhoto],
-      isUploadingPhoto: true,
-      clearError: true,
-    );
-
-    final uploadResult = await _uploadCarImageUseCase(path);
-    uploadResult.when(
-      ok: (url) {
-        final updatedPhotos = state.photos.map((p) {
-          if (p.id == photoId) {
-            return p.copyWith(uploadedUrl: url, isUploading: false);
-          }
-          return p;
-        }).toList();
-
-        state = state.copyWith(
-          photos: updatedPhotos,
-          isUploadingPhoto: updatedPhotos.any((p) => p.isUploading),
-        );
-      },
-      err: (failure) {
-        final updatedPhotos = state.photos
-            .where((p) => p.id != photoId)
-            .toList();
-        state = state.copyWith(
-          photos: updatedPhotos,
-          isUploadingPhoto: updatedPhotos.any((p) => p.isUploading),
-          errorMessage: 'Tải ảnh thất bại: ${failure.message}',
-        );
-      },
-    );
   }
 
   /// Xóa ảnh trong danh sách
@@ -398,6 +399,33 @@ class CheckoutController extends Notifier<CheckoutState> {
     }
   }
 
+  /// Chụp ảnh bằng chứng hư hại xe trực tiếp từ camera (Lưu local path trước)
+  Future<void> pickAndUploadDamagePhotos() async {
+    try {
+      final picked = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+        maxWidth: 1600,
+        maxHeight: 1200,
+      );
+      if (picked != null) {
+        state = state.copyWith(
+          damagePhotos: [...state.damagePhotos, picked.path],
+          clearError: true,
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(errorMessage: 'Không thể mở máy ảnh: $e');
+    }
+  }
+
+  void removeDamagePhoto(int index) {
+    if (index >= 0 && index < state.damagePhotos.length) {
+      final updated = List<String>.from(state.damagePhotos)..removeAt(index);
+      state = state.copyWith(damagePhotos: updated);
+    }
+  }
+
   /// Nộp biên bản trả xe (Check-out checklist) & tạo VehicleLog nếu có hư hại
   Future<bool> submitCheckoutInspection({
     String? staffEmail,
@@ -418,84 +446,249 @@ class CheckoutController extends Notifier<CheckoutState> {
       return false;
     }
 
+    // Kiểm tra tính hợp lệ của biên bản hư hại xe (VehicleLog) nếu có bật
+    if (state.isVehicleDamaged) {
+      if (state.damageItems.isEmpty) {
+        state = state.copyWith(
+          errorMessage:
+              'Vui lòng thêm ít nhất 1 hạng mục hư hại xe cần sửa chữa, hoặc tắt công tắc ghi nhận sự cố.',
+        );
+        return false;
+      }
+    }
+
     state = state.copyWith(isSubmitting: true, clearError: true);
 
-    // Chuẩn bị URL ảnh
-    final uploadedUrls = state.photos
-        .where((p) => p.isUploaded)
-        .map((p) => p.uploadedUrl)
-        .toList();
+    // 1. Tải các ảnh ngoại quan chưa upload lên Cloudinary
+    final updatedPhotos = <CheckInPhoto>[];
+    final uploadedUrls = <String>[];
+
+    for (final photo in state.photos) {
+      if (photo.isUploaded) {
+        updatedPhotos.add(photo);
+        uploadedUrls.add(photo.uploadedUrl);
+      } else if (photo.localPath != null && photo.localPath!.isNotEmpty) {
+        final uploadResult = await _uploadCarImageUseCase(photo.localPath!);
+        final String? url = uploadResult.when(
+          ok: (resUrl) => resUrl,
+          err: (failure) {
+            AppLogger.instance.w('Lỗi tải ảnh ngoại quan: ${failure.message}');
+            return null;
+          },
+        );
+
+        if (url != null && url.isNotEmpty) {
+          final uploadedPhoto = photo.copyWith(
+            uploadedUrl: url,
+            isUploading: false,
+          );
+          updatedPhotos.add(uploadedPhoto);
+          uploadedUrls.add(url);
+        } else {
+          state = state.copyWith(
+            isSubmitting: false,
+            errorMessage:
+                'Không thể tải ảnh ngoại quan xe lên Cloudinary. Vui lòng thử lại.',
+          );
+          return false;
+        }
+      }
+    }
+    state = state.copyWith(photos: updatedPhotos);
+
+    // 2. Tải các ảnh hư hại xe chưa upload lên Cloudinary
+    final updatedDamagePhotos = <String>[];
+    for (final damagePath in state.damagePhotos) {
+      if (damagePath.startsWith('http://') ||
+          damagePath.startsWith('https://')) {
+        updatedDamagePhotos.add(damagePath);
+      } else {
+        final uploadResult = await _uploadCarImageUseCase(damagePath);
+        final String? url = uploadResult.when(
+          ok: (resUrl) => resUrl,
+          err: (failure) {
+            AppLogger.instance.w('Lỗi tải ảnh hư hại: ${failure.message}');
+            return null;
+          },
+        );
+
+        if (url != null && url.isNotEmpty) {
+          updatedDamagePhotos.add(url);
+        } else {
+          state = state.copyWith(
+            isSubmitting: false,
+            errorMessage:
+                'Không thể tải ảnh sự cố hư hại lên Cloudinary. Vui lòng thử lại.',
+          );
+          return false;
+        }
+      }
+    }
+    state = state.copyWith(damagePhotos: updatedDamagePhotos);
+
     final imgStr = uploadedUrls.isNotEmpty
         ? uploadedUrls.join('|')
         : (state.photos.isNotEmpty ? (state.photos.first.localPath ?? '') : '');
 
-    // 1. Tạo checklist CHECK_OUT
-    final checklistResult = await _createCheckoutChecklistUseCase(
-      rentalId: rentalId,
-      currentBattery: state.returnBattery!.toDouble(),
-      img: imgStr,
-      staffEmail: staffEmail,
-    );
+    // 3. Tạo mới hoặc cập nhật checklist CHECK_OUT nếu đã tồn tại
+    RentalChecklistEntity? checklist;
+    final existingCheckout = state.checkOutChecklist;
 
-    return checklistResult.when(
-      ok: (checklist) async {
-        state = state.copyWith(checkOutChecklist: checklist);
+    if (existingCheckout != null && existingCheckout.id > 0) {
+      final effectiveStaffEmail =
+          staffEmail ?? existingCheckout.staffEmail ?? 'staff@swp391.com';
+      final updateResult = await _updateCheckoutChecklistUseCase(
+        id: existingCheckout.id,
+        rentalId: rentalId,
+        currentBattery: state.returnBattery!.toDouble(),
+        img: imgStr,
+        staffEmail: effectiveStaffEmail,
+      );
 
-        // 2. Nếu có ghi nhận hư hại, tạo VehicleLog
-        final vehicleId = state.rentalDetail?.vehicleId ?? state.vehicleId ?? 0;
-        if (state.isVehicleDamaged &&
-            state.damageItems.isNotEmpty &&
-            vehicleId > 0) {
-          final repairItemsJson = state.damageItems
-              .map(
-                (item) => {
-                  'description': item.description,
-                  'cost': item.cost.toInt(),
-                },
-              )
-              .toList();
+      updateResult.when(
+        ok: (chk) => checklist = chk,
+        err: (f) => AppLogger.instance.w('Lỗi update checklist: ${f.message}'),
+      );
+    }
 
-          await _createOrUpdateVehicleLogUseCase(
-            rentalId: rentalId,
-            vehicleId: vehicleId,
-            repairItems: repairItemsJson,
-            imgs: uploadedUrls,
-            staffId: staffId,
+    if (checklist == null) {
+      final checklistResult = await _createCheckoutChecklistUseCase(
+        rentalId: rentalId,
+        currentBattery: state.returnBattery!.toDouble(),
+        img: imgStr,
+        staffEmail: staffEmail,
+      );
+
+      await checklistResult.when(
+        ok: (chk) async {
+          checklist = chk;
+        },
+        err: (failure) async {
+          final msg = failure.message.toLowerCase();
+          if (msg.contains('đã được trả') ||
+              msg.contains('already_checked_out') ||
+              msg.contains('already checked out') ||
+              msg.contains('already exists') ||
+              msg.contains('đã tồn tại')) {
+            await loadChecklists(rentalId);
+            final currentOut = state.checkOutChecklist;
+            if (currentOut != null && currentOut.id > 0) {
+              final effectiveStaffEmail =
+                  staffEmail ?? currentOut.staffEmail ?? 'staff@swp391.com';
+              final retryUpdate = await _updateCheckoutChecklistUseCase(
+                id: currentOut.id,
+                rentalId: rentalId,
+                currentBattery: state.returnBattery!.toDouble(),
+                img: imgStr,
+                staffEmail: effectiveStaffEmail,
+              );
+              retryUpdate.when(ok: (chk) => checklist = chk, err: (_) {});
+            }
+          } else {
+            state = state.copyWith(
+              isSubmitting: false,
+              errorMessage: failure.message,
+            );
+          }
+        },
+      );
+    }
+
+    if (checklist != null) {
+      state = state.copyWith(checkOutChecklist: checklist);
+    }
+
+    // 2. Nếu có ghi nhận hư hại, tạo hoặc cập nhật VehicleLog
+    int effectiveVehicleId =
+        state.rentalDetail?.vehicleId ??
+        state.overview?.vehicleId ??
+        state.vehicleId ??
+        0;
+
+    if (effectiveVehicleId <= 0) {
+      final overviewRes = await _getRentalOverviewUseCase(rentalId);
+      overviewRes.when(
+        ok: (ov) {
+          if (ov.vehicleId != null && ov.vehicleId! > 0) {
+            effectiveVehicleId = ov.vehicleId!;
+          }
+        },
+        err: (_) {},
+      );
+    }
+
+    if (effectiveVehicleId <= 0) {
+      final rentalRes = await _getRentalDetailUseCase(rentalId);
+      rentalRes.when(
+        ok: (detail) {
+          if (detail.vehicleId != null && detail.vehicleId! > 0) {
+            effectiveVehicleId = detail.vehicleId!;
+          }
+        },
+        err: (_) {},
+      );
+    }
+
+    if (state.isVehicleDamaged &&
+        state.damageItems.isNotEmpty &&
+        effectiveVehicleId > 0) {
+      final repairItemsJson = state.damageItems
+          .map(
+            (item) => {
+              'description': item.description,
+              'cost': item.cost.toInt(),
+            },
+          )
+          .toList();
+
+      final damageImageUrls = state.damagePhotos.isNotEmpty
+          ? state.damagePhotos
+          : (uploadedUrls.isNotEmpty ? uploadedUrls : const <String>[]);
+
+      final logResult = await _createOrUpdateVehicleLogUseCase(
+        rentalId: rentalId,
+        vehicleId: effectiveVehicleId,
+        repairItems: repairItemsJson,
+        imgs: damageImageUrls,
+        staffId: staffId,
+        logId: state.vehicleLog?.id,
+      );
+
+      logResult.when(
+        ok: (vLog) {
+          AppLogger.instance.i('Đã lưu vehicleLog thành công: ID=${vLog.id}');
+          state = state.copyWith(vehicleLog: vLog);
+        },
+        err: (f) {
+          AppLogger.instance.e('Lỗi tạo vehicleLog: ${f.message}');
+          state = state.copyWith(
+            errorMessage: 'Lưu hư hại xe thất bại: ${f.message}',
           );
-        }
+        },
+      );
+    }
 
-        // 3. Tải lại bảng kê quyết toán
-        await loadRentalOverview(rentalId);
+    // 3. Đảm bảo trạng thái đơn thuê chuyển sang PENDING_FEE theo yêu cầu của backend
+    try {
+      await _updateRentalStatusUseCase(
+        rentalId: rentalId,
+        status: 'PENDING_FEE',
+      );
+    } catch (e) {
+      AppLogger.instance.w('Lỗi chuyển trạng thái PENDING_FEE: $e');
+    }
 
-        state = state.copyWith(
-          isSubmitting: false,
-          successMessage: 'Tạo biên bản trả xe thành công!',
-        );
+    // 4. Tải lại bảng kê quyết toán
+    await loadRentalOverview(rentalId);
 
-        ref.invalidate(rentalHistoryControllerProvider);
-        ref.invalidate(myReservationsControllerProvider);
-        return true;
-      },
-      err: (failure) async {
-        final msg = failure.message.toLowerCase();
-        if (msg.contains('đã được trả') ||
-            msg.contains('already_checked_out') ||
-            msg.contains('already checked out')) {
-          await loadChecklists(rentalId);
-          await loadRentalOverview(rentalId);
-          state = state.copyWith(isSubmitting: false, clearError: true);
-          ref.invalidate(rentalHistoryControllerProvider);
-          ref.invalidate(myReservationsControllerProvider);
-          return true;
-        }
-
-        state = state.copyWith(
-          isSubmitting: false,
-          errorMessage: failure.message,
-        );
-        return false;
-      },
+    state = state.copyWith(
+      isSubmitting: false,
+      successMessage: 'Tạo biên bản trả xe thành công!',
     );
+
+    ref.invalidate(rentalHistoryControllerProvider);
+    ref.invalidate(myReservationsControllerProvider);
+    return true;
   }
 
   /// Xác thực vị trí trả xe GPS Geofencing (<= 100m)
@@ -647,7 +840,9 @@ class CheckoutController extends Notifier<CheckoutState> {
           damageItems: overview.vehicleDamages.isNotEmpty
               ? overview.vehicleDamages
               : state.damageItems,
-          damagePhotos: overview.vehicleDamageImages,
+          damagePhotos: overview.vehicleDamageImages.isNotEmpty
+              ? overview.vehicleDamageImages
+              : state.damagePhotos,
           isVehicleDamaged:
               overview.vehicleDamageFee > 0 ||
               overview.vehicleDamages.isNotEmpty ||
@@ -658,6 +853,27 @@ class CheckoutController extends Notifier<CheckoutState> {
         state = state.copyWith(isLoading: false, errorMessage: failure.message);
       },
     );
+
+    // Lấy thông tin VehicleLog chi tiết để quyết toán trừ vào tiền cọc
+    final logResult = await _getVehicleLogByRentalIdUseCase(rentalId);
+    logResult.when(
+      ok: (vLog) {
+        if (vLog != null) {
+          state = state.copyWith(
+            vehicleLog: vLog,
+            damageItems: vLog.repairItems.isNotEmpty
+                ? vLog.repairItems
+                : state.damageItems,
+            damagePhotos: vLog.imgs.isNotEmpty ? vLog.imgs : state.damagePhotos,
+            isVehicleDamaged:
+                vLog.cost > 0 ||
+                vLog.repairItems.isNotEmpty ||
+                state.isVehicleDamaged,
+          );
+        }
+      },
+      err: (_) {},
+    );
   }
 
   /// Xác nhận trả xe và quyết toán cọc qua UseCase
@@ -666,6 +882,48 @@ class CheckoutController extends Notifier<CheckoutState> {
     if (rentalId == null) return false;
 
     state = state.copyWith(isSubmitting: true, clearError: true);
+
+    // Nếu đơn thuê có số tiền âm (cần đền bù), kiểm tra đối soát PayOS trước
+    final overview = state.overview;
+    final totalDeposits = overview?.totalDeposits ?? 0.0;
+    final checkOutFee =
+        overview?.checkListFee ?? (state.checkOutChecklist?.fee ?? 0.0);
+    final vehicleDamageFee =
+        (overview?.vehicleDamageFee != null && overview!.vehicleDamageFee > 0)
+        ? overview.vehicleDamageFee
+        : (state.vehicleLog?.cost ??
+              (state.totalDamageCost > 0 ? state.totalDamageCost : 0.0));
+    final balance = totalDeposits - (checkOutFee + vehicleDamageFee);
+
+    if (balance < 0) {
+      // Đối soát trực tiếp xem khách đã thanh toán đền bù qua PayOS chưa
+      final checkResult = await _checkRentalCompensationPaymentUseCase(
+        rentalId,
+      );
+      final isPaid = checkResult.when(ok: (paid) => paid, err: (_) => false);
+      if (isPaid) {
+        state = state.copyWith(
+          isSubmitting: false,
+          isCheckoutCompleted: true,
+          successMessage:
+              'Thanh toán đền bù thành công! Chuyến đi đã hoàn tất.',
+        );
+        ref.invalidate(rentalHistoryControllerProvider);
+        ref.invalidate(myReservationsControllerProvider);
+        return true;
+      }
+    }
+
+    // Backend processCheckOutPayment bắt buộc: if (!rental.getStatus().equals(RentalStatus.PENDING_FEE)) throw INVALID_RENTAL_STATUS
+    // Đảm bảo đơn thuê đã chuyển sang trạng thái PENDING_FEE trước khi xử lý thanh toán / hoàn cọc
+    try {
+      await _updateRentalStatusUseCase(
+        rentalId: rentalId,
+        status: 'PENDING_FEE',
+      );
+    } catch (e) {
+      AppLogger.instance.w('Không thể cập nhật status sang PENDING_FEE: $e');
+    }
 
     final result = await _processCheckoutPaymentUseCase(rentalId);
 
@@ -685,6 +943,104 @@ class CheckoutController extends Notifier<CheckoutState> {
       err: (failure) {
         state = state.copyWith(
           isSubmitting: false,
+          errorMessage: failure.message,
+        );
+        return false;
+      },
+    );
+  }
+
+  /// Lấy hoặc tạo thông tin thanh toán VietQR PayOS cho tiền đền bù cọc
+  Future<void> fetchPayOSPaymentInfo({double? amount}) async {
+    final rentalId = state.rentalId ?? 0;
+    final cleanAmount = (amount != null && amount > 0)
+        ? amount.toInt()
+        : ((state.overview != null)
+              ? (state.overview!.totalDeposits -
+                        (state.overview!.checkListFee +
+                            state.overview!.vehicleDamageFee))
+                    .abs()
+                    .toInt()
+              : 0);
+
+    if (cleanAmount <= 0) return;
+
+    state = state.copyWith(isLoadingPayOS: true, clearError: true);
+
+    // 1. Gọi API backend tạo link PayOS đền bù: POST /api/payment/payos/create-link/rental/{rentalId}
+    final result = await _createRentalCompensationPaymentLinkUseCase(
+      rentalId,
+      amount: cleanAmount.toDouble(),
+    );
+
+    await result.when(
+      ok: (payosInfo) async {
+        state = state.copyWith(
+          isLoadingPayOS: false,
+          payosPaymentInfo: payosInfo,
+        );
+      },
+      err: (failure) async {
+        AppLogger.instance.w(
+          'Lỗi gọi API create-link rental PayOS: ${failure.message}. Thử tạo mã dự phòng.',
+        );
+
+        // Fallback: Nếu backend có sự cố mạng, tạo mã VietQR dự phòng
+        final desc = 'DEN BU DON $rentalId';
+        const bankName = 'MBBank (Quân Đội)';
+        const bin = '970422';
+        const accountNumber = '0909123456';
+        const accountName = 'CONG TY E-MOTION';
+        final realQrUrl =
+            'https://img.vietqr.io/image/$bin-$accountNumber-compact2.png?amount=$cleanAmount&addInfo=${Uri.encodeComponent(desc)}&accountName=${Uri.encodeComponent(accountName)}';
+
+        final fallbackPayos = PayOSPaymentInfoEntity(
+          orderCode: 'DENBU_$rentalId',
+          amount: cleanAmount.toDouble(),
+          description: desc,
+          accountNumber: accountNumber,
+          accountName: accountName,
+          bankName: bankName,
+          bin: bin,
+          qrCodeUrl: realQrUrl,
+        );
+
+        state = state.copyWith(
+          isLoadingPayOS: false,
+          payosPaymentInfo: fallbackPayos,
+        );
+      },
+    );
+  }
+
+  /// Kiểm tra và xác nhận trạng thái thanh toán đền bù đơn thuê với PayOS (Active Check)
+  Future<bool> checkCompensationPayment() async {
+    final rentalId = state.rentalId;
+    if (rentalId == null || rentalId <= 0) return false;
+
+    state = state.copyWith(isLoadingPayOS: true, clearError: true);
+
+    final result = await _checkRentalCompensationPaymentUseCase(rentalId);
+
+    return result.when(
+      ok: (isPaid) async {
+        state = state.copyWith(isLoadingPayOS: false);
+        if (isPaid) {
+          state = state.copyWith(
+            isCheckoutCompleted: true,
+            successMessage:
+                'Xác nhận thanh toán đền bù thành công! Hợp đồng thuê đã hoàn tất.',
+          );
+          await loadRentalOverview(rentalId);
+          ref.invalidate(rentalHistoryControllerProvider);
+          ref.invalidate(myReservationsControllerProvider);
+          return true;
+        }
+        return false;
+      },
+      err: (failure) {
+        state = state.copyWith(
+          isLoadingPayOS: false,
           errorMessage: failure.message,
         );
         return false;

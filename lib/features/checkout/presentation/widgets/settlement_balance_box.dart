@@ -27,13 +27,13 @@ class SettlementBalanceBox extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  isRefund ? 'TIỀN CỌC HOÀN LẠI:' : 'SỐ TIỀN CẦN THANH TOÁN:',
+                  isRefund ? 'TIỀN CỌC HOÀN LẠI:' : 'TIỀN PHẢI ĐỀN BÙ:',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: isRefund
                         ? const Color(0xFF065F46)
-                        : const Color(0xFF991B1B),
+                        : const Color(0xFFDC2626),
                   ),
                 ),
               ),
@@ -41,11 +41,11 @@ class SettlementBalanceBox extends StatelessWidget {
               Text(
                 currencyFormat.format(balance.abs()),
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: isRefund
                       ? const Color(0xFF065F46)
-                      : const Color(0xFF991B1B),
+                      : const Color(0xFFDC2626),
                 ),
               ),
             ],
@@ -53,8 +53,8 @@ class SettlementBalanceBox extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             isRefund
-                ? 'Hệ thống sẽ hoàn trả tự động số tiền cọc còn lại về tài khoản ngân hàng của bạn.'
-                : 'Phụ phí phát sinh vượt quá tiền cọc, vui lòng bấm bên dưới để thanh toán nốt phần chênh lệch.',
+                ? 'Hệ thống sẽ hoàn trả tự động số tiền cọc còn lại sau khi khấu trừ về tài khoản ngân hàng của bạn.'
+                : 'Tiền cọc bị khấu trừ âm do chi phí hư hại xe và phụ phí trả xe vượt quá tiền cọc. Vui lòng thanh toán số tiền đền bù bên dưới.',
             style: TextStyle(
               fontSize: 11,
               color: isRefund

@@ -97,7 +97,12 @@ class CarInspectionPhotosSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uploadedCount = photos.where((p) => p.isUploaded).length;
+    final totalPhotosCount = photos
+        .where(
+          (p) =>
+              p.isUploaded || (p.localPath != null && p.localPath!.isNotEmpty),
+        )
+        .length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -137,17 +142,17 @@ class CarInspectionPhotosSection extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: uploadedCount > 0
+                  color: totalPhotosCount > 0
                       ? const Color(0xFFDCFCE7)
                       : const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '$uploadedCount ảnh đã chụp',
+                  '$totalPhotosCount ảnh đã chụp',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: uploadedCount > 0
+                    color: totalPhotosCount > 0
                         ? const Color(0xFF16A34A)
                         : const Color(0xFF2563EB),
                   ),

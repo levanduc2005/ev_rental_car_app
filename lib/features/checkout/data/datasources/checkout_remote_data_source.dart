@@ -1,3 +1,4 @@
+import 'package:rental_car/features/booking/data/models/payos_payment_info_model.dart';
 import 'package:rental_car/features/checkout/data/models/rental_checklist_model.dart';
 import 'package:rental_car/features/checkout/data/models/rental_overview_model.dart';
 import 'package:rental_car/features/checkout/data/models/vehicle_log_model.dart';
@@ -11,6 +12,15 @@ abstract class CheckoutRemoteDataSource {
     required double currentBattery,
     required String img,
     String? staffEmail,
+  });
+
+  Future<RentalChecklistModel> updateChecklist({
+    required int id,
+    required int rentalId,
+    required String type,
+    required double currentBattery,
+    required String img,
+    required String staffEmail,
   });
 
   Future<VehicleLogModel?> getVehicleLogByRentalId(int rentalId);
@@ -27,4 +37,11 @@ abstract class CheckoutRemoteDataSource {
   Future<RentalOverviewModel> getRentalOverview(int rentalId);
 
   Future<Map<String, dynamic>> processCheckoutPayment(int rentalId);
+
+  Future<PayOSPaymentInfoModel> createRentalCompensationPaymentLink(
+    int rentalId, {
+    double? amount,
+  });
+
+  Future<bool> checkRentalCompensationPayment(int rentalId);
 }

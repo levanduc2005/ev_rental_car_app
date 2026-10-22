@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RentalBottomActionBar extends StatelessWidget {
   const RentalBottomActionBar({
@@ -121,66 +120,8 @@ class RentalBottomActionBar extends StatelessWidget {
 
             // 3. Giai đoạn PENDING_FEE -> Thanh toán phụ phí phát sinh
             if (isPendingFee) ...[
-              if (rental.vehicleDamages.isNotEmpty ||
-                  rental.vehicleDamageCost > 0) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF2563EB),
-                          side: const BorderSide(color: Color(0xFF2563EB)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.pushNamed(
-                            AppRoute.returnVehicleLog.name,
-                            extra: rental.id,
-                          );
-                        },
-                        icon: const Icon(Icons.car_repair_rounded, size: 18),
-                        label: const Text(
-                          'Biên bản hư hại',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD97706),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.pushNamed(
-                            AppRoute.checkoutSummary.name,
-                            extra: rental.id,
-                          );
-                        },
-                        icon: const Icon(Icons.receipt_long_rounded, size: 18),
-                        label: const Text(
-                          'Bảng quyết toán',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ] else ...[
+              if (rental.paymentUrl != null &&
+                  rental.paymentUrl!.isNotEmpty) ...[
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD97706),
@@ -190,105 +131,89 @@ class RentalBottomActionBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    context.pushNamed(
-                      AppRoute.checkoutSummary.name,
-                      extra: rental.id,
-                    );
+                  onPressed: () async {
+                    final uri = Uri.tryParse(rental.paymentUrl!);
+                    if (uri != null && await canLaunchUrl(uri)) {
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
                   },
-                  icon: const Icon(Icons.receipt_long_rounded, size: 18),
+                  icon: const Icon(Icons.payment_rounded, size: 18),
                   label: const Text(
-                    'Bảng quyết toán cọc',
+                    'Thanh toán phụ phí qua PayOS',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ] else ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFBEB),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFFDE68A)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.pending_actions_rounded,
+                        color: Color(0xFFD97706),
+                        size: 20,
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Đơn thuê đang chờ xử lý phụ phí phát sinh. Vui lòng liên hệ nhân viên trạm.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF92400E),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ],
 
-            // 4. Giai đoạn COMPLETED -> Xem bảng kê quyết toán & Tiền hoàn cọc
+            // 4. Giai đoạn COMPLETED -> Trạng thái hoàn tất quyết toán
             if (isCompleted) ...[
-              if (rental.vehicleDamages.isNotEmpty ||
-                  rental.vehicleDamageCost > 0) ...[
-                Row(
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFBBF7D0)),
+                ),
+                child: const Row(
                   children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFDC2626),
-                          side: const BorderSide(color: Color(0xFFDC2626)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.pushNamed(
-                            AppRoute.returnVehicleLog.name,
-                            extra: rental.id,
-                          );
-                        },
-                        icon: const Icon(Icons.car_repair_rounded, size: 18),
-                        label: const Text(
-                          'Biên bản hư hại',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: Color(0xFF16A34A),
+                      size: 20,
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF16A34A),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.pushNamed(
-                            AppRoute.checkoutSummary.name,
-                            extra: rental.id,
-                          );
-                        },
-                        icon: const Icon(Icons.receipt_long_rounded, size: 18),
-                        label: const Text(
-                          'Hóa đơn quyết toán',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      child: Text(
+                        'Đơn thuê đã hoàn tất và kết thúc quyết toán.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF15803D),
                         ),
                       ),
                     ),
                   ],
                 ),
-              ] else ...[
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF16A34A),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    context.pushNamed(
-                      AppRoute.checkoutSummary.name,
-                      extra: rental.id,
-                    );
-                  },
-                  icon: const Icon(Icons.receipt_long_rounded, size: 20),
-                  label: const Text(
-                    'Xem bảng kê quyết toán & Hoàn cọc',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
+              ),
             ],
           ],
         ),

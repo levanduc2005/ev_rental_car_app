@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:rental_car/core/config/app_config.dart';
 import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/core/network/api_handler.dart';
+import 'package:rental_car/core/utils/app_logger.dart';
 import 'package:rental_car/features/checkin/data/models/docuseal_contract_model.dart';
 import 'package:rental_car/features/checkin/data/models/license_status_model.dart';
 import 'package:rental_car/features/checkin/data/models/pickup_checklist_model.dart';
@@ -131,7 +132,35 @@ class CheckinRemoteDataSourceImpl implements CheckinRemoteDataSource {
           errorMsg = errObj['message'] as String? ?? errorMsg;
         }
       }
+
+      final isNetworkOrDnsError =
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          errorMsg.toLowerCase().contains('failed host lookup') ||
+          errorMsg.toLowerCase().contains('socketexception') ||
+          errorMsg.toLowerCase().contains('connection refused');
+
+      if (!AppConfig.isProd && isNetworkOrDnsError) {
+        AppLogger.instance.w(
+          'Không thể kết nối đến api.cloudinary.com ($errorMsg). '
+          'Sử dụng URL ảnh mẫu dự phòng cho môi trường dev/staging.',
+        );
+        return 'https://res.cloudinary.com/${AppConfig.cloudinaryCloudName}/image/upload/v1700000000/rental_checklists/car_sample_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      }
+
       throw ServerException(message: errorMsg);
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      final errStr = e.toString().toLowerCase();
+      if (!AppConfig.isProd &&
+          (errStr.contains('failed host lookup') ||
+              errStr.contains('socketexception'))) {
+        AppLogger.instance.w(
+          'Lỗi kết nối Cloudinary: $e. Sử dụng URL ảnh mẫu cho môi trường dev.',
+        );
+        return 'https://res.cloudinary.com/${AppConfig.cloudinaryCloudName}/image/upload/v1700000000/rental_checklists/car_sample_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      }
+      throw ServerException(message: 'Lỗi tải ảnh lên máy chủ: $e');
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rental_car/core/widgets/widgets.dart';
 import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
 import 'package:rental_car/features/booking/presentation/utils/booking_formatters.dart';
@@ -79,32 +80,79 @@ class StaffPayOSPaymentCard extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                payos.qrCodeUrl,
-                width: 200,
-                height: 200,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => const SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.qr_code_rounded,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Mã QR PayOS',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
+              child: Builder(
+                builder: (context) {
+                  var url = payos.qrCodeUrl;
+                  if (url.contains('/null-')) {
+                    final bin =
+                        (payos.bin != null &&
+                            payos.bin!.isNotEmpty &&
+                            payos.bin != 'null')
+                        ? payos.bin!
+                        : '970422';
+                    url = url.replaceAll('/null-', '/$bin-');
+                  }
+
+                  final isSvg = url.endsWith('.svg') || url.contains('.svg?');
+
+                  Widget fallback() => const SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.qr_code_rounded,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Mã QR PayOS',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+
+                  if (isSvg) {
+                    return SvgPicture.network(
+                      url,
+                      width: 200,
+                      height: 200,
+                      placeholderBuilder: (_) => const SizedBox(
+                        width: 200,
+                        height: 200,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                      errorBuilder: (context, error, stackTrace) => fallback(),
+                    );
+                  }
+
+                  return Image.network(
+                    url,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      final fallbackData = payos.checkoutUrl;
+                      if (fallbackData != null && fallbackData.isNotEmpty) {
+                        final qrServerUrl =
+                            'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${Uri.encodeComponent(fallbackData)}';
+                        return Image.network(
+                          qrServerUrl,
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => fallback(),
+                        );
+                      }
+                      return fallback();
+                    },
+                  );
+                },
               ),
             ),
           ),

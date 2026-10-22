@@ -23,6 +23,7 @@ class RentalDetailModel {
     this.stationAddress,
     this.stationLatitude,
     this.stationLongitude,
+    this.reservationId,
     this.reservationCode,
     this.userEmail,
     this.contractStatus,
@@ -65,6 +66,7 @@ class RentalDetailModel {
   final String? stationAddress;
   final double? stationLatitude;
   final double? stationLongitude;
+  final int? reservationId;
   final String? reservationCode;
   final String? userEmail;
   final String? contractStatus;
@@ -141,14 +143,23 @@ class RentalDetailModel {
     }
 
     // 4. Biên bản thiệt hại xe (VehicleLog)
-    final vl = json['vehicleLog'] as Map<String, dynamic>?;
-    double dmgCost = 0.0;
+    Map<String, dynamic>? vl = json['vehicleLog'] as Map<String, dynamic>?;
+    if (vl == null) {
+      final vls = json['vehicleLogs'] as List?;
+      if (vls != null && vls.isNotEmpty && vls.first is Map<String, dynamic>) {
+        vl = vls.first as Map<String, dynamic>;
+      }
+    }
+
+    double dmgCost =
+        (json['vehicleDamageFee'] as num?)?.toDouble() ??
+        (json['vehicleDamageCost'] as num?)?.toDouble() ??
+        (vl?['cost'] as num?)?.toDouble() ??
+        0.0;
     final damages = <VehicleDamageItemEntity>[];
     final dmgImgs = <String>[];
 
     if (vl != null) {
-      dmgCost = (vl['cost'] as num?)?.toDouble() ?? 0.0;
-
       final items = vl['repairItems'] as List?;
       if (items != null) {
         for (final item in items) {
@@ -174,16 +185,43 @@ class RentalDetailModel {
       }
     }
 
+    // Nếu có danh sách vehicleDamages trực tiếp từ backend
+    final directDamages = json['vehicleDamages'] as List?;
+    if (directDamages != null && damages.isEmpty) {
+      for (final item in directDamages) {
+        if (item is Map<String, dynamic>) {
+          damages.add(
+            VehicleDamageItemEntity(
+              description: item['description'] as String? ?? 'Hư hại phụ tùng',
+              cost: (item['cost'] as num?)?.toDouble() ?? 0.0,
+            ),
+          );
+        }
+      }
+    }
+
+    if (dmgCost == 0.0 && damages.isNotEmpty) {
+      dmgCost = damages.fold(0.0, (acc, item) => acc + item.cost);
+    }
+
     // 5. Nhân viên phụ trách
     final staff = json['staff'] as Map<String, dynamic>?;
     final staffId = (staff?['id'] as num?)?.toInt();
     final staffName = staff?['name'] as String?;
     final staffPhone = staff?['phone'] as String?;
 
-    final vehicleId = (v?['id'] as num?)?.toInt();
+    final vehicleId =
+        (v?['id'] as num?)?.toInt() ?? (json['vehicleId'] as num?)?.toInt();
+
+    final res = json['reservation'] as Map<String, dynamic>?;
+    final resId =
+        (res?['id'] as num?)?.toInt() ??
+        (json['reservationId'] as num?)?.toInt();
+    final resCode =
+        (res?['code'] as String?) ?? (json['reservationCode'] as String?);
 
     return RentalDetailModel(
-      id: json['id'] as int? ?? 0,
+      id: (json['id'] as num?)?.toInt() ?? 0,
       vehicleId: vehicleId,
       staffId: staffId,
       status:
@@ -197,7 +235,7 @@ class RentalDetailModel {
           ? DateTime.tryParse(json['endTime'] as String)
           : null,
       rentFee: (json['rentFee'] as num?)?.toDouble() ?? 0.0,
-      discountPoint: json['discountPoint'] as int? ?? 0,
+      discountPoint: (json['discountPoint'] as num?)?.toInt() ?? 0,
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'] as String)
           : null,
@@ -213,7 +251,8 @@ class RentalDetailModel {
       stationAddress: sAddress,
       stationLatitude: sLat,
       stationLongitude: sLng,
-      reservationCode: json['reservationCode'] as String?,
+      reservationId: resId,
+      reservationCode: resCode,
       userEmail: json['userEmail'] as String?,
       contractStatus: json['contractStatus'] as String?,
       contractUrl: json['contractUrl'] as String?,
@@ -256,6 +295,7 @@ class RentalDetailModel {
       stationAddress: stationAddress,
       stationLatitude: stationLatitude,
       stationLongitude: stationLongitude,
+      reservationId: reservationId,
       reservationCode: reservationCode,
       userEmail: userEmail,
       contractStatus: contractStatus,

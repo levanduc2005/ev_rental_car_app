@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RentalItemCard extends StatelessWidget {
   const RentalItemCard({super.key, required this.item, this.onRefresh});
@@ -237,13 +238,13 @@ class RentalItemCard extends StatelessWidget {
                       ),
                       onPressed: () {
                         context.pushNamed(
-                          AppRoute.checkoutSummary.name,
-                          extra: item.id,
+                          AppRoute.rentalDetail.name,
+                          pathParameters: {'id': item.id.toString()},
                         );
                       },
                       icon: const Icon(Icons.receipt_long_outlined, size: 16),
                       label: const Text(
-                        'Bảng kê quyết toán',
+                        'Xem chi tiết',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -251,9 +252,7 @@ class RentalItemCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (isPendingFee &&
-                      item.paymentUrl != null &&
-                      item.paymentUrl!.isNotEmpty) ...[
+                  if (isPendingFee) ...[
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFD97706),
@@ -266,15 +265,27 @@ class RentalItemCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
+                        if (item.paymentUrl != null &&
+                            item.paymentUrl!.isNotEmpty) {
+                          final uri = Uri.tryParse(item.paymentUrl!);
+                          if (uri != null && await canLaunchUrl(uri)) {
+                            await launchUrl(
+                              uri,
+                              mode: LaunchMode.externalApplication,
+                            );
+                            return;
+                          }
+                        }
+                        if (!context.mounted) return;
                         context.pushNamed(
-                          AppRoute.checkoutSummary.name,
-                          extra: item.id,
+                          AppRoute.rentalDetail.name,
+                          pathParameters: {'id': item.id.toString()},
                         );
                       },
                       icon: const Icon(Icons.payment_rounded, size: 16),
                       label: const Text(
-                        'Thanh toán phát sinh',
+                        'Thanh toán phụ phí',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,

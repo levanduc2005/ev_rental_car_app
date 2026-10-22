@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
@@ -9,6 +12,38 @@ import 'package:rental_car/features/checkout/presentation/pages/checkout_summary
 import 'package:rental_car/features/checkout/presentation/providers/checkout_controller.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/staff/presentation/providers/staff_providers.dart';
+
+/// Định dạng nhập tiền tệ theo hàng nghìn với dấu chấm (.000.000)
+class ThousandsSeparatorInputFormatter extends TextInputFormatter {
+  final NumberFormat _formatter = NumberFormat.decimalPattern('vi_VN');
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    final digitsOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.isEmpty) {
+      return const TextEditingValue();
+    }
+
+    final number = int.tryParse(digitsOnly);
+    if (number == null) {
+      return oldValue;
+    }
+
+    final formatted = _formatter.format(number);
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
 
 class RentalCheckoutPage extends ConsumerStatefulWidget {
   const RentalCheckoutPage({
@@ -31,7 +66,11 @@ class _RentalCheckoutPageState extends ConsumerState<RentalCheckoutPage> {
   late final TextEditingController _damageDescController;
   late final TextEditingController _damageCostController;
 
-  final _currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+  final _currencyFormat = NumberFormat.currency(
+    locale: 'vi_VN',
+    symbol: 'đ',
+    decimalDigits: 0,
+  );
 
   @override
   void initState() {
@@ -66,6 +105,9 @@ class _RentalCheckoutPageState extends ConsumerState<RentalCheckoutPage> {
     if (_batteryController.text.isEmpty && state.returnBattery != null) {
       _batteryController.text = state.returnBattery.toString();
     }
+    if (_odoController.text.isEmpty && state.returnOdometer != null) {
+      _odoController.text = state.returnOdometer.toString();
+    }
   }
 
   void _addDamageItem(CheckoutController controller) {
@@ -95,6 +137,16 @@ class _RentalCheckoutPageState extends ConsumerState<RentalCheckoutPage> {
   }
 
   Future<void> _handleSubmit(CheckoutController controller) async {
+    // Luôn đồng bộ giá trị pin và odo mới nhất người dùng nhập vào controller state
+    final pin = int.tryParse(_batteryController.text.trim());
+    if (pin != null) {
+      controller.setReturnBattery(pin);
+    }
+    final odo = int.tryParse(_odoController.text.trim());
+    if (odo != null) {
+      controller.setReturnOdometer(odo);
+    }
+
     // Lấy thông tin tài khoản nhân viên nếu đang ở chế độ Staff
     final staffProfile = ref
         .read(staffDashboardControllerProvider)
@@ -113,6 +165,13 @@ class _RentalCheckoutPageState extends ConsumerState<RentalCheckoutPage> {
       );
       if (mounted) {
         ref.invalidate(staffDashboardControllerProvider);
+      }
+    } else if (mounted) {
+      final err = ref.read(checkoutControllerProvider).errorMessage;
+      if (err != null && err.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(err), backgroundColor: AppColors.error),
+        );
       }
     }
   }
@@ -258,34 +317,19 @@ class _RentalCheckoutPageState extends ConsumerState<RentalCheckoutPage> {
                   ],
 
                   // Nút kiểm tra xe hoặc tiếp tục quyết toán
-                  if (state.checkOutChecklist != null)
-                    AppButton(
-                      label: 'Tiếp tục bước quyết toán cọc →',
-                      icon: Icons.payments_rounded,
-                      onPressed: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) =>
-                                CheckoutSummaryPage(rentalId: widget.rentalId),
-                          ),
-                        );
-                        if (mounted) {
-                          ref.invalidate(staffDashboardControllerProvider);
-                        }
-                      },
-                    )
-                  else
-                    AppButton(
-                      label: state.isSubmitting
-                          ? 'Đang gửi biên bản trả xe...'
-                          : 'Xác nhận kiểm tra & Tiếp tục quyết toán',
-                      icon: Icons.assignment_turned_in_rounded,
-                      isLoading: state.isSubmitting,
-                      onPressed:
-                          (!state.isInspectionFormValid || state.isSubmitting)
-                          ? null
-                          : () => _handleSubmit(controller),
-                    ),
+                  AppButton(
+                    label: state.isSubmitting
+                        ? 'Đang lưu biên bản & tải ảnh lên máy chủ...'
+                        : (state.checkOutChecklist != null
+                              ? 'Cập nhật biên bản & Tiếp tục quyết toán →'
+                              : 'Xác nhận kiểm tra & Tiếp tục quyết toán'),
+                    icon: Icons.assignment_turned_in_rounded,
+                    isLoading: state.isSubmitting,
+                    onPressed:
+                        (!state.isInspectionFormValid || state.isSubmitting)
+                        ? null
+                        : () => _handleSubmit(controller),
+                  ),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -692,9 +736,10 @@ class _RentalCheckoutPageState extends ConsumerState<RentalCheckoutPage> {
                   child: AppTextField(
                     controller: _damageCostController,
                     label: 'Chi phí dự kiến (VNĐ)',
-                    hint: 'Ví dụ: 500000',
+                    hint: 'Ví dụ: 500.000',
                     keyboardType: TextInputType.number,
                     prefixIcon: Icons.payments_outlined,
+                    inputFormatters: [ThousandsSeparatorInputFormatter()],
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -781,6 +826,179 @@ class _RentalCheckoutPageState extends ConsumerState<RentalCheckoutPage> {
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFDC2626),
                   ),
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 14),
+            const Divider(height: 1, color: Color(0xFFFECDD3)),
+            const SizedBox(height: 12),
+
+            // Ảnh chụp vết hư hại (VehicleLog photo)
+            Row(
+              children: [
+                const Icon(
+                  Icons.camera_alt_outlined,
+                  color: Color(0xFFDC2626),
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'Ảnh chụp vết hư hại / trầy xước *',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF991B1B),
+                    ),
+                  ),
+                ),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFDC2626),
+                    side: const BorderSide(color: Color(0xFFDC2626)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  onPressed: state.isUploadingPhoto
+                      ? null
+                      : () => controller.pickAndUploadDamagePhotos(),
+                  icon: const Icon(Icons.camera_alt_rounded, size: 15),
+                  label: const Text('Chụp ảnh', style: TextStyle(fontSize: 11)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            if (state.isUploadingPhoto)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Đang tải ảnh hư hại lên hệ thống...',
+                      style: TextStyle(fontSize: 11, color: Color(0xFF991B1B)),
+                    ),
+                  ],
+                ),
+              ),
+
+            if (state.damagePhotos.isEmpty) ...[
+              InkWell(
+                onTap: state.isUploadingPhoto
+                    ? null
+                    : () => controller.pickAndUploadDamagePhotos(),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF1F2),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFFECDD3)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.camera_alt_outlined,
+                        color: Color(0xFFDC2626),
+                        size: 16,
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Cần chụp ít nhất 1 ảnh chi tiết vết hư hại từ camera để gửi kèm biên bản sự cố. Bấm để chụp ngay.',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFF991B1B),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ] else ...[
+              SizedBox(
+                height: 80,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.damagePhotos.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 8),
+                  itemBuilder: (context, idx) {
+                    final photoUrl = state.damagePhotos[idx];
+                    final isNetwork =
+                        photoUrl.startsWith('http://') ||
+                        photoUrl.startsWith('https://');
+                    return Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: isNetwork
+                              ? Image.network(
+                                  photoUrl,
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                        width: 80,
+                                        height: 80,
+                                        color: const Color(0xFFE2E8F0),
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          size: 24,
+                                        ),
+                                      ),
+                                )
+                              : (File(photoUrl).existsSync()
+                                    ? Image.file(
+                                        File(photoUrl),
+                                        width: 80,
+                                        height: 80,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Container(
+                                        width: 80,
+                                        height: 80,
+                                        color: const Color(0xFFE2E8F0),
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          size: 24,
+                                        ),
+                                      )),
+                        ),
+                        Positioned(
+                          top: 2,
+                          right: 2,
+                          child: GestureDetector(
+                            onTap: () => controller.removeDamagePhoto(idx),
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: Colors.black54,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                size: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],

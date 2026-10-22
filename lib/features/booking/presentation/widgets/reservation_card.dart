@@ -357,34 +357,6 @@ class ReservationCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF2563EB),
-                              foregroundColor: Colors.white,
-                              visualDensity: VisualDensity.compact,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                            ),
-                            onPressed: () {
-                              context.pushNamed(
-                                AppRoute.returnLocationVerification.name,
-                                extra: reservation.id,
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.assignment_return_outlined,
-                              size: 14,
-                            ),
-                            label: const Text(
-                              'Trả xe',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
                         ],
 
                         // CANCELLED / FAILED / OVERDUE: Thuê xe khác
