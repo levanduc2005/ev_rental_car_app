@@ -28,6 +28,7 @@ enum AppRoute {
   returnVehicleLog('/checkout/vehicle-log'),
   checkoutSummary('/checkout/summary'),
   checkIn('/checkin/:id'),
+  rentalCheckout('/checkout/inspection/:id'),
   emergencyReport('/emergency-report'),
   staffDashboard('/staff/dashboard'),
   staffHandover('/staff/handover');

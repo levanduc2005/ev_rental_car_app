@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/checkout/domain/entities/rental_overview_entity.dart';
+import 'package:rental_car/features/checkout/domain/entities/vehicle_damage_item_entity.dart';
 import 'package:rental_car/features/checkout/presentation/widgets/settlement_balance_box.dart';
 
 class SettlementBreakdownCard extends StatelessWidget {
@@ -12,7 +13,8 @@ class SettlementBreakdownCard extends StatelessWidget {
     required this.vehicleDamageFee,
     required this.totalDeposits,
     required this.balance,
-    required this.onViewDamageDetail,
+    this.onViewDamageDetail,
+    this.vehicleDamages,
   });
 
   final RentalOverviewEntity? overview;
@@ -20,11 +22,20 @@ class SettlementBreakdownCard extends StatelessWidget {
   final double vehicleDamageFee;
   final double totalDeposits;
   final double balance;
-  final VoidCallback onViewDamageDetail;
+  final VoidCallback? onViewDamageDetail;
+  final List<VehicleDamageItemEntity>? vehicleDamages;
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+    final currencyFormat = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'đ',
+      decimalDigits: 0,
+    );
+
+    final damages = (overview != null && overview!.vehicleDamages.isNotEmpty)
+        ? overview!.vehicleDamages
+        : (vehicleDamages ?? const []);
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -92,7 +103,7 @@ class SettlementBreakdownCard extends StatelessWidget {
             ),
 
             // Danh sách chi tiết từng lỗi hư hỏng nếu có
-            if (overview != null && overview!.vehicleDamages.isNotEmpty) ...[
+            if (damages.isNotEmpty) ...[
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(8),
@@ -101,7 +112,7 @@ class SettlementBreakdownCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
-                  children: overview!.vehicleDamages.map((item) {
+                  children: damages.map((item) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Row(
@@ -132,34 +143,6 @@ class SettlementBreakdownCard extends StatelessWidget {
                   }).toList(),
                 ),
               ),
-              const SizedBox(height: 6),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  onPressed: onViewDamageDetail,
-                  icon: const Icon(
-                    Icons.car_repair_rounded,
-                    size: 15,
-                    color: Color(0xFFDC2626),
-                  ),
-                  label: const Text(
-                    'Xem biên bản hư hại chi tiết',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFDC2626),
-                    ),
-                  ),
-                ),
-              ),
             ],
 
             const Divider(height: 24),
@@ -181,14 +164,17 @@ class SettlementBreakdownCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: AppColors.textSecondary,
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              color: AppColors.textSecondary,
+            ),
           ),
         ),
+        const SizedBox(width: 8),
         Text(
           value,
           style: TextStyle(

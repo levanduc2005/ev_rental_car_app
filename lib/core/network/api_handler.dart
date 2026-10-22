@@ -20,8 +20,10 @@ Future<T> guardApiCall<T>(Future<T> Function() apiCall) async {
     if (response != null) {
       String message = 'Đã có lỗi xảy ra từ máy chủ.';
       if (response.data is Map<String, dynamic>) {
+        final dataMap = response.data as Map<String, dynamic>;
         message =
-            (response.data as Map<String, dynamic>)['message'] as String? ??
+            dataMap['message'] as String? ??
+            dataMap['error'] as String? ??
             message;
       }
       throw ServerException(

@@ -22,6 +22,7 @@ class RentalDetailEntity {
     this.stationAddress,
     this.stationLatitude,
     this.stationLongitude,
+    this.reservationId,
     this.reservationCode,
     this.userEmail,
     this.contractStatus,
@@ -64,6 +65,7 @@ class RentalDetailEntity {
   final String? stationAddress;
   final double? stationLatitude;
   final double? stationLongitude;
+  final int? reservationId;
   final String? reservationCode;
   final String? userEmail;
   final String? contractStatus;

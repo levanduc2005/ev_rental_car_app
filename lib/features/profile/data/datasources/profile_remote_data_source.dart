@@ -3,6 +3,9 @@ import 'package:dio/dio.dart';
 import 'package:rental_car/core/config/app_config.dart';
 import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/core/network/api_handler.dart';
+import 'package:rental_car/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:rental_car/features/auth/data/models/user_model.dart';
+import 'package:rental_car/features/auth/domain/entities/user_entity.dart';
 import 'package:rental_car/features/profile/data/models/kyc_document_model.dart';
 import 'package:rental_car/features/profile/data/models/rental_detail_model.dart';
 import 'package:rental_car/features/profile/data/models/rental_item_model.dart';
@@ -34,11 +37,16 @@ abstract interface class ProfileRemoteDataSource {
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
-  ProfileRemoteDataSourceImpl({required Dio dio, Dio? cloudinaryDio})
-    : _dio = dio,
-      _cloudinaryDio = cloudinaryDio;
+  ProfileRemoteDataSourceImpl({
+    required Dio dio,
+    AuthLocalDataSource? authLocalDataSource,
+    Dio? cloudinaryDio,
+  }) : _dio = dio,
+       _authLocalDataSource = authLocalDataSource,
+       _cloudinaryDio = cloudinaryDio;
 
   final Dio _dio;
+  final AuthLocalDataSource? _authLocalDataSource;
   final Dio? _cloudinaryDio;
 
   Dio get _effectiveCloudinaryDio =>
@@ -231,13 +239,22 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<RentalDetailModel> getRentalDetail(int id) {
     return guardApiCall(() async {
+      final user = await _authLocalDataSource?.getUser();
+      final isStaffOrAdmin = user?.toEntity().isStaff ?? false;
+
+      final path = isStaffOrAdmin
+          ? '/rentals/$id/details'
+          : '/rentals/me/details/$id';
+
       Response<Map<String, dynamic>> response;
       try {
-        response = await _dio.get<Map<String, dynamic>>('/rentals/$id/details');
+        response = await _dio.get<Map<String, dynamic>>(path);
       } on DioException {
-        response = await _dio.get<Map<String, dynamic>>(
-          '/rentals/me/details/$id',
-        );
+        // Fallback endpoint if primary path fails
+        final fallbackPath = isStaffOrAdmin
+            ? '/rentals/me/details/$id'
+            : '/rentals/$id/details';
+        response = await _dio.get<Map<String, dynamic>>(fallbackPath);
       }
       final data = response.data?['data'];
       if (data is Map<String, dynamic>) {

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:rental_car/core/network/api_handler.dart';
+import 'package:rental_car/features/booking/data/models/payos_payment_info_model.dart';
 import 'package:rental_car/features/checkout/data/datasources/checkout_remote_data_source.dart';
 import 'package:rental_car/features/checkout/data/models/rental_checklist_model.dart';
 import 'package:rental_car/features/checkout/data/models/rental_overview_model.dart';
@@ -62,16 +63,58 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
   }
 
   @override
+  Future<RentalChecklistModel> updateChecklist({
+    required int id,
+    required int rentalId,
+    required String type,
+    required double currentBattery,
+    required String img,
+    required String staffEmail,
+  }) {
+    return guardApiCall(() async {
+      final body = <String, dynamic>{
+        'id': id,
+        'rentalId': rentalId,
+        'type': type,
+        'currentBattery': currentBattery.toDouble(),
+        'img': img,
+        'staffEmail': staffEmail,
+      };
+
+      final response = await _dio.put<Map<String, dynamic>>(
+        '/rental-checklists/$id',
+        data: body,
+      );
+
+      final data = response.data?['data'];
+      if (data is Map<String, dynamic>) {
+        return RentalChecklistModel.fromJson(data);
+      }
+      throw Exception('Không nhận được dữ liệu biên bản cập nhật từ máy chủ');
+    });
+  }
+
+  @override
   Future<VehicleLogModel?> getVehicleLogByRentalId(int rentalId) {
     return guardApiCall(() async {
       try {
-        final response = await _dio.get<Map<String, dynamic>>(
-          '/vehicleLogs/rental/$rentalId',
-        );
+        Response<Map<String, dynamic>> response;
+        try {
+          response = await _dio.get<Map<String, dynamic>>(
+            '/rentals/$rentalId/details',
+          );
+        } on DioException {
+          response = await _dio.get<Map<String, dynamic>>(
+            '/rentals/me/details/$rentalId',
+          );
+        }
 
         final data = response.data?['data'];
         if (data is Map<String, dynamic>) {
-          return VehicleLogModel.fromJson(data);
+          final vl = data['vehicleLog'] as Map<String, dynamic>?;
+          if (vl != null) {
+            return VehicleLogModel.fromJson(vl);
+          }
         }
         return null;
       } catch (e) {
@@ -147,6 +190,47 @@ class CheckoutRemoteDataSourceImpl implements CheckoutRemoteDataSource {
       );
 
       return response.data?['data'] as Map<String, dynamic>? ?? const {};
+    });
+  }
+
+  @override
+  Future<PayOSPaymentInfoModel> createRentalCompensationPaymentLink(
+    int rentalId, {
+    double? amount,
+  }) {
+    return guardApiCall(() async {
+      final body = amount != null && amount > 0
+          ? {'amount': amount.toInt()}
+          : null;
+
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/payment/payos/create-link/rental/$rentalId',
+        data: body,
+      );
+
+      final data = response.data?['data'];
+      if (data is Map<String, dynamic>) {
+        return PayOSPaymentInfoModel.fromJson(data);
+      }
+      throw Exception(
+        'Không nhận được dữ liệu thanh toán PayOS đền bù từ máy chủ',
+      );
+    });
+  }
+
+  @override
+  Future<bool> checkRentalCompensationPayment(int rentalId) {
+    return guardApiCall(() async {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/payment/payos/check/rental/$rentalId',
+      );
+
+      final data = response.data?['data'];
+      if (data is Map<String, dynamic>) {
+        final status = data['status']?.toString().toUpperCase();
+        return status == 'PAID' || status == 'SUCCESS' || status == 'COMPLETED';
+      }
+      return false;
     });
   }
 }

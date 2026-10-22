@@ -38,11 +38,20 @@ class PayOSPaymentInfoModel {
     final accountName = json['accountName']?.toString() ?? '';
     final bank = json['bankName']?.toString();
     final description = json['description']?.toString() ?? code;
-    final rawQr = json['qrCode']?.toString();
+    var rawQr = json['qrCode']?.toString();
+
+    final effectiveBin = (bin != null && bin.isNotEmpty && bin != 'null')
+        ? bin
+        : '970422';
+
+    if (rawQr != null && rawQr.contains('/null-')) {
+      rawQr = rawQr.replaceAll('/null-', '/$effectiveBin-');
+    }
+
     final qrCodeUrl = (rawQr != null && rawQr.startsWith('http'))
         ? rawQr
-        : (bin != null && accountNumber.isNotEmpty
-              ? 'https://img.vietqr.io/image/$bin-$accountNumber-compact2.png?amount=${amount.toInt()}&addInfo=$description&accountName=${Uri.encodeComponent(accountName)}'
+        : (accountNumber.isNotEmpty
+              ? 'https://img.vietqr.io/image/$effectiveBin-$accountNumber-compact2.png?amount=${amount.toInt()}&addInfo=${Uri.encodeComponent(description)}&accountName=${Uri.encodeComponent(accountName)}'
               : '');
 
     DateTime? parsedExpiresAt;

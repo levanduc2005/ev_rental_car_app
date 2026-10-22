@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
 
-/// Thanh hành động cố định ở đáy màn hình (Bottom Bar) chứa nút "Trả xe thuê"
+/// Thanh hướng dẫn cố định ở đáy màn hình khi đang có chuyến xe
 class ActiveTripBottomBar extends StatelessWidget {
   const ActiveTripBottomBar({super.key, this.targetRentalId});
 
@@ -28,47 +28,52 @@ class ActiveTripBottomBar extends StatelessWidget {
           ),
         ],
       ),
-      child: Material(
-        color: const Color(0xFF2563EB),
-        borderRadius: BorderRadius.circular(14),
-        elevation: 1,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: () {
-            context.pushNamed(
-              AppRoute.returnLocationVerification.name,
-              extra: targetRentalId,
-            );
-          },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.assignment_return_rounded,
-                  color: Colors.white,
-                  size: 20,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF6FF),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFBFDBFE)),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.storefront_rounded,
+              color: Color(0xFF2563EB),
+              size: 22,
+            ),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'Khi trả xe, vui lòng đưa xe về trạm để nhân viên kiểm tra và làm thủ tục nhận lại xe (Check-out).',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF1D4ED8),
+                  height: 1.3,
                 ),
-                SizedBox(width: 8),
-                Text(
-                  'Trả xe thuê',
+              ),
+            ),
+            if (targetRentalId != null) ...[
+              const SizedBox(width: 8),
+              TextButton(
+                onPressed: () {
+                  context.pushNamed(
+                    AppRoute.rentalDetail.name,
+                    pathParameters: {'id': targetRentalId.toString()},
+                  );
+                },
+                child: const Text(
+                  'Chi tiết',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: -0.2,
+                    color: Color(0xFF2563EB),
                   ),
                 ),
-                SizedBox(width: 4),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
+              ),
+            ],
+          ],
         ),
       ),
     );

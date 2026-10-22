@@ -17,6 +17,7 @@ import 'package:rental_car/features/booking/presentation/pages/my_reservations_p
 import 'package:rental_car/features/booking/presentation/pages/reservation_detail_page.dart';
 import 'package:rental_car/features/checkin/presentation/pages/check_in_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/checkout_summary_page.dart';
+import 'package:rental_car/features/checkout/presentation/pages/rental_checkout_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/return_location_verification_page.dart';
 import 'package:rental_car/features/checkout/presentation/pages/return_vehicle_log_page.dart';
 import 'package:rental_car/features/emergency/presentation/pages/emergency_report_page.dart';
@@ -74,7 +75,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         final isStaffRoute =
             location == AppRoute.staffDashboard.path ||
             location == AppRoute.staffHandover.path ||
-            location.startsWith('/rentals/');
+            location.startsWith('/rentals/') ||
+            location.startsWith('/checkout/') ||
+            location.startsWith('/checkin/') ||
+            location.startsWith('/reservations/') ||
+            location.startsWith('/emergency');
 
         if (!isStaffRoute) {
           return AppRoute.staffDashboard.path;
@@ -278,6 +283,22 @@ final routerProvider = Provider<GoRouter>((ref) {
               ? state.extra as RentalDetailEntity
               : null;
           return CheckInPage(rentalId: id, initialRental: initialRental);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.rentalCheckout.path,
+        name: AppRoute.rentalCheckout.name,
+        builder: (_, state) {
+          final idStr = state.pathParameters['id'];
+          final id =
+              int.tryParse(idStr ?? '') ??
+              (state.extra is RentalDetailEntity
+                  ? (state.extra as RentalDetailEntity).id
+                  : (state.extra is int ? state.extra as int : 0));
+          final initialRental = state.extra is RentalDetailEntity
+              ? state.extra as RentalDetailEntity
+              : null;
+          return RentalCheckoutPage(rentalId: id, initialRental: initialRental);
         },
       ),
       GoRoute(

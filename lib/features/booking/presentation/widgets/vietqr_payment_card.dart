@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
 import 'package:rental_car/features/booking/presentation/utils/booking_formatters.dart';
@@ -11,6 +12,10 @@ class VietQRPaymentCard extends StatefulWidget {
     required this.onCopy,
     this.beneficiaryBankName,
     this.initiallyExpanded = false,
+    this.headerTitle = 'Quét mã QR / Chuyển thủ công',
+    this.headerSubtitle,
+    this.title = 'Mã VietQR thanh toán PayOS',
+    this.amountLabel = 'Số tiền cọc:',
     super.key,
   });
 
@@ -18,6 +23,10 @@ class VietQRPaymentCard extends StatefulWidget {
   final void Function(String text, String label) onCopy;
   final String? beneficiaryBankName;
   final bool initiallyExpanded;
+  final String headerTitle;
+  final String? headerSubtitle;
+  final String title;
+  final String amountLabel;
 
   @override
   State<VietQRPaymentCard> createState() => _VietQRPaymentCardState();
@@ -63,47 +72,57 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEFF6FF),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.qr_code_2,
-                          color: Color(0xFF2563EB),
-                          size: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Quét mã QR / Chuyển thủ công',
-                            style: TextStyle(
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFF6FF),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            _isExpanded
-                                ? 'Nhấn để thu gọn'
-                                : 'Dùng điện thoại khác quét hoặc sao chép STK',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: AppColors.textSecondary,
-                            ),
+                          child: const Icon(
+                            Icons.qr_code_2,
+                            color: Color(0xFF2563EB),
+                            size: 18,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.headerTitle,
+                                style: const TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _isExpanded
+                                    ? 'Nhấn để thu gọn'
+                                    : (widget.headerSubtitle ??
+                                          'Dùng điện thoại khác quét hoặc sao chép STK'),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   AnimatedRotation(
                     turns: _isExpanded ? 0.5 : 0.0,
                     duration: const Duration(milliseconds: 200),
@@ -137,9 +156,9 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const Text(
-                    'Mã VietQR thanh toán PayOS',
-                    style: TextStyle(
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -171,35 +190,7 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        widget.paymentInfo.qrCodeUrl,
-                        width: 240,
-                        fit: BoxFit.contain,
-                        loadingBuilder: (_, child, progress) {
-                          if (progress == null) return child;
-                          return const SizedBox(
-                            width: 240,
-                            height: 240,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 240,
-                          height: 240,
-                          color: Colors.grey.shade100,
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.qr_code, size: 70, color: Colors.grey),
-                              SizedBox(height: 8),
-                              Text(
-                                'Mã QR thanh toán PayOS',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      child: _buildQrImage(context),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -263,14 +254,14 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
                     child: Column(
                       children: [
                         _CopyRow(
-                          label: 'Số tiền cọc:',
+                          label: widget.amountLabel,
                           value: BookingFormatters.formatCurrency(
                             widget.paymentInfo.depositFee,
                           ),
                           copyText: widget.paymentInfo.depositFee.toString(),
                           onCopy: () => widget.onCopy(
                             widget.paymentInfo.depositFee.toString(),
-                            'Số tiền',
+                            widget.amountLabel.replaceAll(':', ''),
                           ),
                         ),
                         const Divider(height: 14, color: Color(0xFFFEF3C7)),
@@ -342,6 +333,80 @@ class _VietQRPaymentCardState extends State<VietQRPaymentCard> {
                 : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 250),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQrImage(BuildContext context) {
+    var url = widget.paymentInfo.qrCodeUrl;
+    if (url.contains('/null-')) {
+      final bin =
+          (widget.paymentInfo.bin != null &&
+              widget.paymentInfo.bin!.isNotEmpty &&
+              widget.paymentInfo.bin != 'null')
+          ? widget.paymentInfo.bin!
+          : '970422';
+      url = url.replaceAll('/null-', '/$bin-');
+    }
+
+    final isSvg = url.endsWith('.svg') || url.contains('.svg?');
+
+    if (isSvg) {
+      return SvgPicture.network(
+        url,
+        width: 240,
+        height: 240,
+        placeholderBuilder: (_) => const SizedBox(
+          width: 240,
+          height: 240,
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        errorBuilder: (context, error, stackTrace) => _buildFallbackBox(),
+      );
+    }
+
+    return Image.network(
+      url,
+      width: 240,
+      fit: BoxFit.contain,
+      loadingBuilder: (_, child, progress) {
+        if (progress == null) return child;
+        return const SizedBox(
+          width: 240,
+          height: 240,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        final fallbackData = widget.paymentInfo.checkoutUrl;
+        if (fallbackData != null && fallbackData.isNotEmpty) {
+          final qrServerUrl =
+              'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${Uri.encodeComponent(fallbackData)}';
+          return Image.network(
+            qrServerUrl,
+            width: 240,
+            height: 240,
+            fit: BoxFit.contain,
+            errorBuilder: (_, _, _) => _buildFallbackBox(),
+          );
+        }
+        return _buildFallbackBox();
+      },
+    );
+  }
+
+  Widget _buildFallbackBox() {
+    return Container(
+      width: 240,
+      height: 240,
+      color: Colors.grey.shade100,
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.qr_code, size: 70, color: Colors.grey),
+          SizedBox(height: 8),
+          Text('Mã QR thanh toán PayOS', style: TextStyle(fontSize: 12)),
         ],
       ),
     );

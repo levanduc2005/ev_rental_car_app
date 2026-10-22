@@ -8,15 +8,25 @@ class RentalStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, bgColor, textColor) = switch (status.toUpperCase()) {
-      'ONGOING' => (
-        'Đang thuê',
-        const Color(0xFFEFF6FF),
-        const Color(0xFF2563EB),
+      'PENDING' => (
+        'Chờ ký HĐ',
+        const Color(0xFFFEF3C7),
+        const Color(0xFFD97706),
+      ),
+      'CONTRACTING' => (
+        'Đang ký HĐ',
+        const Color(0xFFEDE9FE),
+        const Color(0xFF7C3AED),
       ),
       'CONFIRM' => (
         'Đã xác nhận',
         const Color(0xFFECFDF5),
         const Color(0xFF059669),
+      ),
+      'ONGOING' => (
+        'Đang thuê',
+        const Color(0xFFEFF6FF),
+        const Color(0xFF2563EB),
       ),
       'CHECKING' => (
         'Đang kiểm tra xe',
@@ -24,7 +34,12 @@ class RentalStatusBadge extends StatelessWidget {
         const Color(0xFFD97706),
       ),
       'PENDING_FEE' => (
-        'Chờ quyết toán phí',
+        'Chờ quyết toán',
+        const Color(0xFFFFFBEB),
+        const Color(0xFFD97706),
+      ),
+      'PENDING_EXTEND_FEE' => (
+        'Chờ phí gia hạn',
         const Color(0xFFFFFBEB),
         const Color(0xFFD97706),
       ),
@@ -38,7 +53,12 @@ class RentalStatusBadge extends StatelessWidget {
         const Color(0xFFF0FDF4),
         const Color(0xFF16A34A),
       ),
-      _ => ('Đã hủy', const Color(0xFFF1F5F9), const Color(0xFF64748B)),
+      'CANCELLED' => (
+        'Đã hủy',
+        const Color(0xFFF1F5F9),
+        const Color(0xFF64748B),
+      ),
+      _ => (status, const Color(0xFFF1F5F9), const Color(0xFF64748B)),
     };
 
     return Container(

@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rental_car/core/theme/app_colors.dart';
-import 'package:rental_car/core/theme/app_spacing.dart';
-import 'package:rental_car/core/theme/app_text_styles.dart';
 import 'package:rental_car/features/checkin/presentation/providers/checkin_controller.dart';
 
 class CarAnglePhotoCard extends StatelessWidget {
@@ -29,78 +27,6 @@ class CarAnglePhotoCard extends StatelessWidget {
   bool get hasImage =>
       (localImagePath != null && localImagePath!.isNotEmpty) ||
       uploadedUrl.trim().isNotEmpty;
-
-  void _showImagePickerSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.lg,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Chụp ảnh: ${angle.title}',
-                  style: AppTextStyles.heading3,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  angle.subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Material(
-                  color: Colors.transparent,
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.camera_alt_rounded,
-                      color: AppColors.primary,
-                    ),
-                    title: const Text('Chụp ảnh trực tiếp (Camera)'),
-                    subtitle: const Text(
-                      'Đề xuất để ghi nhận đúng góc xe thực tế',
-                    ),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      onPickImage(ImageSource.camera);
-                    },
-                  ),
-                ),
-                const Divider(),
-                Material(
-                  color: Colors.transparent,
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.photo_library_rounded,
-                      color: Color(0xFF10B981),
-                    ),
-                    title: const Text('Chọn từ thư viện ảnh (Gallery)'),
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      onPickImage(ImageSource.gallery);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +223,7 @@ class CarAnglePhotoCard extends StatelessWidget {
             child: Row(
               children: [
                 InkWell(
-                  onTap: () => _showImagePickerSheet(context),
+                  onTap: () => onPickImage(ImageSource.camera),
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                     padding: const EdgeInsets.all(6),
@@ -358,7 +284,7 @@ class CarAnglePhotoCard extends StatelessWidget {
 
   Widget _buildPlaceholderButton(BuildContext context) {
     return InkWell(
-      onTap: () => _showImagePickerSheet(context),
+      onTap: () => onPickImage(ImageSource.camera),
       borderRadius: BorderRadius.circular(8),
       child: Container(
         height: 100,

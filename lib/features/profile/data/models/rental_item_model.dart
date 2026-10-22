@@ -25,7 +25,10 @@ class RentalItemModel {
       vehicleName: json['vehicleName'] as String? ?? 'Xe điện EV',
       vehicleImage: json['vehicleImage'] as String?,
       stationName: json['stationName'] as String?,
-      status: json['status'] as String? ?? 'ONGOING',
+      status:
+          (json['status'] ?? json['rentalStatus'] ?? json['rental_status'])
+              as String? ??
+          'ONGOING',
       createdAt: json['createdAt'] as String?,
       paymentUrl: json['paymentUrl'] as String?,
     );

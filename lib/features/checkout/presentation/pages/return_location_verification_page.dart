@@ -123,7 +123,10 @@ class _ReturnLocationVerificationPageState
               onPressed: isValid
                   ? () {
                       context.pushNamed(
-                        AppRoute.checkoutSummary.name,
+                        AppRoute.rentalCheckout.name,
+                        pathParameters: {
+                          'id': (state.rentalId ?? 0).toString(),
+                        },
                         extra: state.rentalId,
                       );
                     }
@@ -134,7 +137,7 @@ class _ReturnLocationVerificationPageState
                   Icon(Icons.assignment_turned_in_rounded, size: 20),
                   SizedBox(width: 8),
                   Text(
-                    'Xác nhận bàn giao xe tại trạm',
+                    'Tiến hành kiểm tra ngoại quan & trả xe',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ],

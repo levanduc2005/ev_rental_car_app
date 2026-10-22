@@ -12,12 +12,14 @@ class CarInspectionPhotosSection extends StatelessWidget {
     required this.isUploadingPhoto,
     required this.onPickPhotos,
     required this.onRemovePhoto,
+    this.description,
   });
 
   final List<CheckInPhoto> photos;
   final bool isUploadingPhoto;
   final void Function(ImageSource source) onPickPhotos;
   final void Function(String photoId) onRemovePhoto;
+  final String? description;
 
   void _showImagePreview(BuildContext context, CheckInPhoto photo) {
     showDialog<void>(
@@ -93,111 +95,14 @@ class CarInspectionPhotosSection extends StatelessWidget {
     );
   }
 
-  void _showPickSourceSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetCtx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Thêm ảnh ngoại quan xe',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Nhân viên chụp quanh xe (đầu, đuôi, sườn và vết xước nếu có)',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              Material(
-                color: Colors.transparent,
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEFF6FF),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_rounded,
-                      color: Color(0xFF2563EB),
-                    ),
-                  ),
-                  title: const Text(
-                    'Chụp ảnh trực tiếp bằng Camera',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  subtitle: const Text(
-                    'Khuyến nghị khi bàn giao xe thực tế tại trạm',
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  onTap: () {
-                    Navigator.pop(sheetCtx);
-                    onPickPhotos(ImageSource.camera);
-                  },
-                ),
-              ),
-              const Divider(height: 1),
-              Material(
-                color: Colors.transparent,
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.photo_library_rounded,
-                      color: Color(0xFF475569),
-                    ),
-                  ),
-                  title: const Text(
-                    'Chọn từ thư viện ảnh (Nhiều ảnh)',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  subtitle: const Text(
-                    'Chọn một hoặc nhiều ảnh đã chụp sẵn',
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  onTap: () {
-                    Navigator.pop(sheetCtx);
-                    onPickPhotos(ImageSource.gallery);
-                  },
-                ),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final uploadedCount = photos.where((p) => p.isUploaded).length;
+    final totalPhotosCount = photos
+        .where(
+          (p) =>
+              p.isUploaded || (p.localPath != null && p.localPath!.isNotEmpty),
+        )
+        .length;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -237,17 +142,17 @@ class CarInspectionPhotosSection extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: uploadedCount > 0
+                  color: totalPhotosCount > 0
                       ? const Color(0xFFDCFCE7)
                       : const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '$uploadedCount ảnh đã chụp',
+                  '$totalPhotosCount ảnh đã chụp',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: uploadedCount > 0
+                    color: totalPhotosCount > 0
                         ? const Color(0xFF16A34A)
                         : const Color(0xFF2563EB),
                   ),
@@ -256,9 +161,9 @@ class CarInspectionPhotosSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Chụp ảnh xe lúc nhận (không giới hạn góc, chụp vết xước nếu có) để lưu hồ sơ bàn giao:',
-            style: TextStyle(
+          Text(
+            description ?? 'Chụp ảnh xe thực tế để lưu hồ sơ bàn giao:',
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
               height: 1.4,
@@ -267,54 +172,32 @@ class CarInspectionPhotosSection extends StatelessWidget {
           const SizedBox(height: 14),
 
           // Nút bấm hành động nhanh
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () => onPickPhotos(ImageSource.camera),
-                  icon: const Icon(Icons.camera_alt_rounded, size: 18),
-                  label: const Text(
-                    'Chụp ảnh (Camera)',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF334155),
-                    side: const BorderSide(color: Color(0xFFCBD5E1)),
-                    padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () => onPickPhotos(ImageSource.gallery),
-                  icon: const Icon(Icons.photo_library_outlined, size: 18),
-                  label: const Text(
-                    'Thư viện ảnh',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                ),
+              onPressed: () => onPickPhotos(ImageSource.camera),
+              icon: const Icon(Icons.camera_alt_rounded, size: 20),
+              label: const Text(
+                'Chụp ảnh xe thực tế',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 14),
 
           // Hiển thị danh sách ảnh hoặc Box trống
           if (photos.isEmpty) ...[
             InkWell(
-              onTap: () => _showPickSourceSheet(context),
+              onTap: () => onPickPhotos(ImageSource.camera),
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 width: double.infinity,
@@ -378,7 +261,7 @@ class CarInspectionPhotosSection extends StatelessWidget {
                 // Ô cuối cùng là ô "+" Thêm ảnh
                 if (index == photos.length) {
                   return InkWell(
-                    onTap: () => _showPickSourceSheet(context),
+                    onTap: () => onPickPhotos(ImageSource.camera),
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
                       decoration: BoxDecoration(

@@ -97,7 +97,10 @@ class RentalsTabContent extends ConsumerWidget {
       itemCount: state.items.length,
       separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
-        return RentalItemCard(item: state.items[index]);
+        return RentalItemCard(
+          item: state.items[index],
+          onRefresh: controller.refresh,
+        );
       },
     );
   }

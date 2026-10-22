@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rental_car/core/providers/core_providers.dart';
+import 'package:rental_car/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rental_car/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:rental_car/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:rental_car/features/profile/domain/repositories/profile_repository.dart';
@@ -18,7 +19,10 @@ import 'package:rental_car/features/profile/presentation/providers/rental_histor
 final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((
   ref,
 ) {
-  return ProfileRemoteDataSourceImpl(dio: ref.watch(dioProvider));
+  return ProfileRemoteDataSourceImpl(
+    dio: ref.watch(dioProvider),
+    authLocalDataSource: ref.watch(authLocalDataSourceProvider),
+  );
 });
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {

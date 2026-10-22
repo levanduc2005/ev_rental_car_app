@@ -454,28 +454,48 @@ class RentalHistoryPage extends ConsumerWidget {
 
   Widget _buildStatusBadge(String status) {
     final (label, bgColor, textColor) = switch (status.toUpperCase()) {
-      'ONGOING' => (
-        'Đang thuê',
-        AppColors.primary.withValues(alpha: 0.12),
-        AppColors.primary,
+      'PENDING' => (
+        'Chờ ký HĐ',
+        const Color(0xFFFEF3C7),
+        const Color(0xFFD97706),
+      ),
+      'CONTRACTING' => (
+        'Đang ký HĐ',
+        const Color(0xFFEDE9FE),
+        const Color(0xFF7C3AED),
       ),
       'CONFIRM' => (
         'Đã xác nhận',
         AppColors.info.withValues(alpha: 0.12),
         AppColors.info,
       ),
+      'ONGOING' => (
+        'Đang thuê',
+        AppColors.primary.withValues(alpha: 0.12),
+        AppColors.primary,
+      ),
+      'CHECKING' => (
+        'Đang kiểm tra xe',
+        const Color(0xFFF59E0B).withValues(alpha: 0.15),
+        const Color(0xFFD97706),
+      ),
       'PENDING_FEE' => (
-        'Chờ thanh toán phí',
+        'Chờ quyết toán',
+        const Color(0xFFF59E0B).withValues(alpha: 0.15),
+        const Color(0xFFD97706),
+      ),
+      'PENDING_EXTEND_FEE' => (
+        'Chờ phí gia hạn',
         const Color(0xFFF59E0B).withValues(alpha: 0.15),
         const Color(0xFFD97706),
       ),
       'OVERDUE' => (
-        'Quá hạn',
+        'Quá hạn trả',
         AppColors.error.withValues(alpha: 0.15),
         AppColors.error,
       ),
       'COMPLETED' => (
-        'Đã hoàn thành',
+        'Hoàn thành',
         AppColors.success.withValues(alpha: 0.12),
         AppColors.success,
       ),

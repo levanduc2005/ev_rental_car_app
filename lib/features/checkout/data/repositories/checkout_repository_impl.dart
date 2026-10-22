@@ -1,5 +1,6 @@
 import 'package:rental_car/core/utils/result.dart';
 import 'package:rental_car/core/utils/safe_call.dart';
+import 'package:rental_car/features/booking/domain/entities/payos_payment_info_entity.dart';
 import 'package:rental_car/features/checkout/data/datasources/checkout_remote_data_source.dart';
 import 'package:rental_car/features/checkout/domain/entities/rental_checklist_entity.dart';
 import 'package:rental_car/features/checkout/domain/entities/rental_overview_entity.dart';
@@ -32,6 +33,27 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
   }) {
     return safeCall(() async {
       return await _remoteDataSource.createChecklist(
+        rentalId: rentalId,
+        type: type,
+        currentBattery: currentBattery,
+        img: img,
+        staffEmail: staffEmail,
+      );
+    });
+  }
+
+  @override
+  Future<Result<RentalChecklistEntity>> updateChecklist({
+    required int id,
+    required int rentalId,
+    required String type,
+    required double currentBattery,
+    required String img,
+    required String staffEmail,
+  }) {
+    return safeCall(() async {
+      return await _remoteDataSource.updateChecklist(
+        id: id,
         rentalId: rentalId,
         type: type,
         currentBattery: currentBattery,
@@ -80,6 +102,27 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
   Future<Result<Map<String, dynamic>>> processCheckoutPayment(int rentalId) {
     return safeCall(() async {
       return await _remoteDataSource.processCheckoutPayment(rentalId);
+    });
+  }
+
+  @override
+  Future<Result<PayOSPaymentInfoEntity>> createRentalCompensationPaymentLink(
+    int rentalId, {
+    double? amount,
+  }) {
+    return safeCall(() async {
+      final model = await _remoteDataSource.createRentalCompensationPaymentLink(
+        rentalId,
+        amount: amount,
+      );
+      return model.toEntity();
+    });
+  }
+
+  @override
+  Future<Result<bool>> checkRentalCompensationPayment(int rentalId) {
+    return safeCall(() async {
+      return await _remoteDataSource.checkRentalCompensationPayment(rentalId);
     });
   }
 }

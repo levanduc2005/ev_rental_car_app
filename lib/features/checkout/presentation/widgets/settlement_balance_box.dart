@@ -25,26 +25,27 @@ class SettlementBalanceBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                isRefund
-                    ? 'TIỀN CỌC HOÀN LẠI THỰC NHẬN:'
-                    : 'SỐ TIỀN CẦN THANH TOÁN THÊM:',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: isRefund
-                      ? const Color(0xFF065F46)
-                      : const Color(0xFF991B1B),
+              Expanded(
+                child: Text(
+                  isRefund ? 'TIỀN CỌC HOÀN LẠI:' : 'TIỀN PHẢI ĐỀN BÙ:',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isRefund
+                        ? const Color(0xFF065F46)
+                        : const Color(0xFFDC2626),
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Text(
                 currencyFormat.format(balance.abs()),
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: isRefund
                       ? const Color(0xFF065F46)
-                      : const Color(0xFF991B1B),
+                      : const Color(0xFFDC2626),
                 ),
               ),
             ],
@@ -52,8 +53,8 @@ class SettlementBalanceBox extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             isRefund
-                ? 'Hệ thống sẽ hoàn trả tự động số tiền cọc còn lại về tài khoản ngân hàng của bạn.'
-                : 'Phụ phí phát sinh vượt quá tiền cọc, vui lòng bấm bên dưới để thanh toán nốt phần chênh lệch.',
+                ? 'Hệ thống sẽ hoàn trả tự động số tiền cọc còn lại sau khi khấu trừ về tài khoản ngân hàng của bạn.'
+                : 'Tiền cọc bị khấu trừ âm do chi phí hư hại xe và phụ phí trả xe vượt quá tiền cọc. Vui lòng thanh toán số tiền đền bù bên dưới.',
             style: TextStyle(
               fontSize: 11,
               color: isRefund

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// A labeled text input built on [TextFormField].
 ///
@@ -17,6 +18,7 @@ class AppTextField extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.enabled = true,
+    this.inputFormatters,
     super.key,
   });
 
@@ -34,6 +36,7 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final bool enabled;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -53,6 +56,7 @@ class _AppTextFieldState extends State<AppTextField> {
       onChanged: widget.onChanged,
       onFieldSubmitted: widget.onSubmitted,
       enabled: widget.enabled,
+      inputFormatters: widget.inputFormatters,
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,
