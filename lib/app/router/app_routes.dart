@@ -14,8 +14,6 @@ enum AppRoute {
   support('/support'), // Hỗ trợ
   vehicleDetail('/vehicles/:id'),
   booking('/booking'),
-  qrScan('/home/qr-scan'),
-  instantBooking('/booking/instant'),
   activeTrip('/active-trip'),
   payment('/payment'),
   bookingSuccess('/booking-success'),

@@ -55,15 +55,15 @@ class StaffRentalCard extends StatelessWidget {
   String _getActionLabel(String status) {
     switch (status.toUpperCase()) {
       case 'PENDING':
-        return 'Tạo hợp đồng DocuSeal';
+        return 'Ký hợp đồng DocuSeal (Bước 2)';
       case 'CONTRACTING':
-        return 'Xác nhận ký & Thanh toán';
+        return 'Ký hợp đồng & Thanh toán (Bước 2 - 3)';
       case 'CONFIRM':
-        return 'Chụp ảnh & Bàn giao xe';
+        return 'Kiểm tra xe & Bàn giao (Bước 4)';
       case 'ONGOING':
-        return 'Xem chi tiết chuyến đi';
+        return 'Xem tiến trình các bước (Hoàn tất)';
       default:
-        return 'Xem chi tiết';
+        return 'Xem tiến trình các bước';
     }
   }
 
@@ -86,11 +86,6 @@ class StaffRentalCard extends StatelessWidget {
     final actionLabel = _getActionLabel(rental.status);
     final actionIcon = _getActionIcon(rental.status);
 
-    final isHandoverPhase =
-        rental.status.toUpperCase() == 'PENDING' ||
-        rental.status.toUpperCase() == 'CONTRACTING' ||
-        rental.status.toUpperCase() == 'CONFIRM';
-
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -110,7 +105,7 @@ class StaffRentalCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          onTap: onTapDetail,
+          onTap: onTapAction ?? onTapDetail,
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -245,82 +240,58 @@ class StaffRentalCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Nút hành động
-                if (isHandoverPhase && onTapAction != null) ...[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF2563EB),
-                            side: const BorderSide(color: Color(0xFFBFDBFE)),
-                            padding: const EdgeInsets.symmetric(vertical: 9),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: onTapDetail,
-                          icon: const Icon(Icons.visibility_outlined, size: 15),
-                          label: const Text(
-                            'Chi tiết',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+                // Nút hành động: Chi tiết & Tiếp tục các bước bàn giao
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF2563EB),
+                          side: const BorderSide(color: Color(0xFFBFDBFE)),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 2,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: statusColor,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 9),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                        onPressed: onTapDetail,
+                        icon: const Icon(Icons.visibility_outlined, size: 15),
+                        label: const Text(
+                          'Chi tiết',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
-                          onPressed: onTapAction,
-                          icon: Icon(actionIcon, size: 15),
-                          label: Text(
-                            actionLabel,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ] else ...[
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF2563EB),
-                        side: const BorderSide(color: Color(0xFFBFDBFE)),
-                        backgroundColor: const Color(0xFFEFF6FF),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: onTapDetail,
-                      icon: const Icon(Icons.visibility_outlined, size: 16),
-                      label: const Text(
-                        'Xem chi tiết đơn thuê',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: statusColor,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: onTapAction ?? onTapDetail,
+                        icon: Icon(actionIcon, size: 15),
+                        label: Text(
+                          actionLabel,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

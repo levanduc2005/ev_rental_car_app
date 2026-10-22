@@ -38,14 +38,21 @@ class _StaffHandoverPageState extends ConsumerState<StaffHandoverPage> {
 
   void _openDocuSealSigning(String url, int rentalId) {
     Navigator.of(context)
-        .push(
-          MaterialPageRoute<void>(
-            builder: (_) =>
-                DocuSealSignPage(rentalId: rentalId, signingUrl: url),
+        .push<bool>(
+          MaterialPageRoute<bool>(
+            builder: (_) => DocuSealSignPage(
+              rentalId: rentalId,
+              signingUrl: url,
+              isStaffHandover: true,
+            ),
           ),
         )
-        .then((_) {
-          ref.read(staffHandoverControllerProvider.notifier).onContractSigned();
+        .then((signed) {
+          if (signed == true) {
+            ref
+                .read(staffHandoverControllerProvider.notifier)
+                .onContractSigned();
+          }
         });
   }
 
@@ -53,6 +60,89 @@ class _StaffHandoverPageState extends ConsumerState<StaffHandoverPage> {
     final uri = Uri.tryParse(url);
     if (uri != null && await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _showCancelRentalDialog() async {
+    final rentalId =
+        widget.rental?.id ??
+        ref.read(staffHandoverControllerProvider).rental?.id;
+    if (rentalId == null || rentalId <= 0) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 24),
+            SizedBox(width: 8),
+            Text(
+              'Hủy đơn thuê xe?',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Text(
+          'Bạn có chắc chắn muốn hủy đơn thuê #$rentalId không?\n\n'
+          'Thao tác này sẽ hủy hợp đồng hiện tại và hoàn trả xe về trạng thái "Sẵn sàng" tại trạm.',
+          style: const TextStyle(
+            fontSize: 13,
+            color: Color(0xFF475569),
+            height: 1.4,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text(
+              'Giữ lại đơn',
+              style: TextStyle(color: Color(0xFF64748B)),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Hủy đơn & Hoàn xe'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      final success = await ref
+          .read(staffHandoverControllerProvider.notifier)
+          .cancelRental();
+      if (!mounted) return;
+
+      if (success) {
+        ref.read(staffDashboardControllerProvider.notifier).refreshData();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Đã hủy đơn thuê và hoàn trả xe về trạng thái sẵn sàng.',
+            ),
+            backgroundColor: Color(0xFF059669),
+          ),
+        );
+        Navigator.of(context).pop();
+      } else {
+        final error = ref.read(staffHandoverControllerProvider).errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error ?? 'Không thể hủy đơn thuê xe. Vui lòng thử lại.',
+            ),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
@@ -78,6 +168,25 @@ class _StaffHandoverPageState extends ConsumerState<StaffHandoverPage> {
             color: AppColors.textPrimary,
           ),
         ),
+        actions: [
+          if (state.currentStep != StaffHandoverStep.completed)
+            TextButton.icon(
+              onPressed: state.isSubmitting ? null : _showCancelRentalDialog,
+              icon: const Icon(
+                Icons.cancel_outlined,
+                size: 16,
+                color: AppColors.error,
+              ),
+              label: const Text(
+                'Hủy đơn',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.error,
+                ),
+              ),
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.md),

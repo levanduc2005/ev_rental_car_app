@@ -7,6 +7,7 @@ import 'package:rental_car/features/checkin/domain/usecases/upload_car_image_use
 import 'package:rental_car/features/checkin/presentation/providers/checkin_controller.dart';
 import 'package:rental_car/features/checkin/presentation/providers/checkin_providers.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
+import 'package:rental_car/features/staff/domain/usecases/cancel_staff_rental_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/convert_reservation_to_rental_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/generate_staff_contract_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/get_checkin_payment_url_usecase.dart';
@@ -130,7 +131,11 @@ class StaffHandoverController extends Notifier<StaffHandoverState> {
   UpdateRentalStatusUseCase? _injectedUpdateStatusUseCase;
   SubmitStaffCheckListUseCase? _injectedSubmitChecklistUseCase;
   UploadCarImageUseCase? _injectedUploadImageUseCase;
+  CancelStaffRentalUseCase? _injectedCancelUseCase;
   ImagePicker? _injectedImagePicker;
+
+  CancelStaffRentalUseCase get _cancelUseCase =>
+      _injectedCancelUseCase ?? ref.read(cancelStaffRentalUseCaseProvider);
 
   ConvertReservationToRentalUseCase get _convertUseCase =>
       _injectedConvertUseCase ??
@@ -163,6 +168,7 @@ class StaffHandoverController extends Notifier<StaffHandoverState> {
     UpdateRentalStatusUseCase? updateStatusUseCase,
     SubmitStaffCheckListUseCase? submitChecklistUseCase,
     UploadCarImageUseCase? uploadImageUseCase,
+    CancelStaffRentalUseCase? cancelUseCase,
     ImagePicker? imagePicker,
   }) {
     _injectedConvertUseCase = convertUseCase;
@@ -171,6 +177,7 @@ class StaffHandoverController extends Notifier<StaffHandoverState> {
     _injectedUpdateStatusUseCase = updateStatusUseCase;
     _injectedSubmitChecklistUseCase = submitChecklistUseCase;
     _injectedUploadImageUseCase = uploadImageUseCase;
+    _injectedCancelUseCase = cancelUseCase;
     _injectedImagePicker = imagePicker;
   }
 
@@ -186,18 +193,85 @@ class StaffHandoverController extends Notifier<StaffHandoverState> {
     } else if (rental != null) {
       StaffHandoverStep step = StaffHandoverStep.contractSigning;
       final status = rental.status.toUpperCase();
-      if (status == 'CONFIRM') {
-        step = StaffHandoverStep.inspection;
-      } else if (status == 'ONGOING') {
+      final contractStatus = rental.contractStatus?.toUpperCase() ?? '';
+
+      // Tự động phân tích bước tiến độ thực tế của đơn thuê
+      if (status == 'ONGOING' || rental.checkInChecklist != null) {
         step = StaffHandoverStep.completed;
+      } else if (status == 'CONFIRM' || status == 'DEPOSITED') {
+        step = StaffHandoverStep.inspection;
+      } else if (contractStatus == 'SIGNED') {
+        step = StaffHandoverStep.payment;
+      } else {
+        step = StaffHandoverStep.contractSigning;
       }
+
+      // Nếu người dùng lỡ bấm trở ra và quay lại đơn đang thao tác, giữ nguyên bước cao nhất đã tới
+      if (state.rental?.id == rental.id &&
+          state.currentStep.index > step.index) {
+        step = state.currentStep;
+      }
+
+      final isContractSigned =
+          contractStatus == 'SIGNED' ||
+          step.index >= StaffHandoverStep.payment.index ||
+          (state.rental?.id == rental.id && state.isContractSigned);
+
+      final isPaymentConfirmed =
+          status == 'CONFIRM' ||
+          step.index >= StaffHandoverStep.inspection.index ||
+          (state.rental?.id == rental.id && state.isPaymentConfirmed);
 
       state = state.copyWith(
         rental: rental,
         currentStep: step,
-        batteryPercentage: rental.currentBattery?.toInt() ?? 95,
+        contractUrl: () => rental.contractUrl ?? state.contractUrl,
+        isContractSigned: isContractSigned,
+        isPaymentConfirmed: isPaymentConfirmed,
+        batteryPercentage:
+            rental.currentBattery?.toInt() ?? state.batteryPercentage,
       );
+
+      // Nếu đã ở bước payment hoặc inspection, sẵn sàng link thanh toán & mã QR
+      if (step == StaffHandoverStep.payment ||
+          step == StaffHandoverStep.inspection) {
+        if (state.paymentUrl == null) {
+          fetchPaymentUrl(rental.id);
+        }
+        if (state.payosPaymentInfo == null) {
+          generatePayOSQr();
+        }
+      }
     }
+  }
+
+  /// Hủy đơn thuê xe và rollback trạng thái xe về sẵn sàng (AVAILABLE)
+  Future<bool> cancelRental() async {
+    final rentalId = state.rental?.id;
+    if (rentalId == null || rentalId <= 0) {
+      state = state.copyWith(
+        errorMessage: () => 'Không tìm thấy thông tin đơn thuê để hủy.',
+      );
+      return false;
+    }
+
+    state = state.copyWith(isSubmitting: true, errorMessage: () => null);
+
+    final result = await _cancelUseCase(rentalId);
+
+    return result.when(
+      ok: (_) {
+        state = state.copyWith(isSubmitting: false);
+        return true;
+      },
+      err: (failure) {
+        state = state.copyWith(
+          isSubmitting: false,
+          errorMessage: () => failure.message,
+        );
+        return false;
+      },
+    );
   }
 
   /// Bước 1: Nhân viên bấm "Tiến hành nhận xe" -> Tạo Rental từ Reservation

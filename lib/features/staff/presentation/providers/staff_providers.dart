@@ -3,11 +3,14 @@ import 'package:rental_car/core/providers/core_providers.dart';
 import 'package:rental_car/features/staff/data/datasources/staff_remote_data_source.dart';
 import 'package:rental_car/features/staff/data/repositories/staff_repository_impl.dart';
 import 'package:rental_car/features/staff/domain/repositories/staff_repository.dart';
+import 'package:rental_car/features/staff/domain/usecases/cancel_staff_rental_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/convert_reservation_to_rental_usecase.dart';
+import 'package:rental_car/features/staff/domain/usecases/create_rental_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/filter_staff_rentals_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/filter_staff_reservations_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/generate_staff_contract_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/get_checkin_payment_url_usecase.dart';
+import 'package:rental_car/features/staff/domain/usecases/get_renter_by_email_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/get_staff_checklists_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/get_staff_profile_usecase.dart';
 import 'package:rental_car/features/staff/domain/usecases/get_station_vehicles_usecase.dart';
@@ -30,6 +33,16 @@ final staffRepositoryProvider = Provider<StaffRepository>((ref) {
 // --- Domain Layer UseCase Providers ---
 final getStaffProfileUseCaseProvider = Provider<GetStaffProfileUseCase>((ref) {
   return GetStaffProfileUseCase(ref.watch(staffRepositoryProvider));
+});
+
+final getRenterByEmailUseCaseProvider = Provider<GetRenterByEmailUseCase>((
+  ref,
+) {
+  return GetRenterByEmailUseCase(ref.watch(staffRepositoryProvider));
+});
+
+final createRentalUseCaseProvider = Provider<CreateRentalUseCase>((ref) {
+  return CreateRentalUseCase(ref.watch(staffRepositoryProvider));
 });
 
 final filterStaffReservationsUseCaseProvider =
@@ -81,6 +94,12 @@ final getStationVehiclesUseCaseProvider = Provider<GetStationVehiclesUseCase>((
   ref,
 ) {
   return GetStationVehiclesUseCase(ref.watch(staffRepositoryProvider));
+});
+
+final cancelStaffRentalUseCaseProvider = Provider<CancelStaffRentalUseCase>((
+  ref,
+) {
+  return CancelStaffRentalUseCase(ref.watch(staffRepositoryProvider));
 });
 
 // --- Presentation Layer Controllers ---

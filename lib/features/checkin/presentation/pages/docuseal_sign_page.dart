@@ -13,11 +13,13 @@ class DocuSealSignPage extends ConsumerStatefulWidget {
     required this.rentalId,
     required this.signingUrl,
     this.contractCode,
+    this.isStaffHandover = false,
   });
 
   final int rentalId;
   final String signingUrl;
   final String? contractCode;
+  final bool isStaffHandover;
 
   @override
   ConsumerState<DocuSealSignPage> createState() => _DocuSealSignPageState();
@@ -98,7 +100,17 @@ class _DocuSealSignPageState extends ConsumerState<DocuSealSignPage> {
     setState(() => _isConfirming = false);
 
     if (success) {
-      _showSuccessHandoverDialog();
+      if (widget.isStaffHandover) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ký hợp đồng DocuSeal thành công!'),
+            backgroundColor: Color(0xFF16A34A),
+          ),
+        );
+        Navigator.of(context).pop(true);
+      } else {
+        _showSuccessHandoverDialog();
+      }
     } else {
       final error = ref.read(checkInControllerProvider).errorMessage;
       ScaffoldMessenger.of(context).showSnackBar(

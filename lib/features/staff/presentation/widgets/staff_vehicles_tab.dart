@@ -13,12 +13,17 @@ class StaffVehiclesTab extends ConsumerWidget {
     final state = ref.watch(staffDashboardControllerProvider);
     final controller = ref.read(staffDashboardControllerProvider.notifier);
 
-    final availableCount = state.vehicles
-        .where((v) => v.status == 'AVAILABLE')
-        .length;
-    final rentingCount = state.vehicles
-        .where((v) => v.status == 'RENTING' || v.status == 'ONGOING')
-        .length;
+    final availableCount = state.vehicles.where((v) {
+      final s = v.status.trim().toUpperCase();
+      return s == 'AVAILABLE' || s == 'SẴN SÀNG' || s == 'SAN SANG';
+    }).length;
+    final rentingCount = state.vehicles.where((v) {
+      final s = v.status.trim().toUpperCase();
+      return s == 'RENTING' ||
+          s == 'ONGOING' ||
+          s == 'ĐANG THUÊ' ||
+          s == 'DANG THUE';
+    }).length;
 
     return RefreshIndicator(
       onRefresh: controller.fetchStationVehicles,

@@ -5,6 +5,7 @@ import 'package:rental_car/features/booking/domain/entities/reservation_entity.d
 import 'package:rental_car/features/checkout/domain/entities/rental_checklist_entity.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:rental_car/features/staff/data/datasources/staff_remote_data_source.dart';
+import 'package:rental_car/features/staff/domain/entities/renter_entity.dart';
 import 'package:rental_car/features/staff/domain/entities/staff_station_entity.dart';
 import 'package:rental_car/features/staff/domain/repositories/staff_repository.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
@@ -212,6 +213,62 @@ class StaffRepositoryImpl implements StaffRepository {
       return Result.err(
         DataFailure(message: 'Lỗi nạp danh sách xe tại trạm: $e'),
       );
+    }
+  }
+
+  @override
+  Future<Result<RenterEntity>> getRenterByEmail(String email) async {
+    try {
+      final model = await _remoteDataSource.getRenterByEmail(email);
+      return Result.ok(model.toEntity());
+    } on NetworkException catch (e) {
+      return Result.err(NetworkFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Result.err(ServerFailure(message: e.message));
+    } catch (e) {
+      return Result.err(
+        DataFailure(message: 'Lỗi tra cứu thông tin người thuê: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<RentalDetailEntity>> createRental({
+    required DateTime startTime,
+    required DateTime endTime,
+    required int vehicleId,
+    required String email,
+    required int staffId,
+  }) async {
+    try {
+      final model = await _remoteDataSource.createRental(
+        startTime: startTime,
+        endTime: endTime,
+        vehicleId: vehicleId,
+        email: email,
+        staffId: staffId,
+      );
+      return Result.ok(model.toEntity());
+    } on NetworkException catch (e) {
+      return Result.err(NetworkFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Result.err(ServerFailure(message: e.message));
+    } catch (e) {
+      return Result.err(DataFailure(message: 'Lỗi tạo hợp đồng thuê xe: $e'));
+    }
+  }
+
+  @override
+  Future<Result<bool>> cancelRental(int rentalId) async {
+    try {
+      final success = await _remoteDataSource.cancelRental(rentalId);
+      return Result.ok(success);
+    } on NetworkException catch (e) {
+      return Result.err(NetworkFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Result.err(ServerFailure(message: e.message));
+    } catch (e) {
+      return Result.err(DataFailure(message: 'Lỗi hủy đơn thuê: $e'));
     }
   }
 }

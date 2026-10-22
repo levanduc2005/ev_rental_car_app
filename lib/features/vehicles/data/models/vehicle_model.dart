@@ -95,10 +95,36 @@ abstract class VehicleModel with _$VehicleModel {
     final depFee = (json['depositFee'] as num?)?.toDouble() ?? 3000000.0;
     final hFee = holdFeeNum?.toDouble() ?? 5000.0;
 
+    String parsedStatus = 'AVAILABLE';
+    final rawStatus = json['status']?.toString().trim();
+    if (rawStatus != null && rawStatus.isNotEmpty) {
+      final s = rawStatus.toUpperCase();
+      if (s == 'SẴN SÀNG' || s == 'SAN SANG' || s == 'AVAILABLE') {
+        parsedStatus = 'AVAILABLE';
+      } else if (s == 'ĐANG THUÊ' ||
+          s == 'DANG THUE' ||
+          s == 'RENTING' ||
+          s == 'ONGOING') {
+        parsedStatus = 'RENTING';
+      } else if (s == 'ĐÃ ĐẶT' ||
+          s == 'DA DAT' ||
+          s == 'RESERVED' ||
+          s == 'PENDING') {
+        parsedStatus = 'RESERVED';
+      } else if (s.contains('BẢO') ||
+          s.contains('BAO') ||
+          s == 'MAINTAINED' ||
+          s == 'MAINTENANCE') {
+        parsedStatus = 'MAINTENANCE';
+      } else {
+        parsedStatus = rawStatus;
+      }
+    }
+
     return VehicleModel(
       id: parsedId,
       name: json['name'] as String? ?? 'Xe điện E-Motion',
-      status: json['status'] as String? ?? 'AVAILABLE',
+      status: parsedStatus,
       category: json['category'] as String?,
       brand: (json['brand'] ?? 'E-MOTION').toString().toUpperCase(),
       plateNumber: json['plateNumber'] as String?,

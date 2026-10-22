@@ -15,9 +15,7 @@ class LoginPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            AuthTopBar(
-              showCloseButton: false,
-            ),
+            AuthTopBar(showCloseButton: false),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),

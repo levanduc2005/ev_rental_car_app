@@ -6,6 +6,7 @@ import 'package:rental_car/features/booking/data/models/reservation_model.dart';
 import 'package:rental_car/features/checkout/data/models/rental_checklist_model.dart';
 import 'package:rental_car/features/profile/data/models/rental_detail_model.dart';
 import 'package:rental_car/features/staff/data/datasources/staff_remote_data_source.dart';
+import 'package:rental_car/features/staff/data/models/renter_model.dart';
 import 'package:rental_car/features/staff/data/models/staff_station_model.dart';
 import 'package:rental_car/features/staff/data/repositories/staff_repository_impl.dart';
 import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart';
@@ -295,6 +296,73 @@ void main() {
       result.when(
         ok: (_) => fail('Expected err'),
         err: (failure) => expect(failure, isA<ServerFailure>()),
+      );
+    });
+
+    test('getRenterByEmail returns mapped entity on success', () async {
+      const renterModel = RenterModel(
+        email: 'renter@test.com',
+        fullName: 'Test Renter',
+        phone: '0912345678',
+        point: 50,
+      );
+
+      when(
+        () => mockRemoteDataSource.getRenterByEmail('renter@test.com'),
+      ).thenAnswer((_) async => renterModel);
+
+      final result = await repository.getRenterByEmail('renter@test.com');
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (entity) {
+          expect(entity.email, 'renter@test.com');
+          expect(entity.fullName, 'Test Renter');
+          expect(entity.point, 50);
+        },
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('createRental returns mapped entity on success', () async {
+      final startTime = DateTime(2026, 10, 25, 8);
+      final endTime = DateTime(2026, 10, 25, 16);
+      const rentalModel = RentalDetailModel(
+        id: 301,
+        status: 'PENDING',
+        vehicleName: 'VF 9',
+        rentFee: 1800000,
+        rentalDepositAmount: 5000000,
+        seatCapacity: 7,
+        batteryCapacity: 123.0,
+      );
+
+      when(
+        () => mockRemoteDataSource.createRental(
+          startTime: startTime,
+          endTime: endTime,
+          vehicleId: 15,
+          email: 'renter@test.com',
+          staffId: 2,
+        ),
+      ).thenAnswer((_) async => rentalModel);
+
+      final result = await repository.createRental(
+        startTime: startTime,
+        endTime: endTime,
+        vehicleId: 15,
+        email: 'renter@test.com',
+        staffId: 2,
+      );
+
+      expect(result.isOk, true);
+      result.when(
+        ok: (entity) {
+          expect(entity.id, 301);
+          expect(entity.vehicleName, 'VF 9');
+          expect(entity.status, 'PENDING');
+        },
+        err: (_) => fail('Expected ok'),
       );
     });
   });

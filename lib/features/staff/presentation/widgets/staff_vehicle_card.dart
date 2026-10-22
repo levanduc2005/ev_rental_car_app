@@ -9,20 +9,26 @@ class StaffVehicleCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   (String label, Color color, Color bg) _getStatusMeta(String status) {
-    switch (status.toUpperCase()) {
-      case 'AVAILABLE':
-        return ('Sẵn sàng', const Color(0xFF059669), const Color(0xFFECFDF5));
-      case 'RENTING':
-      case 'ONGOING':
-        return ('Đang thuê', const Color(0xFF2563EB), const Color(0xFFEFF6FF));
-      case 'RESERVED':
-      case 'PENDING':
-        return ('Đã đặt', const Color(0xFFD97706), const Color(0xFFFFFBEB));
-      case 'MAINTENANCE':
-        return ('Bảo dưỡng', const Color(0xFFDC2626), const Color(0xFFFEF2F2));
-      default:
-        return (status, const Color(0xFF64748B), const Color(0xFFF1F5F9));
+    final s = status.trim().toUpperCase();
+    if (s == 'AVAILABLE' || s == 'SẴN SÀNG' || s == 'SAN SANG') {
+      return ('Sẵn sàng', const Color(0xFF059669), const Color(0xFFECFDF5));
     }
+    if (s == 'RENTING' ||
+        s == 'ONGOING' ||
+        s == 'ĐANG THUÊ' ||
+        s == 'DANG THUE') {
+      return ('Đang thuê', const Color(0xFF2563EB), const Color(0xFFEFF6FF));
+    }
+    if (s == 'RESERVED' || s == 'PENDING' || s == 'ĐÃ ĐẶT' || s == 'DA DAT') {
+      return ('Đã đặt', const Color(0xFFD97706), const Color(0xFFFFFBEB));
+    }
+    if (s.contains('BẢO') ||
+        s.contains('BAO') ||
+        s == 'MAINTAINED' ||
+        s == 'MAINTENANCE') {
+      return ('Bảo dưỡng', const Color(0xFFDC2626), const Color(0xFFFEF2F2));
+    }
+    return (status, const Color(0xFF64748B), const Color(0xFFF1F5F9));
   }
 
   @override

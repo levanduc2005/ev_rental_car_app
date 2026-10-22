@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rental_car/app/router/app_routes.dart';
-import 'package:rental_car/core/theme/app_colors.dart';
 import 'package:rental_car/core/theme/app_spacing.dart';
 import 'package:rental_car/features/home/presentation/providers/home_providers.dart';
 import 'package:rental_car/features/home/presentation/widgets/brand_selector_section.dart';
@@ -32,16 +31,6 @@ class HomePage extends ConsumerWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.qr_code_scanner_rounded,
-              color: AppColors.primary,
-            ),
-            tooltip: 'Quét QR thuê xe tại trạm',
-            onPressed: () {
-              context.pushNamed(AppRoute.qrScan.name);
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.account_circle_outlined),
             tooltip: 'Hồ sơ cá nhân',

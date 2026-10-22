@@ -4,6 +4,7 @@ import 'package:rental_car/core/network/api_handler.dart';
 import 'package:rental_car/features/booking/data/models/reservation_model.dart';
 import 'package:rental_car/features/checkout/data/models/rental_checklist_model.dart';
 import 'package:rental_car/features/profile/data/models/rental_detail_model.dart';
+import 'package:rental_car/features/staff/data/models/renter_model.dart';
 import 'package:rental_car/features/staff/data/models/staff_station_model.dart';
 
 import 'package:rental_car/features/vehicles/data/models/vehicle_model.dart';
@@ -11,6 +12,16 @@ import 'package:rental_car/features/vehicles/domain/entities/vehicle_entity.dart
 
 abstract interface class StaffRemoteDataSource {
   Future<StaffProfileModel> getStaffProfile();
+
+  Future<RenterModel> getRenterByEmail(String email);
+
+  Future<RentalDetailModel> createRental({
+    required DateTime startTime,
+    required DateTime endTime,
+    required int vehicleId,
+    required String email,
+    required int staffId,
+  });
 
   Future<List<ReservationModel>> filterReservations({
     String? search,
@@ -46,6 +57,8 @@ abstract interface class StaffRemoteDataSource {
     required int currentBattery,
     required String img,
   });
+
+  Future<bool> cancelRental(int rentalId);
 
   Future<List<RentalChecklistModel>> getChecklists({
     String? keyword,
@@ -321,17 +334,77 @@ class StaffRemoteDataSourceImpl implements StaffRemoteDataSource {
         items = data['content'] as List<dynamic>;
       }
 
-      final all = items
-          .whereType<Map<String, dynamic>>()
-          .map(VehicleModel.fromJson)
-          .map((m) => m.toEntity())
-          .toList();
+      final all = items.whereType<Map<String, dynamic>>().map((item) {
+        try {
+          return VehicleModel.fromBackendJson(item).toEntity();
+        } catch (_) {
+          return VehicleModel.fromJson(item).toEntity();
+        }
+      }).toList();
 
       if (stationId > 0) {
         final filtered = all.where((v) => v.station?.id == stationId).toList();
         if (filtered.isNotEmpty) return filtered;
       }
       return all;
+    });
+  }
+
+  @override
+  Future<RenterModel> getRenterByEmail(String email) {
+    return guardApiCall(() async {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/users/renter/$email',
+      );
+      final data = response.data?['data'];
+      if (data is Map<String, dynamic>) {
+        return RenterModel.fromJson(data);
+      }
+      throw const ParsingException('Không tìm thấy thông tin người thuê.');
+    });
+  }
+
+  @override
+  Future<RentalDetailModel> createRental({
+    required DateTime startTime,
+    required DateTime endTime,
+    required int vehicleId,
+    required String email,
+    required int staffId,
+  }) {
+    return guardApiCall(() async {
+      final body = <String, dynamic>{
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime.toIso8601String(),
+        'vehicleId': vehicleId,
+        'email': email,
+        'staffId': staffId,
+      };
+
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/rentals',
+        data: body,
+      );
+
+      final data = response.data?['data'];
+      if (data is Map<String, dynamic>) {
+        return RentalDetailModel.fromJson(data);
+      }
+      throw const ParsingException(
+        'Không thể khởi tạo hợp đồng thuê xe từ máy chủ.',
+      );
+    });
+  }
+
+  @override
+  Future<bool> cancelRental(int rentalId) {
+    return guardApiCall(() async {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/rentals/manage/$rentalId/cancel',
+      );
+      final data = response.data?['data'];
+      if (data is bool) return data;
+      return true;
     });
   }
 }
