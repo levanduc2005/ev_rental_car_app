@@ -75,7 +75,6 @@ class StaffRentalCard extends StatelessWidget {
       case 'CONFIRM':
         return 'Kiểm tra xe & Bàn giao (Bước 4)';
       case 'ONGOING':
-        return 'Xem tiến trình các bước (Hoàn tất)';
         return 'Nhận trả xe (Check-out)';
       case 'OVERDUE':
         return 'Nhận trả xe quá hạn';
