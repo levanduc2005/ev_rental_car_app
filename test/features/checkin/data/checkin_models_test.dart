@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rental_car/features/checkin/data/models/docuseal_contract_model.dart';
 import 'package:rental_car/features/checkin/data/models/license_status_model.dart';
 import 'package:rental_car/features/checkin/data/models/pickup_checklist_model.dart';
+import 'package:rental_car/features/checkin/domain/entities/docuseal_contract_entity.dart';
 import 'package:rental_car/features/checkin/domain/entities/pickup_checklist_entity.dart';
 
 void main() {
@@ -33,6 +34,18 @@ void main() {
       });
       expect(model.isApproved, false);
       expect(model.isPending, true);
+
+      final modelRejected = LicenseStatusModel.fromJson({
+        'userId': 12,
+        'licenseStatus': 'REJECTED',
+      });
+      expect(modelRejected.isRejected, true);
+
+      final modelNone = LicenseStatusModel.fromJson({
+        'userId': 12,
+        'licenseStatus': 'NOT_SUBMITTED',
+      });
+      expect(modelNone.isNotSubmitted, true);
     });
   });
 
@@ -132,7 +145,60 @@ void main() {
 
       final serialized = model.toJson();
       expect(serialized['contractCode'], 'HD-EMOTION-105');
+      expect(model, isA<DocuSealContractEntity>());
     });
+
+    test('isSigned is true when SIGNED and false when EXPIRED', () {
+      const signedModel = DocuSealContractModel(
+        rentalId: 1,
+        contractId: 10,
+        contractCode: 'HD1',
+        contractStatus: 'SIGNED',
+        signingUrl: 'https://docuseal.com/s/1',
+      );
+      expect(signedModel.isSigned, true);
+
+      const expiredModel = DocuSealContractModel(
+        rentalId: 2,
+        contractId: 20,
+        contractCode: 'HD2',
+        contractStatus: 'EXPIRED',
+        signingUrl: 'https://docuseal.com/s/2',
+      );
+      expect(expiredModel.isSigned, false);
+    });
+  });
+
+  group('CarImagesEntity & AccessoryChecklistEntity edge cases', () {
+    test('AccessoryChecklistEntity copyWith updates flags', () {
+      const acc = AccessoryChecklistEntity();
+      final updated = acc.copyWith(hasPortableCharger: false);
+      expect(updated.hasPortableCharger, false);
+      expect(updated.hasTireRepairKit, true);
+    });
+
+    test(
+      'CarImagesEntity copyWith and individual front/back toJson mapping',
+      () {
+        const images = CarImagesEntity(
+          frontUrl: 'front.jpg',
+          backUrl: 'back.jpg',
+          leftSideUrl: 'left.jpg',
+          rightSideUrl: 'right.jpg',
+        );
+
+        final updated = images.copyWith(frontUrl: 'front2.jpg');
+        expect(updated.frontUrl, 'front2.jpg');
+        expect(updated.allUrls.length, 4);
+
+        final json = images.toJson();
+        expect(json['frontUrl'], 'front.jpg');
+        expect(json['backUrl'], 'back.jpg');
+        expect(json['leftSideUrl'], 'left.jpg');
+        expect(json['rightSideUrl'], 'right.jpg');
+        expect(json['img'], 'front.jpg|back.jpg|left.jpg|right.jpg');
+      },
+    );
   });
 
   group('ContractConfirmResultModel', () {
@@ -149,6 +215,7 @@ void main() {
       expect(model.isActive, true);
       expect(model.status, 'ACTIVE');
       expect(model.contractStatus, 'SIGNED');
+      expect(model, isA<ContractConfirmResultEntity>());
     });
   });
 }

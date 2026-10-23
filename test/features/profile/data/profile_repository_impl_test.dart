@@ -4,6 +4,7 @@ import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/core/error/failure.dart';
 import 'package:rental_car/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:rental_car/features/profile/data/models/kyc_document_model.dart';
+import 'package:rental_car/features/profile/data/models/rental_detail_model.dart';
 import 'package:rental_car/features/profile/data/models/user_profile_model.dart';
 import 'package:rental_car/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:rental_car/features/profile/domain/entities/kyc_document_entity.dart';
@@ -87,6 +88,92 @@ void main() {
       verify(
         () => mockRemoteDataSource.uploadImage('/path/to/img.jpg'),
       ).called(1);
+    });
+
+    test('updateProfile returns UserProfileEntity when successful', () async {
+      const model = UserProfileModel(
+        email: 'test@example.com',
+        fullName: 'New Name',
+        phone: '0988888888',
+      );
+
+      when(
+        () => mockRemoteDataSource.updateProfile(
+          fullName: 'New Name',
+          phone: '0988888888',
+        ),
+      ).thenAnswer((_) async => model);
+
+      final result = await repository.updateProfile(
+        fullName: 'New Name',
+        phone: '0988888888',
+      );
+
+      expect(result.isOk, isTrue);
+      expect(result.valueOrNull?.fullName, 'New Name');
+    });
+
+    test('getKycDocuments returns list of KycDocumentEntity', () async {
+      const docModel = KycDocumentModel(
+        id: 1,
+        type: 'LICENSE',
+        number: '123456789',
+        imgUrl: 'https://test.jpg',
+      );
+
+      when(
+        () => mockRemoteDataSource.getDocuments('test@example.com'),
+      ).thenAnswer((_) async => [docModel]);
+
+      final result = await repository.getKycDocuments('test@example.com');
+
+      expect(result.isOk, isTrue);
+      expect(result.valueOrNull?.length, 1);
+    });
+
+    test('deleteDocument calls remoteDataSource.deleteDocument', () async {
+      when(
+        () => mockRemoteDataSource.deleteDocument(1),
+      ).thenAnswer((_) async {});
+
+      final result = await repository.deleteDocument(1);
+
+      expect(result.isOk, isTrue);
+      verify(() => mockRemoteDataSource.deleteDocument(1)).called(1);
+    });
+
+    test('getRentalHistory returns list of RentalItemEntity', () async {
+      when(
+        () => mockRemoteDataSource.getRentalHistory(
+          email: 'test@example.com',
+          status: any(named: 'status'),
+        ),
+      ).thenAnswer((_) async => []);
+
+      final result = await repository.getRentalHistory(
+        email: 'test@example.com',
+      );
+
+      expect(result.isOk, isTrue);
+      expect(result.valueOrNull, isEmpty);
+    });
+
+    test('getRentalDetail returns RentalDetailEntity', () async {
+      const model = RentalDetailModel(
+        id: 10,
+        status: 'ONGOING',
+        vehicleName: 'VF8',
+      );
+
+      when(
+        () => mockRemoteDataSource.getRentalDetail(10),
+      ).thenAnswer((_) async => model);
+
+      final result = await repository.getRentalDetail(10);
+
+      expect(result.isOk, isTrue);
+      expect(result.valueOrNull?.id, 10);
+      expect(result.valueOrNull?.vehicleName, 'VF8');
     });
   });
 }

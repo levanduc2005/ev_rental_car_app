@@ -365,5 +365,61 @@ void main() {
         err: (_) => fail('Expected ok'),
       );
     });
+
+    test('cancelRental returns ok on success', () async {
+      when(
+        () => mockRemoteDataSource.cancelRental(10),
+      ).thenAnswer((_) async => true);
+
+      final result = await repository.cancelRental(10);
+
+      expect(result.isOk, isTrue);
+      result.when(
+        ok: (val) => expect(val, isTrue),
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('cancelRental maps NetworkException to NetworkFailure', () async {
+      when(
+        () => mockRemoteDataSource.cancelRental(10),
+      ).thenThrow(const NetworkException('No connection'));
+
+      final result = await repository.cancelRental(10);
+
+      expect(result.isErr, isTrue);
+      result.when(
+        ok: (_) => fail('Expected err'),
+        err: (f) => expect(f, isA<NetworkFailure>()),
+      );
+    });
+
+    test('cancelRental maps ServerException to ServerFailure', () async {
+      when(
+        () => mockRemoteDataSource.cancelRental(10),
+      ).thenThrow(const ServerException(message: 'Cancel error'));
+
+      final result = await repository.cancelRental(10);
+
+      expect(result.isErr, isTrue);
+      result.when(
+        ok: (_) => fail('Expected err'),
+        err: (f) => expect(f, isA<ServerFailure>()),
+      );
+    });
+
+    test('filterReservations maps generic exception to DataFailure', () async {
+      when(
+        () => mockRemoteDataSource.filterReservations(),
+      ).thenThrow(Exception('Crash'));
+
+      final result = await repository.filterReservations();
+
+      expect(result.isErr, isTrue);
+      result.when(
+        ok: (_) => fail('Expected err'),
+        err: (f) => expect(f, isA<DataFailure>()),
+      );
+    });
   });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rental_car/features/emergency/data/models/sos_report_model.dart';
 import 'package:rental_car/features/emergency/domain/entities/emergency_type.dart';
+import 'package:rental_car/features/emergency/domain/entities/sos_report_entity.dart';
 
 void main() {
   group('SosReportModel', () {
@@ -54,6 +55,47 @@ void main() {
       expect(json['type'], 'ACCIDENT');
       expect(json['imageUrl'], 'https://test.jpg');
       expect(json['rentalId'], 8);
+    });
+  });
+
+  group('SosReportEntity', () {
+    test('copyWith, equality and hashCode operate correctly', () {
+      const entity1 = SosReportEntity(
+        id: 1,
+        title: 'SOS',
+        description: 'Flat tire',
+        type: EmergencyType.flatTire,
+        rentalId: 10,
+      );
+
+      final copied = entity1.copyWith(
+        title: 'New SOS',
+        description: 'Flat tire 2',
+        type: EmergencyType.outOfBattery,
+        imageUrl: 'new.jpg',
+        latitude: 10.5,
+        longitude: 106.5,
+        rentalId: 20,
+        userEmail: 'sos@test.com',
+        status: 'RESOLVED',
+        createdAt: DateTime(2026, 10, 15),
+      );
+      expect(copied.description, 'Flat tire 2');
+      expect(copied.title, 'New SOS');
+      expect(copied.userEmail, 'sos@test.com');
+      expect(copied.status, 'RESOLVED');
+      expect(copied.id, 1);
+
+      const entity2 = SosReportEntity(
+        id: 1,
+        title: 'SOS',
+        description: 'Flat tire',
+        type: EmergencyType.flatTire,
+        rentalId: 10,
+      );
+
+      expect(entity1 == entity2, isTrue);
+      expect(entity1.hashCode, entity2.hashCode);
     });
   });
 }

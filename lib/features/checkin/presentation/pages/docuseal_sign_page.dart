@@ -38,43 +38,82 @@ class _DocuSealSignPageState extends ConsumerState<DocuSealSignPage> {
   }
 
   void _initWebViewController() {
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.white)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (url) {
-            setState(() {
-              _isLoading = true;
-              _errorMessage = null;
-            });
-            _checkIfSignedUrl(url);
-          },
-          onPageFinished: (url) {
-            setState(() => _isLoading = false);
-            _checkIfSignedUrl(url);
-          },
-          onUrlChange: (change) {
-            if (change.url != null) {
-              _checkIfSignedUrl(change.url!);
-            }
-          },
-          onWebResourceError: (error) {
-            setState(() {
-              _isLoading = false;
-              _errorMessage = error.description;
-            });
-          },
-        ),
-      );
+    _controller =
+        WebViewController() // NOSONAR
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..setBackgroundColor(Colors.white)
+          ..setNavigationDelegate(
+            NavigationDelegate(
+              onNavigationRequest: (NavigationRequest request) {
+                if (_isAllowedUrl(request.url)) {
+                  return NavigationDecision.navigate;
+                }
+                return NavigationDecision.prevent;
+              },
+              onPageStarted: (url) {
+                setState(() {
+                  _isLoading = true;
+                  _errorMessage = null;
+                });
+                _checkIfSignedUrl(url);
+              },
+              onPageFinished: (url) {
+                setState(() => _isLoading = false);
+                _checkIfSignedUrl(url);
+              },
+              onUrlChange: (change) {
+                if (change.url != null) {
+                  _checkIfSignedUrl(change.url!);
+                }
+              },
+              onWebResourceError: (error) {
+                setState(() {
+                  _isLoading = false;
+                  _errorMessage = error.description;
+                });
+              },
+            ),
+          );
 
     final uri = Uri.tryParse(widget.signingUrl);
-    if (uri != null && uri.isScheme('https')) {
+    if (uri != null &&
+        uri.isScheme('https') &&
+        _isAllowedUrl(widget.signingUrl)) {
       _controller.loadRequest(uri);
     } else {
       _errorMessage =
-          'Đường dẫn ký hợp đồng không hợp lệ hoặc không bảo mật (yêu cầu HTTPS): ${widget.signingUrl}';
+          'Đường dẫn ký hợp đồng không hợp lệ hoặc không bảo mật: ${widget.signingUrl}';
     }
+  }
+
+  bool _isAllowedUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null || !uri.isScheme('https')) {
+      return false;
+    }
+
+    final targetHost = uri.host.toLowerCase();
+    if (targetHost.isEmpty) return false;
+
+    // Trusted DocuSeal domains
+    const trustedDomains = ['docuseal.com', 'docuseal.co', 'docuseal.eu'];
+    for (final domain in trustedDomains) {
+      if (targetHost == domain || targetHost.endsWith('.$domain')) {
+        return true;
+      }
+    }
+
+    // Allow host from signingUrl if valid HTTPS
+    final initialUri = Uri.tryParse(widget.signingUrl);
+    if (initialUri != null && initialUri.isScheme('https')) {
+      final initialHost = initialUri.host.toLowerCase();
+      if (initialHost.isNotEmpty &&
+          (targetHost == initialHost || targetHost.endsWith('.$initialHost'))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   void _checkIfSignedUrl(String url) {

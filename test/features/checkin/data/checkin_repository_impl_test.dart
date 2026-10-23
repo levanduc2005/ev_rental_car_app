@@ -162,5 +162,50 @@ void main() {
         );
       },
     );
+
+    test('uploadCarImage returns image url on success', () async {
+      when(
+        () => mockDataSource.uploadCarImage('/test.jpg'),
+      ).thenAnswer((_) async => 'https://cdn.com/test.jpg');
+
+      final result = await repository.uploadCarImage('/test.jpg');
+
+      expect(result.isOk, isTrue);
+      result.when(
+        ok: (url) => expect(url, 'https://cdn.com/test.jpg'),
+        err: (_) => fail('Expected ok'),
+      );
+    });
+
+    test('uploadCarImage returns NetworkFailure on NetworkException', () async {
+      when(
+        () => mockDataSource.uploadCarImage('/test.jpg'),
+      ).thenThrow(const NetworkException('Mất mạng'));
+
+      final result = await repository.uploadCarImage('/test.jpg');
+
+      expect(result.isErr, isTrue);
+      result.when(
+        ok: (_) => fail('Expected err'),
+        err: (f) => expect(f, isA<NetworkFailure>()),
+      );
+    });
+
+    test(
+      'generateContract returns ServerFailure on generic exception',
+      () async {
+        when(
+          () => mockDataSource.generateContract(105),
+        ).thenThrow(Exception('Unknown'));
+
+        final result = await repository.generateContract(105);
+
+        expect(result.isErr, isTrue);
+        result.when(
+          ok: (_) => fail('Expected err'),
+          err: (f) => expect(f, isA<ServerFailure>()),
+        );
+      },
+    );
   });
 }

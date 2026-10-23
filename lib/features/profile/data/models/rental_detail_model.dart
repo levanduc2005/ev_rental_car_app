@@ -98,13 +98,14 @@ class RentalDetailModel {
 
     // Ảnh xe
     String? vImage;
-    final imgs = v?['images'] as List?;
-    if (imgs != null && imgs.isNotEmpty) {
-      final mainImg = imgs.firstWhere(
-        (img) => img is Map<String, dynamic> && img['main'] == true,
-        orElse: () => imgs.first,
+    final rawImgs = v?['images'];
+    if (rawImgs is List && rawImgs.isNotEmpty) {
+      final imgsList = rawImgs.cast<dynamic>();
+      final mainImg = imgsList.firstWhere(
+        (img) => img is Map && img['main'] == true,
+        orElse: () => imgsList.first,
       );
-      if (mainImg is Map<String, dynamic>) {
+      if (mainImg is Map) {
         vImage = mainImg['url'] as String? ?? mainImg['imgUrl'] as String?;
       }
     }
