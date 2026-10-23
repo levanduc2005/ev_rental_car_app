@@ -207,5 +207,55 @@ void main() {
         );
       },
     );
+
+    test(
+      'error mapping covers NetworkException, ServerException, and generic exception across all methods',
+      () async {
+        final errors = [
+          const NetworkException('net error'),
+          const ServerException(message: 'server error'),
+          Exception('generic error'),
+        ];
+
+        for (final err in errors) {
+          when(() => mockDataSource.getLicenseStatus()).thenThrow(err);
+          final r1 = await repository.getLicenseStatus();
+          expect(r1.isErr, isTrue);
+
+          when(() => mockDataSource.uploadCarImage(any())).thenThrow(err);
+          final r2 = await repository.uploadCarImage('file.jpg');
+          expect(r2.isErr, isTrue);
+
+          when(
+            () => mockDataSource.createPickupChecklist(
+              rentalId: any(named: 'rentalId'),
+              odometer: any(named: 'odometer'),
+              batteryPercentage: any(named: 'batteryPercentage'),
+              accessories: any(named: 'accessories'),
+              images: any(named: 'images'),
+              note: any(named: 'note'),
+            ),
+          ).thenThrow(err);
+          final r3 = await repository.submitPickupChecklist(
+            rentalId: 1,
+            odometer: 100,
+            batteryPercentage: 50,
+            accessories: const AccessoryChecklistEntity(),
+            images: const CarImagesEntity(),
+          );
+          expect(r3.isErr, isTrue);
+
+          when(() => mockDataSource.generateContract(any())).thenThrow(err);
+          final r4 = await repository.generateContract(1);
+          expect(r4.isErr, isTrue);
+
+          when(
+            () => mockDataSource.confirmContractSigned(any()),
+          ).thenThrow(err);
+          final r5 = await repository.confirmContractSigned(1);
+          expect(r5.isErr, isTrue);
+        }
+      },
+    );
   });
 }

@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/features/checkin/data/datasources/checkin_remote_data_source.dart';
 import 'package:rental_car/features/checkin/domain/entities/pickup_checklist_entity.dart';
 
@@ -184,5 +186,176 @@ void main() {
       expect(result.rentalId, 5);
       expect(result.contractStatus, 'SIGNED');
     });
+
+    test(
+      'confirmContractSigned falls back on 500 with No static resource or empty data',
+      () async {
+        when(
+          () => mockDio.post<Map<String, dynamic>>(
+            '/rentals/5/contract/confirm-signed',
+          ),
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(
+              path: '/rentals/5/contract/confirm-signed',
+            ),
+            response: Response(
+              requestOptions: RequestOptions(
+                path: '/rentals/5/contract/confirm-signed',
+              ),
+              statusCode: 500,
+              data: {'message': 'No static resource found'},
+            ),
+          ),
+        );
+
+        final res1 = await dataSource.confirmContractSigned(5);
+        expect(res1.contractStatus, 'SIGNED');
+
+        when(
+          () => mockDio.post<Map<String, dynamic>>(
+            '/rentals/5/contract/confirm-signed',
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(
+              path: '/rentals/5/contract/confirm-signed',
+            ),
+            statusCode: 200,
+            data: {},
+          ),
+        );
+
+        final res2 = await dataSource.confirmContractSigned(5);
+        expect(res2.contractStatus, 'SIGNED');
+      },
+    );
+
+    test(
+      'generateContract handles raw string response or throws ParsingException',
+      () async {
+        when(() => mockDio.post<dynamic>('/rentals/5/contract')).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals/5/contract'),
+            statusCode: 200,
+            data: 'https://docuseal.com/direct-url',
+          ),
+        );
+
+        final res = await dataSource.generateContract(5);
+        expect(res.signingUrl, 'https://docuseal.com/direct-url');
+
+        when(() => mockDio.post<dynamic>('/rentals/5/contract')).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals/5/contract'),
+            statusCode: 200,
+            data: 12345, // invalid
+          ),
+        );
+
+        expect(
+          () => dataSource.generateContract(5),
+          throwsA(isA<ParsingException>()),
+        );
+      },
+    );
+
+    test(
+      'createPickupChecklist throws ParsingException when data is null',
+      () async {
+        when(
+          () => mockDio.post<Map<String, dynamic>>(
+            '/rental-checklists',
+            data: any(named: 'data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rental-checklists'),
+            statusCode: 200,
+            data: {'data': null},
+          ),
+        );
+
+        expect(
+          () => dataSource.createPickupChecklist(
+            rentalId: 1,
+            odometer: 100,
+            batteryPercentage: 50,
+            accessories: const AccessoryChecklistEntity(),
+            images: const CarImagesEntity(),
+          ),
+          throwsA(isA<ParsingException>()),
+        );
+      },
+    );
+
+    test(
+      'uploadCarImage handles missing file, success, and connection errors',
+      () async {
+        await expectLater(
+          dataSource.uploadCarImage('non_existent.jpg'),
+          throwsA(isA<ServerException>()),
+        );
+
+        // Create temp file
+        final tempDir = await Directory.systemTemp.createTemp();
+        final tempFile = File('${tempDir.path}/car.jpg');
+        await tempFile.writeAsString('sample car content');
+
+        // 2. Success upload
+        when(
+          () => mockCloudinaryDio.post<Map<String, dynamic>>(
+            any(),
+            data: any(named: 'data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/upload'),
+            statusCode: 200,
+            data: {'secure_url': 'https://cloudinary.com/car.jpg'},
+          ),
+        );
+
+        final url = await dataSource.uploadCarImage(tempFile.path);
+        expect(url, 'https://cloudinary.com/car.jpg');
+
+        // 3. Cloudinary returns empty secure_url
+        when(
+          () => mockCloudinaryDio.post<Map<String, dynamic>>(
+            any(),
+            data: any(named: 'data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/upload'),
+            statusCode: 200,
+            data: {'secure_url': ''},
+          ),
+        );
+
+        await expectLater(
+          dataSource.uploadCarImage(tempFile.path),
+          throwsA(isA<ServerException>()),
+        );
+
+        // 4. Connection error in non-prod returns fallback image
+        when(
+          () => mockCloudinaryDio.post<Map<String, dynamic>>(
+            any(),
+            data: any(named: 'data'),
+          ),
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/upload'),
+            type: DioExceptionType.connectionTimeout,
+          ),
+        );
+
+        final fallbackUrl = await dataSource.uploadCarImage(tempFile.path);
+        expect(fallbackUrl, contains('car_sample_'));
+
+        await tempDir.delete(recursive: true);
+      },
+    );
   });
 }

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:rental_car/core/error/exceptions.dart';
 import 'package:rental_car/features/staff/data/datasources/staff_remote_data_source.dart';
 
 class MockDio extends Mock implements Dio {}
@@ -264,5 +265,227 @@ void main() {
       final result = await dataSource.cancelRental(25);
       expect(result, isTrue);
     });
+
+    test('getStationVehicles returns filtered vehicles by stationId', () async {
+      when(() => mockDio.get<Map<String, dynamic>>('/vehicles')).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: '/vehicles'),
+          statusCode: 200,
+          data: {
+            'data': [
+              {
+                'id': 1,
+                'name': 'VF 5',
+                'brand': 'VINFAST',
+                'station': {'id': 10, 'name': 'Station 10'},
+              },
+              {
+                'id': 2,
+                'name': 'VF 8',
+                'brand': 'VINFAST',
+                'station': {'id': 20, 'name': 'Station 20'},
+              },
+            ],
+          },
+        ),
+      );
+
+      final vehicles = await dataSource.getStationVehicles(10);
+      expect(vehicles.length, 1);
+      expect(vehicles.first.id, 1);
+    });
+
+    test('createRental calls /rentals and parses RentalDetailModel', () async {
+      when(
+        () => mockDio.post<Map<String, dynamic>>(
+          '/rentals',
+          data: any(named: 'data'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: '/rentals'),
+          statusCode: 200,
+          data: {
+            'data': {
+              'id': 50,
+              'status': 'PENDING',
+              'vehicle': {'name': 'VF 3'},
+            },
+          },
+        ),
+      );
+
+      final result = await dataSource.createRental(
+        startTime: DateTime(2026, 10, 1, 8),
+        endTime: DateTime(2026, 10, 1, 16),
+        vehicleId: 1,
+        email: 'user@test.com',
+        staffId: 2,
+      );
+
+      expect(result.id, 50);
+      expect(result.vehicleName, 'VF 3');
+    });
+
+    test(
+      'generateContract and getCheckInPaymentUrl handle map and direct string formats',
+      () async {
+        // 1. generateContract with Map
+        when(() => mockDio.post<dynamic>('/rentals/25/contract')).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals/25/contract'),
+            statusCode: 200,
+            data: {
+              'data': {'signingUrl': 'https://docuseal.com/s/map'},
+            },
+          ),
+        );
+        final contractUrl = await dataSource.generateContract(25);
+        expect(contractUrl, 'https://docuseal.com/s/map');
+
+        // 2. getCheckInPaymentUrl with Map data['url']
+        when(
+          () => mockDio.get<dynamic>(
+            '/rentals/check-inpayment',
+            queryParameters: any(named: 'queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals/check-inpayment'),
+            statusCode: 200,
+            data: {
+              'data': {'url': 'https://pay.vn/map-url'},
+            },
+          ),
+        );
+        final payUrl = await dataSource.getCheckInPaymentUrl(rentalId: 25);
+        expect(payUrl, 'https://pay.vn/map-url');
+      },
+    );
+
+    test(
+      'parsing exceptions thrown when data is null across endpoints',
+      () async {
+        when(() => mockDio.get<Map<String, dynamic>>('/users/me')).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/users/me'),
+            statusCode: 200,
+            data: {},
+          ),
+        );
+        expect(
+          () => dataSource.getStaffProfile(),
+          throwsA(isA<ParsingException>()),
+        );
+
+        when(
+          () => mockDio.post<Map<String, dynamic>>(
+            '/rentals/reservation',
+            data: any(named: 'data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals/reservation'),
+            statusCode: 200,
+            data: {},
+          ),
+        );
+        expect(
+          () => dataSource.convertReservationToRental(
+            reservationCode: 'C',
+            staffId: 1,
+          ),
+          throwsA(isA<ParsingException>()),
+        );
+
+        when(() => mockDio.post<dynamic>('/rentals/25/contract')).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals/25/contract'),
+            statusCode: 200,
+            data: 123,
+          ),
+        );
+        expect(
+          () => dataSource.generateContract(25),
+          throwsA(isA<ParsingException>()),
+        );
+
+        when(
+          () => mockDio.get<dynamic>(
+            '/rentals/check-inpayment',
+            queryParameters: any(named: 'queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals/check-inpayment'),
+            statusCode: 200,
+            data: 123,
+          ),
+        );
+        expect(
+          () => dataSource.getCheckInPaymentUrl(rentalId: 25),
+          throwsA(isA<ParsingException>()),
+        );
+
+        when(
+          () => mockDio.post<Map<String, dynamic>>(
+            '/rental-checklists',
+            data: any(named: 'data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rental-checklists'),
+            statusCode: 200,
+            data: {},
+          ),
+        );
+        expect(
+          () => dataSource.submitCheckInChecklist(
+            rentalId: 1,
+            staffEmail: 's',
+            currentBattery: 10,
+            img: 'i',
+          ),
+          throwsA(isA<ParsingException>()),
+        );
+
+        when(
+          () => mockDio.get<Map<String, dynamic>>('/users/renter/bad@test.com'),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/users/renter/bad@test.com'),
+            statusCode: 200,
+            data: {},
+          ),
+        );
+        expect(
+          () => dataSource.getRenterByEmail('bad@test.com'),
+          throwsA(isA<ParsingException>()),
+        );
+
+        when(
+          () => mockDio.post<Map<String, dynamic>>(
+            '/rentals',
+            data: any(named: 'data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/rentals'),
+            statusCode: 200,
+            data: {},
+          ),
+        );
+        expect(
+          () => dataSource.createRental(
+            startTime: DateTime(2026, 10),
+            endTime: DateTime(2026, 10, 2),
+            vehicleId: 1,
+            email: 'e',
+            staffId: 1,
+          ),
+          throwsA(isA<ParsingException>()),
+        );
+      },
+    );
   });
 }

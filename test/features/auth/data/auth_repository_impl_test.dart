@@ -274,5 +274,95 @@ void main() {
         );
       },
     );
+
+    test(
+      'default constructor creates repository with default GoogleAuthService',
+      () {
+        final repo = AuthRepositoryImpl(
+          remoteDataSource: remoteDataSource,
+          localDataSource: localDataSource,
+        );
+        expect(repo, isNotNull);
+      },
+    );
+
+    test(
+      'getCurrentUser fetches remote user when token exists, and falls back to JWT claims on error',
+      () async {
+        const validJwt =
+            'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqd3RAdGVzdC5jb20iLCJlbWFpbCI6Imp3dEB0ZXN0LmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJleHAiOjk5OTk5OTk5OTl9.signature';
+
+        // 1. Success remote user with tokenRole enrichment
+        when(() => localDataSource.getUser()).thenAnswer((_) async => null);
+        when(
+          () => localDataSource.getAccessToken(),
+        ).thenAnswer((_) async => validJwt);
+        when(() => remoteDataSource.getCurrentUser()).thenAnswer(
+          (_) async => const UserModel(email: 'jwt@test.com', role: ''),
+        );
+        when(() => localDataSource.saveUser(any())).thenAnswer((_) async {});
+
+        final res1 = await repository.getCurrentUser();
+        expect(res1.isOk, isTrue);
+        expect(res1.valueOrNull?.role, 'ROLE_USER');
+
+        // 2. Remote throws -> falls back to JWT claims
+        when(
+          () => remoteDataSource.getCurrentUser(),
+        ).thenThrow(Exception('offline'));
+
+        final res2 = await repository.getCurrentUser();
+        expect(res2.isOk, isTrue);
+        expect(res2.valueOrNull?.email, 'jwt@test.com');
+      },
+    );
+
+    test(
+      'verifyOtp and signInWithGoogle fallback to JWT user when getCurrentUser throws',
+      () async {
+        const validJwt =
+            'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqd3RAdGVzdC5jb20iLCJlbWFpbCI6Imp3dEB0ZXN0LmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJleHAiOjk5OTk5OTk5OTl9.signature';
+        const tokens = AuthTokensModel(
+          accessToken: validJwt,
+          refreshToken: 'ref',
+        );
+
+        when(
+          () => remoteDataSource.verifyOtp(
+            email: any(named: 'email'),
+            otp: any(named: 'otp'),
+          ),
+        ).thenAnswer((_) async => tokens);
+        when(
+          () => localDataSource.saveTokens(
+            accessToken: any(named: 'accessToken'),
+            refreshToken: any(named: 'refreshToken'),
+          ),
+        ).thenAnswer((_) async {});
+        when(
+          () => remoteDataSource.getCurrentUser(),
+        ).thenThrow(Exception('offline'));
+        when(() => localDataSource.saveUser(any())).thenAnswer((_) async {});
+
+        final verifyRes = await repository.verifyOtp(
+          email: 'fallback@test.com',
+          otp: '123456',
+        );
+        expect(verifyRes.isOk, isTrue);
+        expect(verifyRes.valueOrNull?.email, 'jwt@test.com');
+
+        final auth = MockGoogleSignInAuthentication();
+        when(() => auth.idToken).thenReturn('valid-google-id-token');
+        when(() => googleAuthService.signIn()).thenAnswer((_) async => auth);
+        when(
+          () =>
+              remoteDataSource.loginWithGoogle(idToken: any(named: 'idToken')),
+        ).thenAnswer((_) async => tokens);
+
+        final googleRes = await repository.signInWithGoogle();
+        expect(googleRes.isOk, isTrue);
+        expect(googleRes.valueOrNull?.email, 'jwt@test.com');
+      },
+    );
   });
 }

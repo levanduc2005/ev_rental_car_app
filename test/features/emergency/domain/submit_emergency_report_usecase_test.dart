@@ -72,5 +72,49 @@ void main() {
         ).called(1);
       },
     );
+
+    test(
+      'delegates to repository with custom title and optional params',
+      () async {
+        const expectedEntity = SosReportEntity(
+          id: 2,
+          title: 'Custom Title',
+          description: 'Detailed problem',
+          type: EmergencyType.accident,
+          imageUrl: 'https://example.com/img.png',
+          latitude: 10.5,
+          longitude: 106.7,
+          rentalId: 10,
+          userEmail: 'user@test.com',
+        );
+
+        when(
+          () => mockRepository.submitEmergencyReport(
+            type: EmergencyType.accident,
+            description: 'Detailed problem',
+            title: 'Custom Title',
+            imageUrl: 'https://example.com/img.png',
+            latitude: 10.5,
+            longitude: 106.7,
+            rentalId: 10,
+            userEmail: 'user@test.com',
+          ),
+        ).thenAnswer((_) async => const Result.ok(expectedEntity));
+
+        final result = await useCase(
+          type: EmergencyType.accident,
+          description: 'Detailed problem',
+          title: '  Custom Title  ',
+          imageUrl: 'https://example.com/img.png',
+          latitude: 10.5,
+          longitude: 106.7,
+          rentalId: 10,
+          userEmail: 'user@test.com',
+        );
+
+        expect(result.isOk, isTrue);
+        expect(result.valueOrNull, expectedEntity);
+      },
+    );
   });
 }

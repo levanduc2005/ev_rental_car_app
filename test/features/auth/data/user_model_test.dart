@@ -66,6 +66,35 @@ void main() {
       final entity = model.toEntity();
       expect(entity.role, 'ROLE_ADMIN');
       expect(entity.isAdmin, isTrue);
+      expect(entity.createdAt, isNull);
     });
+
+    test(
+      'toEntity resolves roles for various email formats and existing roles',
+      () {
+        // staff by contains('staff')
+        const m1 = UserModel(email: 'my_staff_member@gmail.com', role: '');
+        expect(m1.toEntity().role, 'ROLE_STAFF');
+
+        // staff by emotion domain without admin/customer prefix
+        const m2 = UserModel(email: 'john@emotion.vn');
+        expect(m2.toEntity().role, 'ROLE_STAFF');
+
+        // customer with emotion domain stays ROLE_USER
+        const m3 = UserModel(
+          email: 'customer.vip@emotion.vn',
+          role: 'ROLE_USER',
+        );
+        expect(m3.toEntity().role, 'ROLE_USER');
+
+        // admin with emotion domain becomes ROLE_ADMIN
+        const m4 = UserModel(email: 'admin.root@emotion.vn', role: 'ROLE_USER');
+        expect(m4.toEntity().role, 'ROLE_ADMIN');
+
+        // custom role preserved
+        const m5 = UserModel(email: 'someone@gmail.com', role: 'ROLE_OPERATOR');
+        expect(m5.toEntity().role, 'ROLE_OPERATOR');
+      },
+    );
   });
 }

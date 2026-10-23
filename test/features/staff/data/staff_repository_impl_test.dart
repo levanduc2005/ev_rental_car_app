@@ -421,5 +421,126 @@ void main() {
         err: (f) => expect(f, isA<DataFailure>()),
       );
     });
+
+    test(
+      'error mappings for all remaining methods in StaffRepositoryImpl',
+      () async {
+        final exceptions = [
+          const NetworkException('net error'),
+          const ServerException(message: 'srv error'),
+          Exception('generic error'),
+        ];
+
+        for (final ex in exceptions) {
+          // filterRentals
+          when(() => mockRemoteDataSource.filterRentals()).thenThrow(ex);
+          final resFilterRentals = await repository.filterRentals();
+          expect(resFilterRentals.isErr, isTrue);
+
+          // convertReservationToRental
+          when(
+            () => mockRemoteDataSource.convertReservationToRental(
+              reservationCode: any(named: 'reservationCode'),
+              staffId: any(named: 'staffId'),
+            ),
+          ).thenThrow(ex);
+          final resConvert = await repository.convertReservationToRental(
+            reservationCode: 'C',
+            staffId: 1,
+          );
+          expect(resConvert.isErr, isTrue);
+
+          // generateContract
+          when(
+            () => mockRemoteDataSource.generateContract(any()),
+          ).thenThrow(ex);
+          final resGen = await repository.generateContract(1);
+          expect(resGen.isErr, isTrue);
+
+          // getCheckInPaymentUrl
+          when(
+            () => mockRemoteDataSource.getCheckInPaymentUrl(
+              rentalId: any(named: 'rentalId'),
+              point: any(named: 'point'),
+            ),
+          ).thenThrow(ex);
+          final resPay = await repository.getCheckInPaymentUrl(rentalId: 1);
+          expect(resPay.isErr, isTrue);
+
+          // updateRentalStatus
+          when(
+            () => mockRemoteDataSource.updateRentalStatus(
+              rentalId: any(named: 'rentalId'),
+              status: any(named: 'status'),
+            ),
+          ).thenThrow(ex);
+          final resUpdate = await repository.updateRentalStatus(
+            rentalId: 1,
+            status: 'DONE',
+          );
+          expect(resUpdate.isErr, isTrue);
+
+          // submitCheckInChecklist
+          when(
+            () => mockRemoteDataSource.submitCheckInChecklist(
+              rentalId: any(named: 'rentalId'),
+              staffEmail: any(named: 'staffEmail'),
+              currentBattery: any(named: 'currentBattery'),
+              img: any(named: 'img'),
+            ),
+          ).thenThrow(ex);
+          final resCheckin = await repository.submitCheckInChecklist(
+            rentalId: 1,
+            staffEmail: 'staff@test.com',
+            currentBattery: 90,
+            img: 'img.jpg',
+          );
+          expect(resCheckin.isErr, isTrue);
+
+          // getChecklists
+          when(
+            () => mockRemoteDataSource.getChecklists(
+              keyword: any(named: 'keyword'),
+              type: any(named: 'type'),
+            ),
+          ).thenThrow(ex);
+          final resChecklists = await repository.getChecklists();
+          expect(resChecklists.isErr, isTrue);
+
+          // getStationVehicles
+          when(
+            () => mockRemoteDataSource.getStationVehicles(any()),
+          ).thenThrow(ex);
+          final resStation = await repository.getStationVehicles(1);
+          expect(resStation.isErr, isTrue);
+
+          // getRenterByEmail
+          when(
+            () => mockRemoteDataSource.getRenterByEmail(any()),
+          ).thenThrow(ex);
+          final resRenter = await repository.getRenterByEmail('a@b.com');
+          expect(resRenter.isErr, isTrue);
+
+          // createRental
+          when(
+            () => mockRemoteDataSource.createRental(
+              startTime: any(named: 'startTime'),
+              endTime: any(named: 'endTime'),
+              vehicleId: any(named: 'vehicleId'),
+              email: any(named: 'email'),
+              staffId: any(named: 'staffId'),
+            ),
+          ).thenThrow(ex);
+          final resCreate = await repository.createRental(
+            startTime: DateTime(2026, 10),
+            endTime: DateTime(2026, 10, 2),
+            vehicleId: 1,
+            email: 'a@b.com',
+            staffId: 1,
+          );
+          expect(resCreate.isErr, isTrue);
+        }
+      },
+    );
   });
 }

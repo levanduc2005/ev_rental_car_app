@@ -164,6 +164,21 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           throw const ParsingException('Không tìm thấy dữ liệu giấy tờ.');
         }
         return KycDocumentModel.fromJson(data);
+      } on DioException catch (e) {
+        String rawMessage = e.message ?? '';
+        final respData = e.response?.data;
+        if (respData is Map<String, dynamic>) {
+          rawMessage =
+              respData['message'] as String? ??
+              respData['error'] as String? ??
+              rawMessage;
+        }
+        final mappedMessage = _mapKycErrorMessage(rawMessage);
+        throw ServerException(
+          statusCode: e.response?.statusCode,
+          message: mappedMessage,
+          cause: e,
+        );
       } on ServerException catch (e) {
         // Ánh xạ mã lỗi OCR chi tiết từ backend sang thông điệp tiếng Việt thân thiện
         final mappedMessage = _mapKycErrorMessage(e.message);

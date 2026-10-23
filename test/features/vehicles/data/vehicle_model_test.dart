@@ -98,5 +98,99 @@ void main() {
       expect(entity.formattedPriceDay, '600K');
       expect(entity.isLuxury, isFalse);
     });
+
+    test('VehicleModel.fromJson and toJson work correctly', () {
+      final json = {
+        'id': 1,
+        'name': 'VF e34',
+        'status': 'AVAILABLE',
+        'brand': 'VINFAST',
+        'seats': 5,
+        'priceRate': 1000000.0,
+        'hourRate': 500000.0,
+      };
+
+      final model = VehicleModel.fromJson(json);
+      expect(model.id, 1);
+      expect(model.name, 'VF e34');
+
+      final serialized = model.toJson();
+      expect(serialized['id'], 1);
+      expect(serialized['name'], 'VF e34');
+    });
+
+    test(
+      'fromBackendJson handles complex image lists, string id, and holdFee string formats',
+      () {
+        final json = {
+          'id': '99',
+          'name': 'VF 9',
+          'brand': 'VinFast',
+          'images': [
+            {'url': 'https://img1.jpg'},
+            'https://img2.jpg',
+          ],
+          'main': 'https://main.jpg',
+          'stationName': 'Trạm Trung Tâm',
+          'holdFee': '10,000 đ',
+          'status': 'SẴN SÀNG',
+        };
+
+        final model = VehicleModel.fromBackendJson(json);
+        expect(model.id, 99);
+        expect(model.stationName, 'Trạm Trung Tâm');
+        expect(model.holdFee, 10000.0);
+        expect(model.status, 'AVAILABLE');
+        expect(model.images, contains('https://main.jpg'));
+      },
+    );
+
+    test(
+      'fromBackendJson handles various status mappings and fallback holdFee keys',
+      () {
+        final statuses = [
+          {'raw': 'ĐANG THUÊ', 'expected': 'RENTING'},
+          {'raw': 'ĐÃ ĐẶT', 'expected': 'RESERVED'},
+          {'raw': 'BẢO TRÌ', 'expected': 'MAINTENANCE'},
+          {'raw': 'CUSTOM_STATUS', 'expected': 'CUSTOM_STATUS'},
+        ];
+
+        for (final s in statuses) {
+          final model = VehicleModel.fromBackendJson({
+            'id': null,
+            'status': s['raw'],
+            'holdFeeValue': 20000,
+          });
+          expect(model.id, 0);
+          expect(model.status, s['expected']);
+          expect(model.holdFee, 20000.0);
+        }
+
+        final modelWithHoldingDeposit = VehicleModel.fromBackendJson({
+          'id': 5,
+          'holdingDeposit': 15000,
+        });
+        expect(modelWithHoldingDeposit.holdFee, 15000.0);
+      },
+    );
+
+    test(
+      'toEntity fallback pricing calculates correctly when rates are low or missing',
+      () {
+        const model = VehicleModel(
+          id: 1,
+          name: 'Car',
+          brand: 'VINFAST',
+          hourRate: 500, // <= 1000, triggers priceRate * 0.45
+          priceRate: 1000000,
+        );
+
+        final entity = model.toEntity();
+        expect(entity.pricePer4Hours, 450000.0);
+        expect(entity.pricePer8Hours, 450000.0 * 1.4);
+        expect(entity.pricePer12Hours, 450000.0 * 1.6);
+        expect(entity.pricePerDay, 1000000.0);
+      },
+    );
   });
 }

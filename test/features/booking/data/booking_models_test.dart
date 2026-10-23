@@ -268,5 +268,45 @@ void main() {
       final copied = model.copyWith(status: 'COMPLETED');
       expect(copied.status, 'COMPLETED');
     });
+
+    test(
+      'fromJson and toEntity handle alternative keys and nested vehicle object',
+      () {
+        final json = {
+          'id': 303,
+          // no code -> falls back to id
+          'station': {
+            'id': 15,
+            'stationName': 'Trạm Nam Sài Gòn',
+            'stationAddress': '789 Nguyễn Văn Linh',
+          },
+          'customerEmail': 'customer@test.com',
+          'vehicle': {
+            'id': 50,
+            'name': 'VF9 Plus',
+            'plateNumber': '51A-99999',
+            'images': ['https://vf9.png'],
+            'batteryLevel': 90,
+          },
+          'payos': {'orderCode': 'ORD-303', 'amount': 1500000},
+          'depositFee': 5000000,
+          'totalAmount': 2000000,
+        };
+
+        final model = ReservationModel.fromJson(json);
+        expect(model.code, '303');
+        expect(model.stationName, 'Trạm Nam Sài Gòn');
+        expect(model.stationAddress, '789 Nguyễn Văn Linh');
+        expect(model.userEmail, 'customer@test.com');
+        expect(model.vehicle?.name, 'VF9 Plus');
+        expect(model.depositAmount, 5000000.0);
+        expect(model.totalRentAmount, 2000000.0);
+        expect(model.paymentInfo?.orderCode, 'ORD-303');
+
+        final entity = model.toEntity();
+        expect(entity.vehicle?.name, 'VF9 Plus');
+        expect(entity.paymentInfo?.orderCode, 'ORD-303');
+      },
+    );
   });
 }

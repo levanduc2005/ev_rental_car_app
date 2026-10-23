@@ -94,6 +94,37 @@ void main() {
       expect(result.valueOrNull?.length, 2);
       expect(result.valueOrNull?.first.score, 5);
       expect(result.valueOrNull?.last.score, 4);
+
+      when(
+        () => mockRemoteDataSource.getAllRatings(),
+      ).thenThrow(const ServerException(message: 'error'));
+      final errRes = await repository.getAllRatings();
+      expect(errRes.isErr, isTrue);
     });
+
+    test(
+      'getRatingById returns RatingEntity on success and failure on exception',
+      () async {
+        const model = RatingModel(
+          id: 99,
+          rentalId: 10,
+          score: 5,
+          comment: 'Đỉnh',
+        );
+
+        when(
+          () => mockRemoteDataSource.getRatingById(99),
+        ).thenAnswer((_) async => model);
+        final okResult = await repository.getRatingById(99);
+        expect(okResult.isOk, isTrue);
+        expect(okResult.valueOrNull?.id, 99);
+
+        when(
+          () => mockRemoteDataSource.getRatingById(99),
+        ).thenThrow(const ServerException(message: 'Not found'));
+        final errResult = await repository.getRatingById(99);
+        expect(errResult.isErr, isTrue);
+      },
+    );
   });
 }

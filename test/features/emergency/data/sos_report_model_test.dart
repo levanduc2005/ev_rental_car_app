@@ -96,6 +96,22 @@ void main() {
 
       expect(entity1 == entity2, isTrue);
       expect(entity1.hashCode, entity2.hashCode);
+      expect(entity1 == entity1, isTrue);
+      expect(entity1 == Object(), isFalse);
+      expect(entity1 == entity1.copyWith(id: 2), isFalse);
+      expect(entity1 == entity1.copyWith(title: 'Other'), isFalse);
+      expect(entity1 == entity1.copyWith(description: 'Other'), isFalse);
+      expect(
+        entity1 == entity1.copyWith(type: EmergencyType.accident),
+        isFalse,
+      );
+      expect(entity1 == entity1.copyWith(imageUrl: 'diff.jpg'), isFalse);
+      expect(entity1 == entity1.copyWith(latitude: 1.0), isFalse);
+      expect(entity1 == entity1.copyWith(longitude: 2.0), isFalse);
+      expect(entity1 == entity1.copyWith(rentalId: 999), isFalse);
+
+      final noChangeCopy = entity1.copyWith();
+      expect(noChangeCopy == entity1, isTrue);
     });
   });
 }
