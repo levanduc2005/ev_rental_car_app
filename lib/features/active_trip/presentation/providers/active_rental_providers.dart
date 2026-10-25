@@ -4,8 +4,12 @@ import 'package:rental_car/features/active_trip/data/datasources/active_rental_r
 import 'package:rental_car/features/active_trip/data/repositories/active_rental_repository_impl.dart';
 import 'package:rental_car/features/active_trip/domain/entities/active_rental_entity.dart';
 import 'package:rental_car/features/active_trip/domain/repositories/active_rental_repository.dart';
+import 'package:rental_car/features/active_trip/domain/usecases/check_extend_payment_use_case.dart';
+import 'package:rental_car/features/active_trip/domain/usecases/extend_rental_use_case.dart';
 import 'package:rental_car/features/active_trip/domain/usecases/get_active_rental_detail_use_case.dart';
 import 'package:rental_car/features/active_trip/domain/usecases/get_current_active_rental_use_case.dart';
+import 'package:rental_car/features/active_trip/domain/usecases/get_vehicle_schedule_use_case.dart';
+import 'package:rental_car/features/active_trip/domain/usecases/preview_extend_rental_use_case.dart';
 import 'package:rental_car/features/auth/presentation/providers/auth_controller.dart';
 
 // --- Data Layer Providers ---
@@ -34,6 +38,34 @@ final getCurrentActiveRentalUseCaseProvider =
         repository: ref.watch(activeRentalRepositoryProvider),
       );
     });
+
+final getVehicleScheduleUseCaseProvider = Provider<GetVehicleScheduleUseCase>((
+  ref,
+) {
+  return GetVehicleScheduleUseCase(
+    repository: ref.watch(activeRentalRepositoryProvider),
+  );
+});
+
+final previewExtendRentalUseCaseProvider = Provider<PreviewExtendRentalUseCase>(
+  (ref) {
+    return PreviewExtendRentalUseCase(
+      ref.watch(activeRentalRepositoryProvider),
+    );
+  },
+);
+
+final extendRentalUseCaseProvider = Provider<ExtendRentalUseCase>((ref) {
+  return ExtendRentalUseCase(
+    repository: ref.watch(activeRentalRepositoryProvider),
+  );
+});
+
+final checkExtendPaymentUseCaseProvider = Provider<CheckExtendPaymentUseCase>((
+  ref,
+) {
+  return CheckExtendPaymentUseCase(ref.watch(activeRentalRepositoryProvider));
+});
 
 // --- Controller Providers for Presentation ---
 /// Provider lấy chi tiết đơn thuê theo rentalId

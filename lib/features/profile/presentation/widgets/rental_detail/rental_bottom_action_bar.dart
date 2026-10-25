@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rental_car/features/active_trip/presentation/providers/active_rental_providers.dart';
+import 'package:rental_car/features/active_trip/presentation/widgets/extend_trip_bottom_sheet.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_detail_entity.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,9 +20,16 @@ class RentalBottomActionBar extends StatelessWidget {
     final isConfirm = rental.isConfirm || rental.isDeposited;
     final isChecking = rental.isChecking;
     final isPendingFee = rental.isPendingFee;
+    final isPendingExtendFee = rental.isPendingExtendFee;
     final isCompleted = rental.isCompleted;
+    final canExtend = rental.canExtend;
 
-    if (!isConfirm && !isChecking && !isPendingFee && !isCompleted) {
+    if (!isConfirm &&
+        !isChecking &&
+        !isPendingFee &&
+        !isPendingExtendFee &&
+        !isCompleted &&
+        !canExtend) {
       return const SizedBox.shrink();
     }
 
@@ -75,6 +85,49 @@ class RentalBottomActionBar extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 10),
+            ],
+
+            // 1. Nút Gia hạn hợp đồng (nếu đủ điều kiện canExtend)
+            if (canExtend) ...[
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF2563EB),
+                  side: const BorderSide(color: Color(0xFF2563EB)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  if (rental.vehicleId != null && rental.endTime != null) {
+                    double hourlyRate = rental.pricePerHour ?? 225000;
+                    if (rental.rentFee > 0 && rental.startTime != null) {
+                      final h = rental.endTime!
+                          .difference(rental.startTime!)
+                          .inHours;
+                      if (h > 0) {
+                        hourlyRate = rental.rentFee / h;
+                      }
+                    }
+                    showExtendTripBottomSheet(
+                      context: context,
+                      rentalId: rental.id,
+                      vehicleId: rental.vehicleId!,
+                      vehicleName: rental.vehicleName,
+                      currentEndTime: rental.endTime!,
+                      pricePerHour: hourlyRate,
+                      onSuccess: onRefresh,
+                    );
+                  }
+                },
+                icon: const Icon(Icons.more_time_rounded, size: 18),
+                label: const Text(
+                  'Gia hạn hợp đồng',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 10),
             ],
 
             // 2. Giai đoạn CHECKING -> Thông báo chờ nhân viên duyệt
@@ -118,8 +171,8 @@ class RentalBottomActionBar extends StatelessWidget {
               ),
             ],
 
-            // 3. Giai đoạn PENDING_FEE -> Thanh toán phụ phí phát sinh
-            if (isPendingFee) ...[
+            // 3. Giai đoạn PENDING_FEE hoặc PENDING_EXTEND_FEE -> Thanh toán phụ phí phát sinh
+            if (isPendingFee || isPendingExtendFee) ...[
               if (rental.paymentUrl != null &&
                   rental.paymentUrl!.isNotEmpty) ...[
                 ElevatedButton.icon(
@@ -141,11 +194,80 @@ class RentalBottomActionBar extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.payment_rounded, size: 18),
-                  label: const Text(
-                    'Thanh toán phụ phí qua PayOS',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  label: Text(
+                    isPendingExtendFee
+                        ? 'Mở trang thanh toán PayOS'
+                        : 'Thanh toán phụ phí qua PayOS',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+                if (isPendingExtendFee) ...[
+                  const SizedBox(height: 8),
+                  Consumer(
+                    builder: (context, ref, _) {
+                      return OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: const BorderSide(color: Color(0xFF16A34A)),
+                          foregroundColor: const Color(0xFF16A34A),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          final useCase = ref.read(
+                            checkExtendPaymentUseCaseProvider,
+                          );
+                          final result = await useCase(rental.id);
+                          if (!context.mounted) return;
+                          result.when(
+                            ok: (isPaid) {
+                              if (isPaid) {
+                                onRefresh();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Thanh toán gia hạn thành công! Chuyến đi đã được cập nhật.',
+                                    ),
+                                    backgroundColor: Color(0xFF16A34A),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Hệ thống chưa nhận được thanh toán. Vui lòng thử lại sau vài giây.',
+                                    ),
+                                    backgroundColor: Color(0xFFD97706),
+                                  ),
+                                );
+                              }
+                            },
+                            err: (failure) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(failure.message),
+                                  backgroundColor: const Color(0xFFDC2626),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: const Text(
+                          'Kiểm tra trạng thái thanh toán',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ] else ...[
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -157,18 +279,20 @@ class RentalBottomActionBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: const Color(0xFFFDE68A)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.pending_actions_rounded,
                         color: Color(0xFFD97706),
                         size: 20,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Đơn thuê đang chờ xử lý phụ phí phát sinh. Vui lòng liên hệ nhân viên trạm.',
-                          style: TextStyle(
+                          isPendingExtendFee
+                              ? 'Đơn thuê đang chờ thanh toán tiền gia hạn.'
+                              : 'Đơn thuê đang chờ xử lý phụ phí phát sinh. Vui lòng liên hệ nhân viên trạm.',
+                          style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF92400E),

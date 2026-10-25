@@ -88,10 +88,14 @@ class RentalDetailEntity {
   bool get isConfirm => status.toUpperCase() == 'CONFIRM';
   bool get isDeposited => status.toUpperCase() == 'DEPOSITED';
   bool get isPendingFee => status.toUpperCase() == 'PENDING_FEE';
+  bool get isPendingExtendFee => status.toUpperCase() == 'PENDING_EXTEND_FEE';
   bool get isChecking => status.toUpperCase() == 'CHECKING';
   bool get isOverdue => status.toUpperCase() == 'OVERDUE';
   bool get isCompleted => status.toUpperCase() == 'COMPLETED';
   bool get isCancelled => status.toUpperCase() == 'CANCELLED';
+
+  bool get canExtend =>
+      (isOngoing || isConfirm || isOverdue) && !isPendingExtendFee;
 
   bool get canStartCheckIn {
     if (canCheckIn) return true;

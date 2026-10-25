@@ -5,6 +5,7 @@ import 'package:rental_car/core/utils/map_launcher.dart';
 import 'package:rental_car/features/active_trip/domain/entities/active_rental_entity.dart';
 import 'package:rental_car/features/active_trip/presentation/providers/active_rental_providers.dart';
 import 'package:rental_car/features/active_trip/presentation/widgets/countdown_box.dart';
+import 'package:rental_car/features/active_trip/presentation/widgets/extend_trip_bottom_sheet.dart';
 import 'package:rental_car/features/profile/domain/entities/rental_item_entity.dart';
 
 /// Thẻ đồng hồ đếm ngược hành trình, thanh tiến trình sử dụng & thông tin trạm trả xe
@@ -177,13 +178,41 @@ class ActiveTripStatusCard extends ConsumerWidget {
               ),
               InkWell(
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Vui lòng liên hệ tổng đài để yêu cầu gia hạn chuyến đi.',
+                  final rentalId = detail?.id ?? activeRentalItem?.id;
+                  final vehicleId = detail?.vehicleId;
+                  final vehicleName =
+                      detail?.vehicleName ??
+                      activeRentalItem?.vehicleName ??
+                      'Xe điện';
+                  // Tính đơn giá giờ thực tế của xe từ đơn thuê hiện tại (VD: VF8 = 900.000đ / 4h = 225.000đ/h)
+                  double hourlyRate = 225000;
+                  if (detail != null && detail!.rentFee > 0) {
+                    final durationHours = detail!.endTime
+                        .difference(detail!.startTime)
+                        .inHours;
+                    if (durationHours > 0) {
+                      hourlyRate = detail!.rentFee / durationHours;
+                    }
+                  }
+
+                  if (rentalId != null && vehicleId != null) {
+                    showExtendTripBottomSheet(
+                      context: context,
+                      rentalId: rentalId,
+                      vehicleId: vehicleId,
+                      vehicleName: vehicleName,
+                      currentEndTime: deadline,
+                      pricePerHour: hourlyRate,
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Không tìm thấy thông tin xe để gia hạn.',
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
                 child: const Row(
                   children: [

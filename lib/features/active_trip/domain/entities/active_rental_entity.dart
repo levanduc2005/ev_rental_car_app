@@ -37,6 +37,13 @@ abstract class ActiveRentalEntity with _$ActiveRentalEntity {
     return s == 'IN_PROGRESS' || s == 'ACTIVE' || s == 'ONGOING';
   }
 
+  /// Đang chờ thanh toán tiền gia hạn
+  bool get isPendingExtendFee => status.toUpperCase() == 'PENDING_EXTEND_FEE';
+
+  /// Có thể thực hiện gia hạn không
+  bool get canExtend =>
+      (isActive || status.toUpperCase() == 'OVERDUE') && !isPendingExtendFee;
+
   /// Thời gian đã trôi qua kể từ khi bắt đầu nhận xe
   Duration get elapsedDuration {
     final now = DateTime.now();
